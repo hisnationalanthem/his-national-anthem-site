@@ -109,15 +109,15 @@ function createSiteHeader() {
             </button>
 
 
-            <nav
-                class="site-navigation"
-                id="site-navigation"
-                aria-label="Main navigation"
-            >
-                <ul class="site-nav-list">
-                    class="site-nav-link
-                </ul>
-            </nav>
+           <nav
+    class="site-navigation"
+    id="site-navigation"
+    aria-label="Main navigation"
+>
+    <ul class="site-nav-list">
+        ${navigationLinks}
+    </ul>
+</nav>
 
         </header>
     `;

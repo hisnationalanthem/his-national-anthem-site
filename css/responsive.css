@@ -107,3 +107,33 @@
     }
 
 }
+/* ========================================
+   HOMEPAGE CONTENT
+   ======================================== */
+
+@media (max-width: 700px) {
+
+    .home-grid {
+        grid-template-columns: 1fr;
+
+        gap: 18px;
+    }
+
+
+    .journal-panel {
+        padding: 24px;
+    }
+
+
+    .featured-panel {
+        padding: 26px;
+    }
+
+
+    .page-intro {
+        margin-bottom: 42px;
+
+        padding-bottom: 28px;
+    }
+
+}

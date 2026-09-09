@@ -115,7 +115,7 @@ function createSiteHeader() {
                 aria-label="Main navigation"
             >
                 <ul class="site-nav-list">
-                    ${navigationLinks}
+                    class="site-nav-link
                 </ul>
             </nav>
 

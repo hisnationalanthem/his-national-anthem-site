@@ -4,6 +4,232 @@
    ======================================== */
 
 
-/* Navigation, buttons, cards, forms,
-   notices, badges, and other reusable
-   website components will go here. */
+/* ========================================
+   SITE HEADER
+   ======================================== */
+
+.site-header {
+    width: 100%;
+
+    padding: 22px var(--page-padding);
+
+    background:
+        rgba(23, 21, 18, 0.96);
+
+    border-bottom:
+        1px solid var(--color-border-soft);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    position: relative;
+
+    z-index: 100;
+}
+
+
+/* ========================================
+   SITE BRANDING
+   ======================================== */
+
+.site-branding {
+    flex-shrink: 0;
+}
+
+
+.site-logo {
+    color: var(--color-text);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 1.2rem;
+    font-weight: 400;
+
+    letter-spacing: 0.06em;
+
+    text-decoration: none;
+}
+
+
+.site-logo:hover {
+    color: var(--color-accent-light);
+}
+
+
+/* ========================================
+   NAVIGATION
+   ======================================== */
+
+.site-navigation {
+    display: block;
+}
+
+
+.site-nav-list {
+    list-style: none;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 8px 20px;
+}
+
+
+.site-nav-item {
+    list-style: none;
+}
+
+
+.site-nav-link {
+    display: inline-block;
+
+    padding: 5px 0;
+
+    color: var(--color-text-soft);
+
+    font-size: 0.88rem;
+
+    letter-spacing: 0.04em;
+
+    text-decoration: none;
+
+    border-bottom:
+        1px solid transparent;
+
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.site-nav-link:hover {
+    color: var(--color-text);
+
+    border-color:
+        var(--color-accent-dark);
+}
+
+
+/* ========================================
+   ACTIVE PAGE
+   ======================================== */
+
+.site-nav-link.active {
+    color: var(--color-text);
+
+    border-color:
+        var(--color-accent-light);
+}
+
+
+/* ========================================
+   MOBILE MENU BUTTON
+   ======================================== */
+
+.mobile-menu-button {
+    display: none;
+
+    padding: 8px 12px;
+
+    background:
+        transparent;
+
+    color:
+        var(--color-text);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-small);
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.9rem;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.mobile-menu-button:hover {
+    background:
+        var(--color-background-soft);
+
+    border-color:
+        var(--color-accent-dark);
+}
+
+
+.mobile-menu-button:focus-visible {
+    outline:
+        2px solid var(--color-accent-light);
+
+    outline-offset:
+        3px;
+}
+
+
+/* ========================================
+   SITE FOOTER
+   ======================================== */
+
+.site-footer {
+    width: min(
+        calc(100% - (var(--page-padding) * 2)),
+        var(--page-width)
+    );
+
+    margin:
+        0 auto;
+
+    padding:
+        28px 0 36px;
+
+    border-top:
+        1px solid var(--color-border-soft);
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        20px;
+}
+
+
+.site-footer-name,
+.site-footer-copyright {
+    margin: 0;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.82rem;
+
+    letter-spacing:
+        0.04em;
+}

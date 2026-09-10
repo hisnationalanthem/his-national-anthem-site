@@ -7,6 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "[data-masterlist-grid]"
   );
 
+  const searchInput = document.querySelector(
+    "#masterlist-search-input"
+  );
+
   console.log("masterlist.js loaded.");
 
   if (!statusElement || !gridElement) {
@@ -17,6 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     return;
   }
+
+  let allBots = [];
+
+
+  /* ==========================================================
+     LABEL HELPERS
+     ========================================================== */
 
   function getPovLabel(value) {
     const labels = {
@@ -30,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return labels[value] || value || "";
   }
 
+
   function getTypeLabel(value) {
     const labels = {
       original: "Original",
@@ -42,6 +54,11 @@ document.addEventListener("DOMContentLoaded", () => {
     return labels[value] || value || "";
   }
 
+
+  /* ==========================================================
+     CARD ELEMENTS
+     ========================================================== */
+
   function createMetaBadge(text) {
     const badge = document.createElement("span");
 
@@ -51,14 +68,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return badge;
   }
 
+
   function createBotCard(bot) {
     const article = document.createElement("article");
 
     article.className = "masterlist-live-card";
 
-    /*
-     * IMAGE
-     */
+
+    /* IMAGE */
+
     if (bot.image_url) {
       const image = document.createElement("img");
 
@@ -70,16 +88,16 @@ document.addEventListener("DOMContentLoaded", () => {
       article.append(image);
     }
 
-    /*
-     * CARD BODY
-     */
+
+    /* CARD BODY */
+
     const body = document.createElement("div");
 
     body.className = "masterlist-live-body";
 
-    /*
-     * BOT NAME
-     */
+
+    /* NAME */
+
     const title = document.createElement("h3");
 
     title.className = "masterlist-live-name";
@@ -87,9 +105,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     body.append(title);
 
-    /*
-     * POV + TYPE
-     */
+
+    /* POV + BOT TYPE */
+
     const meta = document.createElement("div");
 
     meta.className = "masterlist-live-meta";
@@ -114,9 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body.append(meta);
     }
 
-    /*
-     * DESCRIPTION
-     */
+
+    /* DESCRIPTION */
+
     if (bot.description) {
       const description = document.createElement("p");
 
@@ -129,9 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
       body.append(description);
     }
 
-    /*
-     * JANITORAI LINK
-     */
+
+    /* JANITORAI LINK */
+
     if (bot.janitor_url) {
       const link = document.createElement("a");
 
@@ -144,15 +162,110 @@ document.addEventListener("DOMContentLoaded", () => {
       body.append(link);
     }
 
+
     article.append(body);
 
     return article;
   }
 
-  async function loadMasterlist() {
+
+  /* ==========================================================
+     RENDER BOT LIST
+     ========================================================== */
+
+  function renderBots(bots, searchTerm = "") {
+    gridElement.replaceChildren();
+
     /*
-     * MAKE SURE SUPABASE EXISTS
+     * No published bots exist at all.
      */
+    if (allBots.length === 0) {
+      statusElement.textContent =
+        "There are no published bots in the masterlist yet.";
+
+      return;
+    }
+
+    /*
+     * Bots exist, but search found nothing.
+     */
+    if (bots.length === 0) {
+      statusElement.textContent =
+        `No bots match "${searchTerm}".`;
+
+      return;
+    }
+
+    /*
+     * Create visible cards.
+     */
+    bots.forEach((bot) => {
+      gridElement.append(
+        createBotCard(bot)
+      );
+    });
+
+    /*
+     * Search result message.
+     */
+    if (searchTerm) {
+      statusElement.textContent =
+        bots.length === 1
+          ? `1 bot matches "${searchTerm}".`
+          : `${bots.length} bots match "${searchTerm}".`;
+
+      return;
+    }
+
+    /*
+     * Normal full-masterlist message.
+     */
+    statusElement.textContent =
+      bots.length === 1
+        ? "1 bot in the masterlist."
+        : `${bots.length} bots in the masterlist.`;
+  }
+
+
+  /* ==========================================================
+     SEARCH
+     ========================================================== */
+
+  function searchBots() {
+    const searchTerm =
+      searchInput?.value.trim() || "";
+
+    /*
+     * Empty search = show everything.
+     */
+    if (!searchTerm) {
+      renderBots(allBots);
+
+      return;
+    }
+
+    const normalizedSearch =
+      searchTerm.toLowerCase();
+
+    const matchingBots = allBots.filter((bot) => {
+      const botName =
+        String(bot.name || "").toLowerCase();
+
+      return botName.includes(normalizedSearch);
+    });
+
+    renderBots(
+      matchingBots,
+      searchTerm
+    );
+  }
+
+
+  /* ==========================================================
+     LOAD FROM SUPABASE
+     ========================================================== */
+
+  async function loadMasterlist() {
     if (!window.supabaseClient) {
       console.error(
         "Masterlist could not load: Supabase client unavailable."
@@ -169,9 +282,6 @@ document.addEventListener("DOMContentLoaded", () => {
         "Loading published bots from Supabase..."
       );
 
-      /*
-       * GET PUBLISHED BOTS
-       */
       const { data, error } = await window.supabaseClient
         .from("bots")
         .select(
@@ -182,9 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
           ascending: false
         });
 
-      /*
-       * DATABASE ERROR
-       */
       if (error) {
         console.error(
           "Supabase masterlist error:",
@@ -202,41 +309,11 @@ document.addEventListener("DOMContentLoaded", () => {
         data
       );
 
-      const bots = Array.isArray(data)
+      allBots = Array.isArray(data)
         ? data
         : [];
 
-      /*
-       * REMOVE ANY PREVIOUS CARDS
-       */
-      gridElement.replaceChildren();
-
-      /*
-       * EMPTY MASTERLIST
-       */
-      if (bots.length === 0) {
-        statusElement.textContent =
-          "There are no published bots in the masterlist yet.";
-
-        return;
-      }
-
-      /*
-       * CREATE BOT CARDS
-       */
-      bots.forEach((bot) => {
-        gridElement.append(
-          createBotCard(bot)
-        );
-      });
-
-      /*
-       * RESULT COUNT
-       */
-      statusElement.textContent =
-        bots.length === 1
-          ? "1 bot in the masterlist."
-          : `${bots.length} bots in the masterlist.`;
+      renderBots(allBots);
 
     } catch (error) {
       console.error(
@@ -248,6 +325,19 @@ document.addEventListener("DOMContentLoaded", () => {
         "Bot masterlist is temporarily unavailable.";
     }
   }
+
+
+  /* ==========================================================
+     EVENTS
+     ========================================================== */
+
+  if (searchInput) {
+    searchInput.addEventListener(
+      "input",
+      searchBots
+    );
+  }
+
 
   loadMasterlist();
 });

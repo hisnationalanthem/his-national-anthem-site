@@ -183,3 +183,61 @@
     }
 
 }
+/* ========================================
+   MEMBERSHIP PAGE
+   ======================================== */
+
+@media (max-width: 750px) {
+
+    .membership-card {
+        padding: 28px;
+    }
+
+
+    .membership-card-header {
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+
+    .membership-benefits {
+        grid-template-columns: 1fr;
+    }
+
+
+    .membership-benefit {
+        min-height: auto;
+    }
+
+
+    .credit-counter-placeholder {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .membership-card {
+        padding: 22px;
+    }
+
+
+    .membership-benefit {
+        padding: 22px;
+
+        gap: 16px;
+    }
+
+
+    .membership-benefit-number {
+        min-width: 38px;
+
+        font-size: 1.7rem;
+    }
+
+}

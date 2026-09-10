@@ -55,6 +55,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("admin.js loaded.");
 
+  /* ==========================================================
+   MANAGE BOT ELEMENTS
+   ========================================================== */
+
+const botManagerList = document.querySelector(
+  "[data-admin-bot-manager-list]"
+);
+
+const botManagerStatus = document.querySelector(
+  "[data-admin-bots-status]"
+);
+
+const botRefreshButton = document.querySelector(
+  "[data-admin-bots-refresh]"
+);
 
   /* ==========================================================
      STATE
@@ -153,6 +168,148 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+/* ==========================================================
+   BOT MANAGER LABEL HELPERS
+   ========================================================== */
+
+function getAdminPovLabel(value) {
+  const labels = {
+    anypov: "AnyPOV",
+    fempov: "FemPOV",
+    malepov: "MalePOV",
+    mlm: "MLM",
+    wlw: "WLW"
+  };
+
+  return labels[value] || value || "Not specified";
+}
+
+/* ==========================================================
+   CREATE ADMIN BOT CARD
+   ========================================================== */
+
+function createAdminBotCard(bot) {
+  const article = document.createElement("article");
+
+  article.className = "admin-bot-manager-card";
+
+
+  /* HEADER */
+
+  const header = document.createElement("div");
+
+  header.className = "admin-bot-manager-header";
+
+
+  const title = document.createElement("h3");
+
+  title.className = "admin-bot-manager-name";
+  title.textContent = bot.name;
+
+
+  const status = document.createElement("span");
+
+  status.className =
+    bot.published
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  status.textContent =
+    bot.published
+      ? "Published"
+      : "Draft";
+
+
+  header.append(
+    title,
+    status
+  );
+
+
+  /* SLUG */
+
+  const slug = document.createElement("p");
+
+  slug.className = "admin-bot-manager-slug";
+  slug.textContent = bot.slug;
+
+
+  /* META */
+
+  const meta = document.createElement("div");
+
+  meta.className = "admin-bot-manager-meta";
+
+
+  const pov = document.createElement("span");
+
+  pov.textContent =
+    getAdminPovLabel(bot.pov);
+
+
+  const type = document.createElement("span");
+
+  type.textContent =
+    getAdminBotTypeLabel(bot.bot_type);
+
+
+  meta.append(
+    pov,
+    type
+  );
+
+
+  /* DESCRIPTION */
+
+  const description = document.createElement("p");
+
+  description.className =
+    "admin-bot-manager-description";
+
+  description.textContent =
+    bot.description ||
+    "No masterlist description provided.";
+
+
+  /* JANITORAI URL STATUS */
+
+  const janitorStatus = document.createElement("p");
+
+  janitorStatus.className =
+    "admin-bot-manager-link-status";
+
+  janitorStatus.textContent =
+    bot.janitor_url
+      ? "JanitorAI link added"
+      : "No JanitorAI link";
+
+
+  /* BUILD CARD */
+
+  article.append(
+    header,
+    slug,
+    meta,
+    description,
+    janitorStatus
+  );
+
+
+  return article;
+}
+    
+function getAdminBotTypeLabel(value) {
+  const labels = {
+    original: "Original",
+    alt: "Alt",
+    commission: "Commission",
+    media_inspired: "Media Inspired",
+    remaster: "Remaster"
+  };
+
+  return labels[value] || value || "Not specified";
+}
+    
     botSubmitButton.disabled = isLoading;
 
     botSubmitButton.textContent =
@@ -271,10 +428,12 @@ document.addEventListener("DOMContentLoaded", () => {
         user.email
       );
 
-      setAuthStatus("");
-      showDashboard();
+     setAuthStatus("");
+showDashboard();
 
-      return true;
+await loadAdminBots();
+
+return true;
 
     } catch (error) {
       console.error(
@@ -440,6 +599,113 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
+  /* ==========================================================
+   LOAD ADMIN BOT MANAGER
+   ========================================================== */
+
+async function loadAdminBots() {
+  if (
+    !botManagerList ||
+    !botManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    botManagerList.replaceChildren();
+
+    botManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+    return;
+  }
+
+
+  botManagerStatus.textContent =
+    "Loading bots...";
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("bots")
+      .select(`
+        id,
+        name,
+        slug,
+        description,
+        pov,
+        bot_type,
+        image_url,
+        janitor_url,
+        published,
+        published_at,
+        created_at
+      `)
+      .order("created_at", {
+        ascending: false
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const bots =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin bots received:",
+      bots
+    );
+
+
+    botManagerList.replaceChildren();
+
+
+    if (bots.length === 0) {
+      botManagerStatus.textContent =
+        "There are no bot entries yet.";
+
+      return;
+    }
+
+
+    bots.forEach((bot) => {
+      botManagerList.append(
+        createAdminBotCard(bot)
+      );
+    });
+
+
+    botManagerStatus.textContent =
+      bots.length === 1
+        ? "1 bot entry."
+        : `${bots.length} bot entries.`;
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin bots:",
+      error
+    );
+
+    botManagerList.replaceChildren();
+
+    botManagerStatus.textContent =
+      "Unable to load bot entries.";
+  }
+}
 
   /* ==========================================================
      ADD BOT
@@ -781,6 +1047,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  /* ==========================================================
+   BOT MANAGER REFRESH
+   ========================================================== */
+
+if (botRefreshButton) {
+  botRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminBots();
+    }
+  );
+}
 
   /* ==========================================================
      START

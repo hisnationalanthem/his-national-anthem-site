@@ -704,10 +704,32 @@ publicationButton.addEventListener("click", async () => {
   );
 });
 
+    const deleteButton =
+  document.createElement("button");
+
+deleteButton.type = "button";
+
+deleteButton.className =
+  "secondary-button danger-button";
+
+deleteButton.textContent =
+  "Delete";
+
+
+deleteButton.addEventListener(
+  "click",
+  async () => {
+    await deleteSeries(
+      series,
+      deleteButton
+    );
+  }
+);
 
 actions.append(
   editButton,
-  publicationButton
+  publicationButton,
+  deleteButton
 );
 
 
@@ -779,6 +801,107 @@ return article;
     }
   }
 
+/* ==========================================================
+   DELETE SERIES
+   ========================================================== */
+
+async function deleteSeries(
+  series,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (seriesManagerStatus) {
+      seriesManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const confirmed = window.confirm(
+    `Permanently delete "${series.name}"?\n\nAny bot-to-series assignments for this collection will also be removed.\n\nThis cannot be undone.`
+  );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Deleting...";
+  }
+
+
+  if (seriesManagerStatus) {
+    seriesManagerStatus.textContent =
+      `Deleting "${series.name}"...`;
+  }
+
+
+  try {
+    const {
+      error
+    } = await window.supabaseClient
+      .from("series")
+      .delete()
+      .eq("id", series.id);
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Series deleted:",
+      series.id
+    );
+
+
+    /*
+     * Close Edit Series if the deleted
+     * collection was currently being edited.
+     */
+    if (editingSeriesId === series.id) {
+      closeEditSeries();
+    }
+
+
+    await loadAdminSeries();
+
+
+    if (seriesManagerStatus) {
+      seriesManagerStatus.textContent =
+        `"${series.name}" was deleted permanently.`;
+    }
+
+
+  } catch (error) {
+    console.error(
+      "Unable to delete series:",
+      error
+    );
+
+
+    if (seriesManagerStatus) {
+      seriesManagerStatus.textContent =
+        `"${series.name}" could not be deleted.`;
+    }
+
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Delete";
+    }
+  }
+}
+  
 /* ==========================================================
    PUBLISH / UNPUBLISH SERIES
    ========================================================== */

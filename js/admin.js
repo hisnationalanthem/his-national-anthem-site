@@ -78,6 +78,7 @@ const editSeriesCancelButton = document.querySelector(
   let editingBotId = null;
   let editingBotPublished = false;
   let editingSeriesId = null;
+  let editingUpcomingId = null;
 
 
   /* ==========================================================
@@ -390,6 +391,7 @@ void loadAdminUpcomingBots();
         seriesForm?.reset();
         closeEditBot();
         showLogin();
+        closeEditUpcoming();
         setAuthStatus("Signed out.");
       } catch (error) {
         console.error("Admin sign-out error:", error);
@@ -1198,6 +1200,146 @@ return article;
   }
 
 /* ==========================================================
+   EDIT UPCOMING BOT HELPERS
+   ========================================================== */
+
+function closeEditUpcoming() {
+  editingUpcomingId = null;
+
+  if (editUpcomingForm) {
+    editUpcomingForm.reset();
+  }
+
+  if (editUpcomingStatusMessage) {
+    editUpcomingStatusMessage.textContent = "";
+  }
+
+  if (editUpcomingPanel) {
+    editUpcomingPanel.hidden = true;
+  }
+}
+
+
+function openEditUpcoming(entry) {
+  if (
+    !editUpcomingPanel ||
+    !editUpcomingForm
+  ) {
+    console.error(
+      "Edit Upcoming Bot form elements are unavailable."
+    );
+
+    return;
+  }
+
+
+  editingUpcomingId = entry.id;
+
+
+  const botNameField =
+    editUpcomingForm.elements.namedItem(
+      "bot_name"
+    );
+
+  const botTypeField =
+    editUpcomingForm.elements.namedItem(
+      "bot_type"
+    );
+
+  const dateField =
+    editUpcomingForm.elements.namedItem(
+      "expected_post_date"
+    );
+
+  const statusField =
+    editUpcomingForm.elements.namedItem(
+      "status"
+    );
+
+  const seriesField =
+    editUpcomingForm.elements.namedItem(
+      "series_name"
+    );
+
+  const notesField =
+    editUpcomingForm.elements.namedItem(
+      "notes"
+    );
+
+  const sortOrderField =
+    editUpcomingForm.elements.namedItem(
+      "sort_order"
+    );
+
+  const visibleField =
+    editUpcomingForm.elements.namedItem(
+      "public_visible"
+    );
+
+
+  if (botNameField) {
+    botNameField.value =
+      entry.bot_name || "";
+  }
+
+  if (botTypeField) {
+    botTypeField.value =
+      entry.bot_type || "";
+  }
+
+  if (dateField) {
+    dateField.value =
+      entry.expected_post_date || "";
+  }
+
+  if (statusField) {
+    statusField.value =
+      entry.status || "planned";
+  }
+
+  if (seriesField) {
+    seriesField.value =
+      entry.series_name || "";
+  }
+
+  if (notesField) {
+    notesField.value =
+      entry.notes || "";
+  }
+
+  if (sortOrderField) {
+    sortOrderField.value =
+      String(
+        entry.sort_order ?? 0
+      );
+  }
+
+  if (visibleField) {
+    visibleField.checked =
+      Boolean(entry.public_visible);
+  }
+
+
+  if (editUpcomingHeading) {
+    editUpcomingHeading.textContent =
+      `Editing "${entry.bot_name}".`;
+  }
+
+  if (editUpcomingStatusMessage) {
+    editUpcomingStatusMessage.textContent =
+      "";
+  }
+
+
+  editUpcomingPanel.hidden = false;
+
+  editUpcomingPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+  
+/* ==========================================================
    ADMIN UPCOMING BOT CARD
    ========================================================== */
 
@@ -1332,16 +1474,52 @@ function createAdminUpcomingCard(entry) {
     "No notes provided.";
 
 
-  article.append(
-    header,
-    date,
-    meta,
-    series,
-    notes
-  );
+  /* ACTIONS */
+
+const actions =
+  document.createElement("div");
+
+actions.className =
+  "admin-bot-manager-actions";
 
 
-  return article;
+const editButton =
+  document.createElement("button");
+
+editButton.type =
+  "button";
+
+editButton.className =
+  "secondary-button";
+
+editButton.textContent =
+  "Edit";
+
+
+editButton.addEventListener(
+  "click",
+  () => {
+    openEditUpcoming(entry);
+  }
+);
+
+
+actions.append(
+  editButton
+);
+
+
+article.append(
+  header,
+  date,
+  meta,
+  series,
+  notes,
+  actions
+);
+
+
+return article;
 }
 
   
@@ -3279,6 +3457,327 @@ if (assignmentForm) {
         }
 
         updateAssignmentSubmitState();
+      }
+    }
+  );
+}
+
+  /* ==========================================================
+   CANCEL EDIT UPCOMING BOT
+   ========================================================== */
+
+if (editUpcomingCancelButton) {
+  editUpcomingCancelButton.addEventListener(
+    "click",
+    () => {
+      closeEditUpcoming();
+    }
+  );
+}
+
+  /* ==========================================================
+   SAVE EDITED UPCOMING BOT
+   ========================================================== */
+
+if (editUpcomingForm) {
+  editUpcomingForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (editUpcomingStatusMessage) {
+          editUpcomingStatusMessage.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* ENTRY SELECTED */
+
+      if (!editingUpcomingId) {
+        if (editUpcomingStatusMessage) {
+          editUpcomingStatusMessage.textContent =
+            "No upcoming bot is currently selected.";
+        }
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(editUpcomingForm);
+
+
+      const botName =
+        String(
+          formData.get("bot_name") || ""
+        ).trim();
+
+
+      const botType =
+        String(
+          formData.get("bot_type") || ""
+        ).trim();
+
+
+      const expectedPostDate =
+        String(
+          formData.get("expected_post_date") || ""
+        ).trim();
+
+
+      const status =
+        String(
+          formData.get("status") || "planned"
+        ).trim();
+
+
+      const seriesName =
+        String(
+          formData.get("series_name") || ""
+        ).trim();
+
+
+      const notes =
+        String(
+          formData.get("notes") || ""
+        ).trim();
+
+
+      const sortOrderRaw =
+        Number(
+          formData.get("sort_order")
+        );
+
+
+      const publicVisible =
+        formData.get("public_visible") === "on";
+
+
+      /* VALIDATE NAME */
+
+      if (!botName) {
+        if (editUpcomingStatusMessage) {
+          editUpcomingStatusMessage.textContent =
+            "Bot name is required.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE TYPE */
+
+      const allowedTypes = [
+        "",
+        "original",
+        "alt",
+        "commission",
+        "media_inspired",
+        "remaster"
+      ];
+
+
+      if (!allowedTypes.includes(botType)) {
+        if (editUpcomingStatusMessage) {
+          editUpcomingStatusMessage.textContent =
+            "Choose a valid bot type.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE STATUS */
+
+      const allowedStatuses = [
+        "planned",
+        "writing",
+        "in_progress",
+        "ready",
+        "scheduled",
+        "delayed",
+        "posted",
+        "cancelled"
+      ];
+
+
+      if (!allowedStatuses.includes(status)) {
+        if (editUpcomingStatusMessage) {
+          editUpcomingStatusMessage.textContent =
+            "Choose a valid upcoming-bot status.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE SORT ORDER */
+
+      if (
+        !Number.isInteger(sortOrderRaw) ||
+        sortOrderRaw < 0
+      ) {
+        if (editUpcomingStatusMessage) {
+          editUpcomingStatusMessage.textContent =
+            "Sort order must be 0 or greater.";
+        }
+
+        return;
+      }
+
+
+      /* BUILD UPDATE */
+
+      const updates = {
+        bot_name: botName,
+
+        bot_type:
+          botType || null,
+
+        expected_post_date:
+          expectedPostDate || null,
+
+        status,
+
+        series_name:
+          seriesName || null,
+
+        notes:
+          notes || null,
+
+        sort_order:
+          sortOrderRaw,
+
+        public_visible:
+          publicVisible
+      };
+
+
+      /* LOADING */
+
+      if (editUpcomingSubmitButton) {
+        editUpcomingSubmitButton.disabled =
+          true;
+
+        editUpcomingSubmitButton.textContent =
+          "Saving...";
+      }
+
+
+      if (editUpcomingStatusMessage) {
+        editUpcomingStatusMessage.textContent =
+          "Saving changes...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("upcoming_bots")
+          .update(updates)
+          .eq(
+            "id",
+            editingUpcomingId
+          )
+          .select(`
+            id,
+            bot_name,
+            bot_type,
+            expected_post_date,
+            status,
+            series_name,
+            notes,
+            sort_order,
+            public_visible
+          `)
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to update upcoming bot:",
+            error
+          );
+
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            if (editUpcomingStatusMessage) {
+              editUpcomingStatusMessage.textContent =
+                "One of the edited values does not meet the database rules.";
+            }
+
+            return;
+          }
+
+
+          if (editUpcomingStatusMessage) {
+            editUpcomingStatusMessage.textContent =
+              "The upcoming bot could not be updated.";
+          }
+
+          return;
+        }
+
+
+        console.log(
+          "Upcoming bot updated successfully:",
+          data
+        );
+
+
+        const updatedName =
+          data.bot_name;
+
+
+        closeEditUpcoming();
+
+        await loadAdminUpcomingBots();
+
+
+        if (upcomingManagerStatus) {
+          upcomingManagerStatus.textContent =
+            `"${updatedName}" was updated successfully.`;
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected error while updating upcoming bot:",
+          error
+        );
+
+
+        if (editUpcomingStatusMessage) {
+          editUpcomingStatusMessage.textContent =
+            "The upcoming bot could not be updated right now.";
+        }
+
+
+      } finally {
+        if (editUpcomingSubmitButton) {
+          editUpcomingSubmitButton.disabled =
+            false;
+
+          editUpcomingSubmitButton.textContent =
+            "Save Changes";
+        }
       }
     }
   );

@@ -78,8 +78,8 @@
         </p>
 
         <div class="request-status">
-            Form coming soon
-        </div>
+    Open — submit below
+</div>
 
     </article>
 
@@ -111,10 +111,10 @@
 
 
 <!-- =====================================
-     JON BERNTHAL FORM PLACEHOLDER
+     JON BERNTHAL SUGGESTION FORM
      ===================================== -->
 
-<section class="journal-panel request-form-placeholder">
+<section class="journal-panel">
 
     <p class="panel-label">
         Jon Bernthal Suggestions
@@ -123,13 +123,71 @@
     <h2>Submit a Suggestion</h2>
 
     <p>
-        The Jon Bernthal suggestion form will appear here
-        once the Supabase request system is ready.
+        Send in an idea for a future Jon Bernthal-inspired bot.
+        Suggestions are free and do not guarantee that the idea
+        will be created.
     </p>
 
-    <p class="small-note">
-        This form is intentionally inactive for now.
-    </p>
+
+    <form
+        data-free-request-form="jon_bernthal"
+    >
+
+        <div class="form-field">
+            <label for="jon-bernthal-name">
+                Name / Handle
+            </label>
+
+            <input
+                type="text"
+                id="jon-bernthal-name"
+                name="submitter_name"
+                autocomplete="nickname"
+                maxlength="100"
+            >
+
+            <p class="small-note">
+                Optional. Leave blank if you would rather submit anonymously.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label for="jon-bernthal-details">
+                Your Suggestion
+            </label>
+
+            <textarea
+                id="jon-bernthal-details"
+                name="request_details"
+                rows="8"
+                maxlength="5000"
+                required
+            ></textarea>
+
+            <p class="small-note">
+                Include the character, dynamic, trope, scenario,
+                or other details you want me to consider.
+            </p>
+        </div>
+
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-free-request-submit
+        >
+            Submit Suggestion
+        </button>
+
+
+        <p
+            class="admin-form-status"
+            data-free-request-status
+            aria-live="polite"
+        ></p>
+
+    </form>
 
 </section>
 

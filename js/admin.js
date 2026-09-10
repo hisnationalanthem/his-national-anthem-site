@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+  /* ==========================================================
+     AUTH ELEMENTS
+     ========================================================== */
+
   const loginPanel = document.querySelector(
     "[data-admin-login]"
   );
@@ -15,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "[data-admin-login-button]"
   );
 
-  const statusElement = document.querySelector(
+  const authStatusElement = document.querySelector(
     "[data-admin-auth-status]"
   );
 
@@ -23,7 +27,41 @@ document.addEventListener("DOMContentLoaded", () => {
     "[data-admin-logout]"
   );
 
+
+  /* ==========================================================
+     ADD BOT ELEMENTS
+     ========================================================== */
+
+  const botForm = document.querySelector(
+    "[data-admin-bot-form]"
+  );
+
+  const botSubmitButton = document.querySelector(
+    "[data-admin-bot-submit]"
+  );
+
+  const botStatusElement = document.querySelector(
+    "[data-admin-bot-status]"
+  );
+
+  const botNameInput = document.querySelector(
+    "#admin-bot-name"
+  );
+
+  const botSlugInput = document.querySelector(
+    "#admin-bot-slug"
+  );
+
+
   console.log("admin.js loaded.");
+
+
+  /* ==========================================================
+     STATE
+     ========================================================== */
+
+  let adminAuthorized = false;
+  let lastGeneratedSlug = "";
 
 
   /* ==========================================================
@@ -34,13 +72,13 @@ document.addEventListener("DOMContentLoaded", () => {
     !loginPanel ||
     !dashboard ||
     !loginForm ||
-    !statusElement
+    !authStatusElement
   ) {
     console.error("Admin page elements are missing.", {
       loginPanel,
       dashboard,
       loginForm,
-      statusElement
+      authStatusElement
     });
 
     return;
@@ -48,7 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ==========================================================
-     UI HELPERS
+     GENERAL UI HELPERS
      ========================================================== */
 
   function showLogin() {
@@ -63,10 +101,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  function setStatus(message, isError = false) {
-    statusElement.textContent = message;
+  function setAuthStatus(message, isError = false) {
+    authStatusElement.textContent = message;
 
-    statusElement.classList.toggle(
+    authStatusElement.classList.toggle(
       "admin-auth-error",
       isError
     );
@@ -84,6 +122,89 @@ document.addEventListener("DOMContentLoaded", () => {
       isLoading
         ? "Signing In..."
         : "Sign In";
+  }
+
+
+  /* ==========================================================
+     BOT FORM UI HELPERS
+     ========================================================== */
+
+  function setBotStatus(message, isError = false) {
+    if (!botStatusElement) {
+      return;
+    }
+
+    botStatusElement.textContent = message;
+
+    botStatusElement.classList.toggle(
+      "admin-form-error",
+      isError
+    );
+
+    botStatusElement.classList.toggle(
+      "admin-form-success",
+      !isError && Boolean(message)
+    );
+  }
+
+
+  function setBotFormLoading(isLoading) {
+    if (!botSubmitButton) {
+      return;
+    }
+
+    botSubmitButton.disabled = isLoading;
+
+    botSubmitButton.textContent =
+      isLoading
+        ? "Saving..."
+        : "Save Bot";
+  }
+
+
+  /* ==========================================================
+     SLUG GENERATION
+     ========================================================== */
+
+  function createSlug(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/['’]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/-+/g, "-");
+  }
+
+
+  if (botNameInput && botSlugInput) {
+    botNameInput.addEventListener("input", () => {
+      const generatedSlug =
+        createSlug(botNameInput.value);
+
+      /*
+       * Auto-update the slug if:
+       * - the slug is empty, or
+       * - it still contains the previously auto-generated value.
+       *
+       * Once you manually change the slug, typing in the bot name
+       * will no longer overwrite your custom slug.
+       */
+      if (
+        !botSlugInput.value ||
+        botSlugInput.value === lastGeneratedSlug
+      ) {
+        botSlugInput.value = generatedSlug;
+        lastGeneratedSlug = generatedSlug;
+      }
+    });
+
+
+    botSlugInput.addEventListener("input", () => {
+      botSlugInput.value =
+        createSlug(botSlugInput.value);
+    });
   }
 
 
@@ -120,8 +241,11 @@ document.addEventListener("DOMContentLoaded", () => {
      ========================================================== */
 
   async function authorizeUser(user) {
+    adminAuthorized = false;
+
     try {
-      const isAdmin = await userIsAdmin(user);
+      const isAdmin =
+        await userIsAdmin(user);
 
       if (!isAdmin) {
         console.warn(
@@ -132,7 +256,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         showLogin();
 
-        setStatus(
+        setAuthStatus(
           "This account is not authorized to access the admin dashboard.",
           true
         );
@@ -140,12 +264,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return false;
       }
 
+      adminAuthorized = true;
+
       console.log(
         "Administrator authorized:",
         user.email
       );
 
-      setStatus("");
+      setAuthStatus("");
       showDashboard();
 
       return true;
@@ -156,9 +282,11 @@ document.addEventListener("DOMContentLoaded", () => {
         error
       );
 
+      adminAuthorized = false;
+
       showLogin();
 
-      setStatus(
+      setAuthStatus(
         "Unable to verify administrator access.",
         true
       );
@@ -178,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
 
       if (!window.supabaseClient) {
-        setStatus(
+        setAuthStatus(
           "Supabase connection is unavailable.",
           true
         );
@@ -202,7 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       if (!email || !password) {
-        setStatus(
+        setAuthStatus(
           "Enter your email and password.",
           true
         );
@@ -213,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       setLoginLoading(true);
 
-      setStatus(
+      setAuthStatus(
         "Checking credentials..."
       );
 
@@ -235,7 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
             error
           );
 
-          setStatus(
+          setAuthStatus(
             "Email or password is incorrect.",
             true
           );
@@ -245,7 +373,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
         if (!data?.user) {
-          setStatus(
+          setAuthStatus(
             "Unable to sign in.",
             true
           );
@@ -265,7 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
           error
         );
 
-        setStatus(
+        setAuthStatus(
           "Unable to sign in right now.",
           true
         );
@@ -286,14 +414,19 @@ document.addEventListener("DOMContentLoaded", () => {
       "click",
       async () => {
         try {
-          await window.supabaseClient.auth
-            .signOut();
+          await window.supabaseClient.auth.signOut();
+
+          adminAuthorized = false;
 
           loginForm.reset();
 
+          if (botForm) {
+            botForm.reset();
+          }
+
           showLogin();
 
-          setStatus(
+          setAuthStatus(
             "Signed out."
           );
 
@@ -302,6 +435,274 @@ document.addEventListener("DOMContentLoaded", () => {
             "Admin sign-out error:",
             error
           );
+        }
+      }
+    );
+  }
+
+
+  /* ==========================================================
+     ADD BOT
+     ========================================================== */
+
+  if (botForm) {
+    botForm.addEventListener(
+      "submit",
+      async (event) => {
+        event.preventDefault();
+
+
+        /* ------------------------------------------------------
+           AUTHORIZATION
+           ------------------------------------------------------ */
+
+        if (
+          !window.supabaseClient ||
+          !adminAuthorized
+        ) {
+          setBotStatus(
+            "Administrator authorization is required.",
+            true
+          );
+
+          return;
+        }
+
+
+        /* ------------------------------------------------------
+           READ FORM VALUES
+           ------------------------------------------------------ */
+
+        const formData =
+          new FormData(botForm);
+
+        const name =
+          String(
+            formData.get("name") || ""
+          ).trim();
+
+        const slug =
+          createSlug(
+            formData.get("slug")
+          );
+
+        const pov =
+          String(
+            formData.get("pov") || ""
+          ).trim();
+
+        const botType =
+          String(
+            formData.get("bot_type") || ""
+          ).trim();
+
+        const description =
+          String(
+            formData.get("description") || ""
+          ).trim();
+
+        const imageUrl =
+          String(
+            formData.get("image_url") || ""
+          ).trim();
+
+        const janitorUrl =
+          String(
+            formData.get("janitor_url") || ""
+          ).trim();
+
+        const published =
+          formData.get("published") === "on";
+
+
+        /* ------------------------------------------------------
+           VALIDATION
+           ------------------------------------------------------ */
+
+        if (!name) {
+          setBotStatus(
+            "Bot name is required.",
+            true
+          );
+
+          return;
+        }
+
+
+        if (!slug) {
+          setBotStatus(
+            "A valid slug is required.",
+            true
+          );
+
+          return;
+        }
+
+
+        const validSlug =
+          /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+        if (!validSlug.test(slug)) {
+          setBotStatus(
+            "Slug can contain only lowercase letters, numbers, and single hyphens.",
+            true
+          );
+
+          return;
+        }
+
+
+        /*
+         * Published bots must have a JanitorAI URL.
+         */
+        if (published && !janitorUrl) {
+          setBotStatus(
+            "Add the JanitorAI URL before publishing this bot.",
+            true
+          );
+
+          return;
+        }
+
+
+        /* ------------------------------------------------------
+           BUILD DATABASE ROW
+           ------------------------------------------------------ */
+
+        const newBot = {
+          name,
+          slug,
+
+          description:
+            description || null,
+
+          pov:
+            pov || null,
+
+          bot_type:
+            botType || null,
+
+          image_url:
+            imageUrl || null,
+
+          janitor_url:
+            janitorUrl || null,
+
+          published,
+
+          published_at:
+            published
+              ? new Date().toISOString()
+              : null
+        };
+
+
+        /* ------------------------------------------------------
+           SAVE
+           ------------------------------------------------------ */
+
+        setBotFormLoading(true);
+
+        setBotStatus(
+          published
+            ? "Publishing bot..."
+            : "Saving draft..."
+        );
+
+
+        try {
+          const {
+            data,
+            error
+          } = await window.supabaseClient
+            .from("bots")
+            .insert(newBot)
+            .select(
+              "id, name, slug, published"
+            )
+            .single();
+
+
+          if (error) {
+            console.error(
+              "Unable to save bot:",
+              error
+            );
+
+
+            /*
+             * PostgreSQL unique violation.
+             */
+            if (error.code === "23505") {
+              setBotStatus(
+                "That slug is already being used. Choose a different slug.",
+                true
+              );
+
+              return;
+            }
+
+
+            /*
+             * PostgreSQL constraint violation.
+             */
+            if (
+              error.code === "23514" ||
+              error.code === "23502"
+            ) {
+              setBotStatus(
+                "The bot could not be saved because one of the values does not meet the database rules.",
+                true
+              );
+
+              return;
+            }
+
+
+            setBotStatus(
+              "The bot could not be saved.",
+              true
+            );
+
+            return;
+          }
+
+
+          console.log(
+            "Bot saved successfully:",
+            data
+          );
+
+
+          /* ----------------------------------------------------
+             SUCCESS
+             ---------------------------------------------------- */
+
+          setBotStatus(
+            published
+              ? `"${data.name}" was published successfully.`
+              : `"${data.name}" was saved as a private draft.`
+          );
+
+
+          botForm.reset();
+
+          lastGeneratedSlug = "";
+
+
+        } catch (error) {
+          console.error(
+            "Unexpected error while saving bot:",
+            error
+          );
+
+          setBotStatus(
+            "The bot could not be saved right now.",
+            true
+          );
+
+        } finally {
+          setBotFormLoading(false);
         }
       }
     );
@@ -320,7 +721,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       showLogin();
 
-      setStatus(
+      setAuthStatus(
         "Supabase connection is unavailable.",
         true
       );
@@ -347,7 +748,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
       if (!session?.user) {
+        adminAuthorized = false;
         showLogin();
+
         return;
       }
 
@@ -368,11 +771,12 @@ document.addEventListener("DOMContentLoaded", () => {
         error
       );
 
+      adminAuthorized = false;
+
       showLogin();
 
-      setStatus(
-        "Please sign in.",
-        false
+      setAuthStatus(
+        "Please sign in."
       );
     }
   }

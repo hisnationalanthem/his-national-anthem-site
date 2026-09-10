@@ -974,6 +974,177 @@
 </section>
 
             <!-- =====================================
+     BOT / SERIES ASSIGNMENTS
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+
+            <p class="panel-label">
+                Collections
+            </p>
+
+            <h2>Assign Bots to Series</h2>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-assignments-refresh
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        Add existing bots to one or more series.
+        Removing an assignment does not delete the bot
+        or the series.
+    </p>
+
+
+    <!-- =====================================
+         ADD ASSIGNMENT
+         ===================================== -->
+
+    <form
+        class="admin-series-form"
+        data-admin-assignment-form
+    >
+
+        <!-- BOT -->
+
+        <div class="form-field">
+
+            <label for="admin-assignment-bot">
+                Bot
+            </label>
+
+            <select
+                id="admin-assignment-bot"
+                name="bot_id"
+                data-admin-assignment-bot
+                disabled
+                required
+            >
+
+                <option value="">
+                    Loading bots...
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- SERIES -->
+
+        <div class="form-field">
+
+            <label for="admin-assignment-series">
+                Series
+            </label>
+
+            <select
+                id="admin-assignment-series"
+                name="series_id"
+                data-admin-assignment-series
+                disabled
+                required
+            >
+
+                <option value="">
+                    Loading series...
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- SORT ORDER -->
+
+        <div class="form-field">
+
+            <label for="admin-assignment-sort-order">
+                Bot Position in Series
+            </label>
+
+            <input
+                type="number"
+                id="admin-assignment-sort-order"
+                name="sort_order"
+                min="0"
+                step="1"
+                value="0"
+            >
+
+            <p class="small-note">
+                Lower numbers appear first within that series.
+            </p>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-admin-assignment-submit
+            disabled
+        >
+            Add to Series
+        </button>
+
+
+        <!-- STATUS -->
+
+        <p
+            class="admin-form-status"
+            data-admin-assignment-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+
+    <!-- =====================================
+         CURRENT ASSIGNMENTS
+         ===================================== -->
+
+    <div class="admin-assignment-manager">
+
+        <h3>
+            Current Assignments
+        </h3>
+
+        <p
+            class="admin-form-status"
+            data-admin-assignment-manager-status
+            aria-live="polite"
+        >
+            Loading assignments...
+        </p>
+
+
+        <div
+            class="admin-assignment-list"
+            data-admin-assignment-list
+        ></div>
+
+    </div>
+
+</section>
+
+            <!-- =====================================
      EDIT SERIES
      ===================================== -->
 

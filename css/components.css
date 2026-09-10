@@ -1814,3 +1814,221 @@
     outline-offset:
         4px;
 }
+/* ========================================
+   TERMS OF SERVICE PAGE
+   ======================================== */
+
+
+/* ========================================
+   POLICY NOTICE
+   ======================================== */
+
+.policy-notice {
+    margin-bottom: 64px;
+
+    padding: 30px;
+
+    background:
+        rgba(98, 88, 70, 0.12);
+
+    border:
+        1px solid var(--color-accent-dark);
+
+    border-left:
+        3px solid var(--color-accent-light);
+
+    border-radius:
+        var(--radius-medium);
+}
+
+
+.policy-notice h2 {
+    margin-bottom:
+        14px;
+
+    font-size:
+        1.6rem;
+}
+
+
+.policy-notice p + p {
+    margin-top:
+        12px;
+}
+
+
+/* ========================================
+   POLICY SECTIONS
+   ======================================== */
+
+.policy-section {
+    padding:
+        34px 0;
+
+    border-top:
+        1px solid var(--color-border-soft);
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(220px, 0.7fr)
+        minmax(0, 1.8fr);
+
+    gap:
+        48px;
+
+    margin-bottom:
+        0;
+}
+
+
+.policy-section:last-child {
+    border-bottom:
+        1px solid var(--color-border-soft);
+}
+
+
+/* ========================================
+   POLICY SECTION HEADING
+   ======================================== */
+
+.policy-section-heading {
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    gap:
+        18px;
+}
+
+
+.policy-number {
+    color:
+        var(--color-accent-dark);
+
+    font-size:
+        0.75rem;
+
+    letter-spacing:
+        0.08em;
+
+    line-height:
+        1.8;
+}
+
+
+.policy-section-heading h2 {
+    margin:
+        0;
+
+    font-size:
+        1.55rem;
+}
+
+
+/* ========================================
+   POLICY CONTENT
+   ======================================== */
+
+.policy-content {
+    max-width:
+        720px;
+}
+
+
+.policy-content p + p {
+    margin-top:
+        16px;
+}
+
+
+/* ========================================
+   POLICY FACTS
+   ======================================== */
+
+.policy-facts {
+    margin:
+        24px 0;
+
+    border-top:
+        1px solid var(--color-border-soft);
+}
+
+
+.policy-fact {
+    padding:
+        13px 0;
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        20px;
+
+    border-bottom:
+        1px solid var(--color-border-soft);
+}
+
+
+.policy-fact span {
+    color:
+        var(--color-text-soft);
+}
+
+
+.policy-fact strong {
+    flex-shrink:
+        0;
+
+    color:
+        var(--color-accent-light);
+
+    font-weight:
+        400;
+}
+
+
+/* ========================================
+   PENDING POLICY LABEL
+   ======================================== */
+
+.policy-pending {
+    display:
+        inline-block;
+
+    margin-top:
+        20px;
+
+    padding:
+        6px 10px;
+
+    color:
+        var(--color-text-muted);
+
+    background:
+        rgba(23, 21, 18, 0.45);
+
+    border:
+        1px dashed var(--color-border);
+
+    border-radius:
+        var(--radius-small);
+
+    font-size:
+        0.72rem;
+
+    letter-spacing:
+        0.09em;
+
+    text-transform:
+        uppercase;
+}

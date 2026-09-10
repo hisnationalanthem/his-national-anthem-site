@@ -363,10 +363,31 @@ publicationButton.addEventListener(
   }
 );
 
+  const deleteButton =
+  document.createElement("button");
+
+deleteButton.type = "button";
+deleteButton.className =
+  "secondary-button danger-button";
+
+deleteButton.textContent =
+  "Delete";
+
+
+deleteButton.addEventListener(
+  "click",
+  async () => {
+    await deleteBot(
+      bot,
+      deleteButton
+    );
+  }
+);
 
 actions.append(
   editButton,
-  publicationButton
+  publicationButton,
+  deleteButton
 );
 
   /* BUILD CARD */
@@ -830,6 +851,107 @@ function openEditBot(bot) {
     behavior: "smooth",
     block: "start"
   });
+}
+
+/* ==========================================================
+   DELETE BOT
+   ========================================================== */
+
+async function deleteBot(
+  bot,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (botManagerStatus) {
+      botManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const confirmed = window.confirm(
+    `Permanently delete "${bot.name}"?\n\nThis cannot be undone.`
+  );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Deleting...";
+  }
+
+
+  if (botManagerStatus) {
+    botManagerStatus.textContent =
+      `Deleting "${bot.name}"...`;
+  }
+
+
+  try {
+    const {
+      error
+    } = await window.supabaseClient
+      .from("bots")
+      .delete()
+      .eq("id", bot.id);
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Bot deleted:",
+      bot.id
+    );
+
+
+    /*
+     * If this bot was currently open in the
+     * Edit Bot form, close that form too.
+     */
+    if (editingBotId === bot.id) {
+      closeEditBot();
+    }
+
+
+    await loadAdminBots();
+
+
+    if (botManagerStatus) {
+      botManagerStatus.textContent =
+        `"${bot.name}" was deleted permanently.`;
+    }
+
+
+  } catch (error) {
+    console.error(
+      "Unable to delete bot:",
+      error
+    );
+
+
+    if (botManagerStatus) {
+      botManagerStatus.textContent =
+        `"${bot.name}" could not be deleted.`;
+    }
+
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Delete";
+    }
+  }
 }
   
 /* ==========================================================

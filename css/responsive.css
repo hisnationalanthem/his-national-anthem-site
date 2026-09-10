@@ -390,3 +390,49 @@
     }
 
 }
+/* ========================================
+   TERMS OF SERVICE PAGE
+   ======================================== */
+
+@media (max-width: 750px) {
+
+    .policy-section {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            20px;
+
+        padding:
+            28px 0;
+    }
+
+
+    .policy-notice {
+        padding:
+            24px;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .policy-fact {
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+        gap:
+            4px;
+    }
+
+
+    .policy-section-heading {
+        gap:
+            12px;
+    }
+
+}

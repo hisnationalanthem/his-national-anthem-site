@@ -158,6 +158,23 @@ const editSeriesCancelButton = document.querySelector(
     seriesSubmitButton.textContent = isLoading ? "Saving..." : "Save Series";
   }
 
+  /* ==========================================================
+   UPCOMING BOT FORM LOADING
+   ========================================================== */
+
+function setUpcomingFormLoading(isLoading) {
+  if (!upcomingSubmitButton) {
+    return;
+  }
+
+  upcomingSubmitButton.disabled =
+    isLoading || !adminAuthorized;
+
+  upcomingSubmitButton.textContent =
+    isLoading
+      ? "Saving..."
+      : "Save Upcoming Bot";
+}
 
   /* ==========================================================
      LABEL HELPERS
@@ -293,6 +310,7 @@ function getAdminUpcomingStatusLabel(value) {
       console.log("Administrator authorized:", user.email);
       setAuthStatus("");
       showDashboard();
+      setUpcomingFormLoading(false);
 
      // Content-loading errors should never make a valid admin look unauthorized.
 void loadAdminBots();
@@ -364,6 +382,9 @@ void loadAdminUpcomingBots();
       try {
         await window.supabaseClient.auth.signOut();
         adminAuthorized = false;
+        setUpcomingFormLoading(false);
+        seriesForm?.reset();
+        upcomingForm?.reset();
         loginForm.reset();
         botForm?.reset();
         seriesForm?.reset();
@@ -2352,6 +2373,286 @@ async function loadAdminUpcomingBots() {
     }
   }
 
+  /* ==========================================================
+   CREATE UPCOMING BOT
+   ========================================================== */
+
+if (upcomingForm) {
+  upcomingForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (upcomingStatusMessage) {
+          upcomingStatusMessage.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(upcomingForm);
+
+
+      const botName =
+        String(
+          formData.get("bot_name") || ""
+        ).trim();
+
+
+      const botType =
+        String(
+          formData.get("bot_type") || ""
+        ).trim();
+
+
+      const expectedPostDate =
+        String(
+          formData.get("expected_post_date") || ""
+        ).trim();
+
+
+      const status =
+        String(
+          formData.get("status") || "planned"
+        ).trim();
+
+
+      const seriesName =
+        String(
+          formData.get("series_name") || ""
+        ).trim();
+
+
+      const notes =
+        String(
+          formData.get("notes") || ""
+        ).trim();
+
+
+      const sortOrderRaw =
+        Number(
+          formData.get("sort_order")
+        );
+
+
+      const publicVisible =
+        formData.get("public_visible") === "on";
+
+
+      /* VALIDATE NAME */
+
+      if (!botName) {
+        if (upcomingStatusMessage) {
+          upcomingStatusMessage.textContent =
+            "Bot name is required.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE TYPE */
+
+      const allowedTypes = [
+        "",
+        "original",
+        "alt",
+        "commission",
+        "media_inspired",
+        "remaster"
+      ];
+
+
+      if (!allowedTypes.includes(botType)) {
+        if (upcomingStatusMessage) {
+          upcomingStatusMessage.textContent =
+            "Choose a valid bot type.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE STATUS */
+
+      const allowedStatuses = [
+        "planned",
+        "writing",
+        "in_progress",
+        "ready",
+        "scheduled",
+        "delayed",
+        "posted",
+        "cancelled"
+      ];
+
+
+      if (!allowedStatuses.includes(status)) {
+        if (upcomingStatusMessage) {
+          upcomingStatusMessage.textContent =
+            "Choose a valid upcoming-bot status.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE SORT ORDER */
+
+      if (
+        !Number.isInteger(sortOrderRaw) ||
+        sortOrderRaw < 0
+      ) {
+        if (upcomingStatusMessage) {
+          upcomingStatusMessage.textContent =
+            "Sort order must be 0 or greater.";
+        }
+
+        return;
+      }
+
+
+      /* BUILD RECORD */
+
+      const newUpcomingBot = {
+        bot_name: botName,
+
+        bot_type:
+          botType || null,
+
+        expected_post_date:
+          expectedPostDate || null,
+
+        status,
+
+        series_name:
+          seriesName || null,
+
+        notes:
+          notes || null,
+
+        sort_order:
+          sortOrderRaw,
+
+        public_visible:
+          publicVisible
+      };
+
+
+      /* SAVE */
+
+      setUpcomingFormLoading(true);
+
+
+      if (upcomingStatusMessage) {
+        upcomingStatusMessage.textContent =
+          publicVisible
+            ? "Saving public upcoming bot..."
+            : "Saving private upcoming bot...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("upcoming_bots")
+          .insert(newUpcomingBot)
+          .select(`
+            id,
+            bot_name,
+            bot_type,
+            expected_post_date,
+            status,
+            series_name,
+            notes,
+            sort_order,
+            public_visible
+          `)
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to save upcoming bot:",
+            error
+          );
+
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            if (upcomingStatusMessage) {
+              upcomingStatusMessage.textContent =
+                "One of the upcoming-bot values does not meet the database rules.";
+            }
+
+            return;
+          }
+
+
+          if (upcomingStatusMessage) {
+            upcomingStatusMessage.textContent =
+              "The upcoming bot could not be saved.";
+          }
+
+          return;
+        }
+
+
+        console.log(
+          "Upcoming bot saved successfully:",
+          data
+        );
+
+
+        upcomingForm.reset();
+
+
+        if (upcomingStatusMessage) {
+          upcomingStatusMessage.textContent =
+            data.public_visible
+              ? `"${data.bot_name}" was added to the public upcoming queue.`
+              : `"${data.bot_name}" was saved as a private upcoming entry.`;
+        }
+
+
+        await loadAdminUpcomingBots();
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected error while saving upcoming bot:",
+          error
+        );
+
+
+        if (upcomingStatusMessage) {
+          upcomingStatusMessage.textContent =
+            "The upcoming bot could not be saved right now.";
+        }
+
+
+      } finally {
+        setUpcomingFormLoading(false);
+      }
+    }
+  );
+}
 
   /* ==========================================================
      CREATE SERIES

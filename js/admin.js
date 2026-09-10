@@ -82,7 +82,9 @@ const editSeriesCancelButton = document.querySelector(
   let editingAnnouncementId = null;
   let editingAnnouncementPublished = false;
 
-
+let adminFreeRequests = [];
+let editingFreeRequestId = null;
+  
   /* ==========================================================
      REQUIRED ELEMENTS
      ========================================================== */
@@ -259,6 +261,33 @@ function getAdminAnnouncementCategoryLabel(value) {
 
   return labels[value] || value || "General";
 }
+
+  /* ==========================================================
+   FREE REQUEST LABELS
+   ========================================================== */
+
+function getAdminFreeRequestTypeLabel(value) {
+  const labels = {
+    jon_bernthal: "Jon Bernthal Suggestion",
+    graveyard: "Graveyard Request"
+  };
+
+  return labels[value] || value || "Unknown Request Type";
+}
+
+
+function getAdminFreeRequestStatusLabel(value) {
+  const labels = {
+    submitted: "Submitted",
+    reviewing: "Reviewing",
+    accepted: "Accepted",
+    denied: "Denied",
+    created: "Created",
+    archived: "Archived"
+  };
+
+  return labels[value] || value || "Unknown Status";
+}
   
   /* ==========================================================
      SLUG HELPERS
@@ -330,6 +359,8 @@ function getAdminAnnouncementCategoryLabel(value) {
 
   async function authorizeUser(user) {
     adminAuthorized = false;
+    adminFreeRequests = [];
+editingFreeRequestId = null;
 
     try {
       const isAdmin = await userIsAdmin(user);
@@ -358,6 +389,7 @@ void loadAdminSeries();
 void loadAdminAssignments();
 void loadAdminUpcomingBots();
 void loadAdminAnnouncements();
+void loadAdminFreeRequests();
 
       return true;
     } catch (error) {
@@ -846,6 +878,66 @@ const editAnnouncementCancelButton = document.querySelector(
 
 const editAnnouncementStatus = document.querySelector(
   "[data-admin-edit-announcement-status]"
+);
+
+/* ==========================================================
+   FREE REQUEST ELEMENTS
+   ========================================================== */
+
+const freeRequestRefreshButton = document.querySelector(
+  "[data-admin-free-requests-refresh]"
+);
+
+const freeRequestTypeFilter = document.querySelector(
+  "[data-admin-free-request-type-filter]"
+);
+
+const freeRequestStatusFilter = document.querySelector(
+  "[data-admin-free-request-status-filter]"
+);
+
+const freeRequestManagerStatus = document.querySelector(
+  "[data-admin-free-request-manager-status]"
+);
+
+const freeRequestList = document.querySelector(
+  "[data-admin-free-request-list]"
+);
+
+const editFreeRequestPanel = document.querySelector(
+  "[data-admin-edit-free-request-panel]"
+);
+
+const editFreeRequestForm = document.querySelector(
+  "[data-admin-edit-free-request-form]"
+);
+
+const editFreeRequestHeading = document.querySelector(
+  "[data-admin-edit-free-request-heading]"
+);
+
+const editFreeRequestType = document.querySelector(
+  "[data-admin-edit-free-request-type]"
+);
+
+const editFreeRequestSubmitter = document.querySelector(
+  "[data-admin-edit-free-request-submitter]"
+);
+
+const editFreeRequestDetails = document.querySelector(
+  "[data-admin-edit-free-request-details]"
+);
+
+const editFreeRequestSubmitButton = document.querySelector(
+  "[data-admin-edit-free-request-submit]"
+);
+
+const editFreeRequestCancelButton = document.querySelector(
+  "[data-admin-edit-free-request-cancel]"
+);
+
+const editFreeRequestStatusMessage = document.querySelector(
+  "[data-admin-edit-free-request-status-message]"
 );
   
   /* ==========================================================
@@ -2167,6 +2259,194 @@ async function deleteUpcomingBot(
     }
   }
 }
+
+  /* ==========================================================
+   ADMIN FREE REQUEST CARD
+   ========================================================== */
+
+function createAdminFreeRequestCard(request) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-free-request-card";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    getAdminFreeRequestTypeLabel(
+      request.request_type
+    );
+
+
+  const status =
+    document.createElement("span");
+
+  status.className =
+    request.status === "accepted" ||
+    request.status === "created"
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  status.textContent =
+    getAdminFreeRequestStatusLabel(
+      request.status
+    );
+
+
+  header.append(
+    title,
+    status
+  );
+
+
+  /* SUBMITTER */
+
+  const submitter =
+    document.createElement("p");
+
+  submitter.className =
+    "admin-bot-manager-link-status";
+
+  submitter.textContent =
+    request.submitter_name
+      ? `Submitted by: ${request.submitter_name}`
+      : "Submitted anonymously";
+
+
+  /* DETAILS */
+
+  const details =
+    document.createElement("p");
+
+  details.className =
+    "admin-bot-manager-description";
+
+  details.textContent =
+    request.request_details;
+
+
+  /* DATE */
+
+  const date =
+    document.createElement("p");
+
+  date.className =
+    "admin-bot-manager-slug";
+
+
+  if (request.created_at) {
+    date.textContent =
+      `Submitted: ${new Date(
+        request.created_at
+      ).toLocaleString()}`;
+  } else {
+    date.textContent =
+      "Submission date unavailable";
+  }
+
+
+  article.append(
+    header,
+    submitter,
+    details,
+    date
+  );
+
+
+  return article;
+}
+
+  /* ==========================================================
+   RENDER FREE REQUESTS
+   ========================================================== */
+
+function renderAdminFreeRequests() {
+  if (
+    !freeRequestList ||
+    !freeRequestManagerStatus
+  ) {
+    return;
+  }
+
+
+  const selectedType =
+    freeRequestTypeFilter?.value || "all";
+
+  const selectedStatus =
+    freeRequestStatusFilter?.value || "all";
+
+
+  const filteredRequests =
+    adminFreeRequests.filter(
+      (request) => {
+        const matchesType =
+          selectedType === "all" ||
+          request.request_type ===
+            selectedType;
+
+        const matchesStatus =
+          selectedStatus === "all" ||
+          request.status ===
+            selectedStatus;
+
+        return (
+          matchesType &&
+          matchesStatus
+        );
+      }
+    );
+
+
+  freeRequestList.replaceChildren();
+
+
+  if (adminFreeRequests.length === 0) {
+    freeRequestManagerStatus.textContent =
+      "There are no free request entries yet.";
+
+    return;
+  }
+
+
+  if (filteredRequests.length === 0) {
+    freeRequestManagerStatus.textContent =
+      "No free requests match the selected filters.";
+
+    return;
+  }
+
+
+  filteredRequests.forEach(
+    (request) => {
+      freeRequestList.append(
+        createAdminFreeRequestCard(
+          request
+        )
+      );
+    }
+  );
+
+
+  freeRequestManagerStatus.textContent =
+    filteredRequests.length === 1
+      ? "1 free request entry."
+      : `${filteredRequests.length} free request entries.`;
+}
   
   /* ==========================================================
      LOAD BOT MANAGER
@@ -2965,6 +3245,146 @@ async function loadAdminAnnouncements() {
   } finally {
     if (announcementRefreshButton) {
       announcementRefreshButton.disabled = false;
+    }
+  }
+}
+
+  /* ==========================================================
+   LOAD FREE REQUESTS
+   ========================================================== */
+
+async function loadAdminFreeRequests() {
+  if (
+    !freeRequestList ||
+    !freeRequestManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    adminFreeRequests = [];
+
+    freeRequestList.replaceChildren();
+
+    freeRequestManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+    if (freeRequestRefreshButton) {
+      freeRequestRefreshButton.disabled = true;
+    }
+
+    if (freeRequestTypeFilter) {
+      freeRequestTypeFilter.disabled = true;
+    }
+
+    if (freeRequestStatusFilter) {
+      freeRequestStatusFilter.disabled = true;
+    }
+
+    return;
+  }
+
+
+  freeRequestManagerStatus.textContent =
+    "Loading free requests...";
+
+  freeRequestList.replaceChildren();
+
+
+  if (freeRequestRefreshButton) {
+    freeRequestRefreshButton.disabled = true;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("free_requests")
+      .select(`
+        id,
+        user_id,
+        request_type,
+        submitter_name,
+        request_details,
+        status,
+        created_at,
+        updated_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    adminFreeRequests =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin free requests received:",
+      adminFreeRequests
+    );
+
+
+    if (freeRequestTypeFilter) {
+      freeRequestTypeFilter.disabled =
+        false;
+    }
+
+    if (freeRequestStatusFilter) {
+      freeRequestStatusFilter.disabled =
+        false;
+    }
+
+
+    renderAdminFreeRequests();
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin free requests:",
+      error
+    );
+
+
+    adminFreeRequests = [];
+
+    freeRequestList.replaceChildren();
+
+    freeRequestManagerStatus.textContent =
+      "Unable to load free request entries.";
+
+
+    if (freeRequestTypeFilter) {
+      freeRequestTypeFilter.disabled =
+        true;
+    }
+
+    if (freeRequestStatusFilter) {
+      freeRequestStatusFilter.disabled =
+        true;
+    }
+
+
+  } finally {
+    if (freeRequestRefreshButton) {
+      freeRequestRefreshButton.disabled =
+        false;
     }
   }
 }
@@ -3992,6 +4412,42 @@ if (announcementRefreshButton) {
       closeEditBot();
     });
   }
+
+  /* ==========================================================
+   FREE REQUEST MANAGER REFRESH
+   ========================================================== */
+
+if (freeRequestRefreshButton) {
+  freeRequestRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminFreeRequests();
+    }
+  );
+}
+
+  /* ==========================================================
+   FREE REQUEST FILTERS
+   ========================================================== */
+
+if (freeRequestTypeFilter) {
+  freeRequestTypeFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminFreeRequests();
+    }
+  );
+}
+
+
+if (freeRequestStatusFilter) {
+  freeRequestStatusFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminFreeRequests();
+    }
+  );
+}
 
 /* ==========================================================
    SAVE EDITED SERIES

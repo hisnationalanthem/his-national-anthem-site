@@ -1483,6 +1483,8 @@ actions.className =
   "admin-bot-manager-actions";
 
 
+/* EDIT */
+
 const editButton =
   document.createElement("button");
 
@@ -1504,8 +1506,35 @@ editButton.addEventListener(
 );
 
 
+/* DELETE */
+
+const deleteButton =
+  document.createElement("button");
+
+deleteButton.type =
+  "button";
+
+deleteButton.className =
+  "secondary-button danger-button";
+
+deleteButton.textContent =
+  "Delete";
+
+
+deleteButton.addEventListener(
+  "click",
+  async () => {
+    await deleteUpcomingBot(
+      entry,
+      deleteButton
+    );
+  }
+);
+
+
 actions.append(
-  editButton
+  editButton,
+  deleteButton
 );
 
 
@@ -1522,6 +1551,110 @@ article.append(
 return article;
 }
 
+  /* ==========================================================
+   DELETE UPCOMING BOT
+   ========================================================== */
+
+async function deleteUpcomingBot(
+  entry,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (upcomingManagerStatus) {
+      upcomingManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      `Permanently delete "${entry.bot_name}" from the upcoming queue?\n\nThis cannot be undone.`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (button) {
+    button.disabled = true;
+    button.textContent =
+      "Deleting...";
+  }
+
+
+  if (upcomingManagerStatus) {
+    upcomingManagerStatus.textContent =
+      `Deleting "${entry.bot_name}"...`;
+  }
+
+
+  try {
+    const {
+      error
+    } = await window.supabaseClient
+      .from("upcoming_bots")
+      .delete()
+      .eq(
+        "id",
+        entry.id
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Upcoming bot deleted:",
+      entry.id
+    );
+
+
+    if (
+      editingUpcomingId === entry.id
+    ) {
+      closeEditUpcoming();
+    }
+
+
+    await loadAdminUpcomingBots();
+
+
+    if (upcomingManagerStatus) {
+      upcomingManagerStatus.textContent =
+        `"${entry.bot_name}" was deleted permanently.`;
+    }
+
+
+  } catch (error) {
+    console.error(
+      "Unable to delete upcoming bot:",
+      error
+    );
+
+
+    if (upcomingManagerStatus) {
+      upcomingManagerStatus.textContent =
+        `"${entry.bot_name}" could not be deleted.`;
+    }
+
+
+    if (button) {
+      button.disabled = false;
+      button.textContent =
+        "Delete";
+    }
+  }
+}
   
   /* ==========================================================
      LOAD BOT MANAGER

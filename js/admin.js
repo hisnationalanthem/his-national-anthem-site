@@ -318,13 +318,7 @@ function getAdminBotTypeLabel(value) {
   return labels[value] || value || "Not specified";
 }
     
-    botSubmitButton.disabled = isLoading;
-
-    botSubmitButton.textContent =
-      isLoading
-        ? "Saving..."
-        : "Save Bot";
-  }
+    
 
 
   /* ==========================================================

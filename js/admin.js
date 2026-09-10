@@ -79,6 +79,8 @@ const editSeriesCancelButton = document.querySelector(
   let editingBotPublished = false;
   let editingSeriesId = null;
   let editingUpcomingId = null;
+  let editingAnnouncementId = null;
+  let editingAnnouncementPublished = false;
 
 
   /* ==========================================================
@@ -430,6 +432,7 @@ void loadAdminAnnouncements();
         seriesForm?.reset();
         announcementForm?.reset();
         closeEditBot();
+        closeEditAnnouncement();
         showLogin();
         closeEditUpcoming();
         setAuthStatus("Signed out.");
@@ -1623,6 +1626,120 @@ deleteButton.addEventListener(
   }
 );
 
+/* ==========================================================
+   EDIT ANNOUNCEMENT HELPERS
+   ========================================================== */
+
+function closeEditAnnouncement() {
+  editingAnnouncementId = null;
+  editingAnnouncementPublished = false;
+
+  if (editAnnouncementForm) {
+    editAnnouncementForm.reset();
+  }
+
+  if (editAnnouncementStatus) {
+    editAnnouncementStatus.textContent = "";
+  }
+
+  if (editAnnouncementPanel) {
+    editAnnouncementPanel.hidden = true;
+  }
+}
+
+
+function openEditAnnouncement(announcement) {
+  if (
+    !editAnnouncementPanel ||
+    !editAnnouncementForm
+  ) {
+    console.error(
+      "Edit Announcement form elements are unavailable."
+    );
+
+    return;
+  }
+
+
+  editingAnnouncementId =
+    announcement.id;
+
+  editingAnnouncementPublished =
+    Boolean(announcement.published);
+
+
+  const titleField =
+    editAnnouncementForm.elements.namedItem(
+      "title"
+    );
+
+  const categoryField =
+    editAnnouncementForm.elements.namedItem(
+      "category"
+    );
+
+  const contentField =
+    editAnnouncementForm.elements.namedItem(
+      "content"
+    );
+
+  const importantField =
+    editAnnouncementForm.elements.namedItem(
+      "important"
+    );
+
+  const publishedField =
+    editAnnouncementForm.elements.namedItem(
+      "published"
+    );
+
+
+  if (titleField) {
+    titleField.value =
+      announcement.title || "";
+  }
+
+  if (categoryField) {
+    categoryField.value =
+      announcement.category || "general";
+  }
+
+  if (contentField) {
+    contentField.value =
+      announcement.content || "";
+  }
+
+  if (importantField) {
+    importantField.checked =
+      Boolean(announcement.important);
+  }
+
+  if (publishedField) {
+    publishedField.checked =
+      Boolean(announcement.published);
+  }
+
+
+  if (editAnnouncementHeading) {
+    editAnnouncementHeading.textContent =
+      `Editing "${announcement.title}".`;
+  }
+
+
+  if (editAnnouncementStatus) {
+    editAnnouncementStatus.textContent =
+      "";
+  }
+
+
+  editAnnouncementPanel.hidden = false;
+
+  editAnnouncementPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+  
   /* ==========================================================
    ADMIN ANNOUNCEMENT CARD
    ========================================================== */
@@ -1741,15 +1858,53 @@ function createAdminAnnouncementCard(announcement) {
   }
 
 
-  article.append(
-    header,
-    meta,
-    content,
-    date
-  );
+ /* ACTIONS */
+
+const actions =
+  document.createElement("div");
+
+actions.className =
+  "admin-bot-manager-actions";
 
 
-  return article;
+const editButton =
+  document.createElement("button");
+
+editButton.type =
+  "button";
+
+editButton.className =
+  "secondary-button";
+
+editButton.textContent =
+  "Edit";
+
+
+editButton.addEventListener(
+  "click",
+  () => {
+    openEditAnnouncement(
+      announcement
+    );
+  }
+);
+
+
+actions.append(
+  editButton
+);
+
+
+article.append(
+  header,
+  meta,
+  content,
+  date,
+  actions
+);
+
+
+return article;
 }
 
 
@@ -4626,6 +4781,251 @@ if (editUpcomingForm) {
             false;
 
           editUpcomingSubmitButton.textContent =
+            "Save Changes";
+        }
+      }
+    }
+  );
+}
+
+  /* ==========================================================
+   SAVE EDITED ANNOUNCEMENT
+   ========================================================== */
+
+if (editAnnouncementForm) {
+  editAnnouncementForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (editAnnouncementStatus) {
+          editAnnouncementStatus.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      if (!editingAnnouncementId) {
+        if (editAnnouncementStatus) {
+          editAnnouncementStatus.textContent =
+            "No announcement is currently selected.";
+        }
+
+        return;
+      }
+
+
+      const formData =
+        new FormData(
+          editAnnouncementForm
+        );
+
+
+      const title =
+        String(
+          formData.get("title") || ""
+        ).trim();
+
+
+      const content =
+        String(
+          formData.get("content") || ""
+        ).trim();
+
+
+      const category =
+        String(
+          formData.get("category") || "general"
+        ).trim();
+
+
+      const important =
+        formData.get("important") === "on";
+
+
+      const published =
+        formData.get("published") === "on";
+
+
+      if (!title) {
+        if (editAnnouncementStatus) {
+          editAnnouncementStatus.textContent =
+            "Announcement title is required.";
+        }
+
+        return;
+      }
+
+
+      if (!content) {
+        if (editAnnouncementStatus) {
+          editAnnouncementStatus.textContent =
+            "Announcement content is required.";
+        }
+
+        return;
+      }
+
+
+      const allowedCategories = [
+        "general",
+        "website",
+        "commissions",
+        "membership",
+        "requests",
+        "masterlist",
+        "schedule"
+      ];
+
+
+      if (
+        !allowedCategories.includes(category)
+      ) {
+        if (editAnnouncementStatus) {
+          editAnnouncementStatus.textContent =
+            "Choose a valid announcement category.";
+        }
+
+        return;
+      }
+
+
+      const updates = {
+        title,
+        content,
+        category,
+        important,
+        published
+      };
+
+
+      if (
+        published &&
+        !editingAnnouncementPublished
+      ) {
+        updates.published_at =
+          new Date().toISOString();
+      }
+
+
+      if (!published) {
+        updates.published_at = null;
+      }
+
+
+      if (editAnnouncementSubmitButton) {
+        editAnnouncementSubmitButton.disabled =
+          true;
+
+        editAnnouncementSubmitButton.textContent =
+          "Saving...";
+      }
+
+
+      if (editAnnouncementStatus) {
+        editAnnouncementStatus.textContent =
+          "Saving changes...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("announcements")
+          .update(updates)
+          .eq(
+            "id",
+            editingAnnouncementId
+          )
+          .select(`
+            id,
+            title,
+            content,
+            category,
+            important,
+            published,
+            published_at
+          `)
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to update announcement:",
+            error
+          );
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            if (editAnnouncementStatus) {
+              editAnnouncementStatus.textContent =
+                "One of the edited values does not meet the database rules.";
+            }
+
+            return;
+          }
+
+
+          if (editAnnouncementStatus) {
+            editAnnouncementStatus.textContent =
+              "The announcement could not be updated.";
+          }
+
+          return;
+        }
+
+
+        console.log(
+          "Announcement updated successfully:",
+          data
+        );
+
+
+        const updatedTitle =
+          data.title;
+
+
+        closeEditAnnouncement();
+
+        await loadAdminAnnouncements();
+
+
+        if (announcementManagerStatus) {
+          announcementManagerStatus.textContent =
+            `"${updatedTitle}" was updated successfully.`;
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected error while updating announcement:",
+          error
+        );
+
+
+        if (editAnnouncementStatus) {
+          editAnnouncementStatus.textContent =
+            "The announcement could not be updated right now.";
+        }
+
+
+      } finally {
+        if (editAnnouncementSubmitButton) {
+          editAnnouncementSubmitButton.disabled =
+            false;
+
+          editAnnouncementSubmitButton.textContent =
             "Save Changes";
         }
       }

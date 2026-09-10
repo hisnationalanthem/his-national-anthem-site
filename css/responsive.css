@@ -436,3 +436,43 @@
     }
 
 }
+/* ========================================
+   ABOUT PAGE
+   ======================================== */
+
+@media (max-width: 750px) {
+
+    .about-layout {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            18px;
+    }
+
+
+    .creator-links {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .ama-field-preview {
+        flex-direction:
+            column;
+
+        gap:
+            5px;
+    }
+
+
+    .ama-field-value {
+        text-align:
+            left;
+    }
+
+}

@@ -1335,3 +1335,357 @@
     border-top:
         1px solid var(--color-border-soft);
 }
+/* ========================================
+   BOT MASTERLIST PAGE
+   ======================================== */
+
+
+/* ========================================
+   MASTERLIST TOOLS
+   ======================================== */
+
+.masterlist-tools {
+    margin-bottom: 0;
+}
+
+
+.masterlist-search {
+    margin-top: 28px;
+}
+
+
+.masterlist-search label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.76rem;
+
+    letter-spacing: 0.08em;
+
+    text-transform: uppercase;
+}
+
+
+.masterlist-search input {
+    width: 100%;
+
+    padding: 13px 14px;
+
+    background:
+        rgba(23, 21, 18, 0.55);
+
+    color:
+        var(--color-text);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-small);
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.95rem;
+}
+
+
+.masterlist-search input::placeholder {
+    color:
+        var(--color-text-muted);
+}
+
+
+.masterlist-search input:disabled {
+    opacity:
+        0.7;
+
+    cursor:
+        not-allowed;
+}
+
+
+/* ========================================
+   FILTER BUTTONS
+   ======================================== */
+
+.masterlist-filters {
+    margin-top: 18px;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+}
+
+
+.filter-button {
+    padding:
+        8px 13px;
+
+    background:
+        transparent;
+
+    color:
+        var(--color-text-soft);
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-small);
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.78rem;
+
+    cursor:
+        pointer;
+}
+
+
+.filter-button.active {
+    color:
+        var(--color-text);
+
+    border-color:
+        var(--color-accent-dark);
+
+    background:
+        rgba(143, 129, 104, 0.08);
+}
+
+
+.filter-button:disabled {
+    cursor:
+        not-allowed;
+
+    opacity:
+        0.72;
+}
+
+
+/* ========================================
+   BOT GRID
+   ======================================== */
+
+.bot-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        20px;
+
+    margin-top:
+        30px;
+}
+
+
+/* ========================================
+   BOT CARD
+   ======================================== */
+
+.bot-card {
+    overflow:
+        hidden;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(43, 39, 33, 0.76),
+            rgba(30, 27, 23, 0.96)
+        );
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-medium);
+
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+
+.bot-image-placeholder {
+    min-height:
+        240px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        rgba(23, 21, 18, 0.6);
+
+    color:
+        var(--color-text-muted);
+
+    border-bottom:
+        1px solid var(--color-border-soft);
+
+    font-size:
+        0.75rem;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.bot-card-content {
+    padding:
+        22px;
+}
+
+
+.bot-card-category {
+    margin-bottom:
+        8px;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.7rem;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.bot-card h3 {
+    margin-bottom:
+        10px;
+
+    font-size:
+        1.35rem;
+}
+
+
+.bot-card-meta {
+    margin-top:
+        20px;
+
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px;
+}
+
+
+.bot-card-meta span {
+    padding:
+        5px 8px;
+
+    color:
+        var(--color-text-muted);
+
+    background:
+        rgba(23, 21, 18, 0.48);
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-small);
+
+    font-size:
+        0.68rem;
+
+    letter-spacing:
+        0.07em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.bot-card-placeholder {
+    opacity:
+        0.82;
+}
+
+
+/* ========================================
+   SERIES GRID
+   ======================================== */
+
+.series-grid {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap:
+        20px;
+
+    margin-top:
+        30px;
+}
+
+
+.series-card {
+    min-height:
+        250px;
+
+    padding:
+        28px;
+
+    background:
+        var(--color-background-soft);
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-medium);
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        flex-start;
+}
+
+
+.series-card h3 {
+    margin-bottom:
+        12px;
+
+    font-size:
+        1.4rem;
+}
+
+
+.series-card .request-status {
+    margin-top:
+        auto;
+}

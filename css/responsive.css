@@ -591,3 +591,18 @@
     }
 
 }
+@media (max-width: 600px) {
+  .upcoming-live-card-top {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .upcoming-status-badge {
+    align-self: flex-start;
+  }
+
+  .upcoming-live-meta {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+}

@@ -3146,3 +3146,69 @@ a.creator-link-card:hover {
   color: var(--color-text-soft);
   font-style: italic;
 }
+/* ============================================================
+   LIVE UPCOMING BOT QUEUE
+   ============================================================ */
+
+.upcoming-live-section {
+  margin-top: 2rem;
+}
+
+.upcoming-load-status {
+  margin: 1rem 0 1.5rem;
+  color: var(--color-text-soft);
+  font-style: italic;
+}
+
+.upcoming-live-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.upcoming-live-card {
+  padding: 1.25rem;
+  border: 1px solid var(--color-border-soft);
+  border-radius: var(--radius-medium);
+  background: var(--color-background-soft);
+}
+
+.upcoming-live-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.upcoming-live-name {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.upcoming-status-badge {
+  flex-shrink: 0;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  color: var(--color-text-soft);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.upcoming-live-date {
+  margin: 0.6rem 0 0;
+  color: var(--color-accent-light);
+}
+
+.upcoming-live-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-top: 0.75rem;
+  color: var(--color-text-soft);
+  font-size: 0.9rem;
+}
+
+.upcoming-meta-item {
+  display: inline-block;
+}

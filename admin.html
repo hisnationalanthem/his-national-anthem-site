@@ -495,6 +495,254 @@
 
 </section>
 
+<!-- =====================================
+     EDIT BOT
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-edit-bot-panel
+    hidden
+>
+
+    <p class="panel-label">
+        Masterlist
+    </p>
+
+    <h2>
+        Edit Bot
+    </h2>
+
+    <p data-admin-edit-bot-heading>
+        Update an existing masterlist entry.
+    </p>
+
+
+    <form
+        class="admin-bot-form"
+        data-admin-edit-bot-form
+    >
+
+        <!-- NAME -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-bot-name">
+                Bot Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-bot-name"
+                name="name"
+                autocomplete="off"
+                required
+            >
+
+        </div>
+
+
+        <!-- SLUG -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-bot-slug">
+                Slug
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-bot-slug"
+                name="slug"
+                autocomplete="off"
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                required
+            >
+
+            <p class="small-note">
+                Lowercase letters, numbers, and hyphens only.
+            </p>
+
+        </div>
+
+
+        <!-- POV -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-bot-pov">
+                POV
+            </label>
+
+            <select
+                id="admin-edit-bot-pov"
+                name="pov"
+            >
+
+                <option value="">
+                    Not specified
+                </option>
+
+                <option value="anypov">
+                    AnyPOV
+                </option>
+
+                <option value="fempov">
+                    FemPOV
+                </option>
+
+                <option value="malepov">
+                    MalePOV
+                </option>
+
+                <option value="mlm">
+                    MLM
+                </option>
+
+                <option value="wlw">
+                    WLW
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- BOT TYPE -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-bot-type">
+                Bot Type
+            </label>
+
+            <select
+                id="admin-edit-bot-type"
+                name="bot_type"
+            >
+
+                <option value="">
+                    Not specified
+                </option>
+
+                <option value="original">
+                    Original
+                </option>
+
+                <option value="alt">
+                    Alt
+                </option>
+
+                <option value="commission">
+                    Commission
+                </option>
+
+                <option value="media_inspired">
+                    Media Inspired
+                </option>
+
+                <option value="remaster">
+                    Remaster
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-bot-description">
+                Description
+            </label>
+
+            <textarea
+                id="admin-edit-bot-description"
+                name="description"
+                rows="5"
+            ></textarea>
+
+        </div>
+
+
+        <!-- IMAGE URL -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-bot-image-url">
+                Image URL
+            </label>
+
+            <input
+                type="url"
+                id="admin-edit-bot-image-url"
+                name="image_url"
+                placeholder="https://..."
+            >
+
+        </div>
+
+
+        <!-- JANITORAI URL -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-bot-janitor-url">
+                JanitorAI URL
+            </label>
+
+            <input
+                type="url"
+                id="admin-edit-bot-janitor-url"
+                name="janitor_url"
+                placeholder="https://janitorai.com/..."
+            >
+
+            <p class="small-note">
+                A JanitorAI URL is required before this bot can be published.
+            </p>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-edit-bot-submit
+            >
+                Save Changes
+            </button>
+
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-edit-bot-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <p
+            class="admin-form-status"
+            data-admin-edit-bot-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
+            
             <div class="admin-management-grid">
 
                 <article class="journal-panel">

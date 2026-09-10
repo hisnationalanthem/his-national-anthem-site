@@ -185,7 +185,25 @@ const editSeriesCancelButton = document.querySelector(
     return labels[value] || value || "Not specified";
   }
 
+/* ==========================================================
+   UPCOMING STATUS LABEL
+   ========================================================== */
 
+function getAdminUpcomingStatusLabel(value) {
+  const labels = {
+    planned: "Planned",
+    writing: "Writing",
+    in_progress: "In Progress",
+    ready: "Ready",
+    scheduled: "Scheduled",
+    delayed: "Delayed",
+    posted: "Posted",
+    cancelled: "Cancelled"
+  };
+
+  return labels[value] || value || "Not specified";
+}
+  
   /* ==========================================================
      SLUG HELPERS
      ========================================================== */
@@ -280,6 +298,7 @@ const editSeriesCancelButton = document.querySelector(
 void loadAdminBots();
 void loadAdminSeries();
 void loadAdminAssignments();
+void loadAdminUpcomingBots();
 
       return true;
     } catch (error) {
@@ -659,6 +678,57 @@ function openEditSeries(series) {
     "[data-admin-assignments-refresh]"
   );
 
+  /* ==========================================================
+   UPCOMING BOT ELEMENTS
+   ========================================================== */
+
+const upcomingForm = document.querySelector(
+  "[data-admin-upcoming-form]"
+);
+
+const upcomingSubmitButton = document.querySelector(
+  "[data-admin-upcoming-submit]"
+);
+
+const upcomingStatusMessage = document.querySelector(
+  "[data-admin-upcoming-status-message]"
+);
+
+const upcomingRefreshButton = document.querySelector(
+  "[data-admin-upcoming-refresh]"
+);
+
+const upcomingManagerStatus = document.querySelector(
+  "[data-admin-upcoming-manager-status]"
+);
+
+const upcomingList = document.querySelector(
+  "[data-admin-upcoming-list]"
+);
+
+const editUpcomingPanel = document.querySelector(
+  "[data-admin-edit-upcoming-panel]"
+);
+
+const editUpcomingForm = document.querySelector(
+  "[data-admin-edit-upcoming-form]"
+);
+
+const editUpcomingHeading = document.querySelector(
+  "[data-admin-edit-upcoming-heading]"
+);
+
+const editUpcomingSubmitButton = document.querySelector(
+  "[data-admin-edit-upcoming-submit]"
+);
+
+const editUpcomingCancelButton = document.querySelector(
+  "[data-admin-edit-upcoming-cancel]"
+);
+
+const editUpcomingStatusMessage = document.querySelector(
+  "[data-admin-edit-upcoming-status-message]"
+);
 
   /* ==========================================================
      ASSIGNMENT FORM STATE
@@ -1106,7 +1176,154 @@ article.append(
 return article;
   }
 
+/* ==========================================================
+   ADMIN UPCOMING BOT CARD
+   ========================================================== */
 
+function createAdminUpcomingCard(entry) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-upcoming-manager-card";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    entry.bot_name;
+
+
+  const visibility =
+    document.createElement("span");
+
+  visibility.className =
+    entry.public_visible
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  visibility.textContent =
+    entry.public_visible
+      ? "Public"
+      : "Private";
+
+
+  header.append(
+    title,
+    visibility
+  );
+
+
+  /* DATE */
+
+  const date =
+    document.createElement("p");
+
+  date.className =
+    "admin-bot-manager-slug";
+
+  date.textContent =
+    entry.expected_post_date
+      ? `Expected: ${entry.expected_post_date}`
+      : "Expected date not set";
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const type =
+    document.createElement("span");
+
+  type.textContent =
+    entry.bot_type
+      ? getAdminBotTypeLabel(
+          entry.bot_type
+        )
+      : "Type not specified";
+
+
+  const status =
+    document.createElement("span");
+
+  status.textContent =
+    getAdminUpcomingStatusLabel(
+      entry.status
+    );
+
+
+  const sortOrder =
+    document.createElement("span");
+
+  sortOrder.textContent =
+    `Sort Order: ${entry.sort_order ?? 0}`;
+
+
+  meta.append(
+    type,
+    status,
+    sortOrder
+  );
+
+
+  /* SERIES */
+
+  const series =
+    document.createElement("p");
+
+  series.className =
+    "admin-bot-manager-link-status";
+
+  series.textContent =
+    entry.series_name
+      ? `Series: ${entry.series_name}`
+      : "No series";
+
+
+  /* NOTES */
+
+  const notes =
+    document.createElement("p");
+
+  notes.className =
+    "admin-bot-manager-description";
+
+  notes.textContent =
+    entry.notes ||
+    "No notes provided.";
+
+
+  article.append(
+    header,
+    date,
+    meta,
+    series,
+    notes
+  );
+
+
+  return article;
+}
+
+  
   /* ==========================================================
      LOAD BOT MANAGER
      ========================================================== */
@@ -1641,6 +1858,144 @@ async function loadAdminAssignments() {
 }
 
   /* ==========================================================
+   LOAD UPCOMING BOTS
+   ========================================================== */
+
+async function loadAdminUpcomingBots() {
+  if (
+    !upcomingList ||
+    !upcomingManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    upcomingList.replaceChildren();
+
+    upcomingManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+    if (upcomingRefreshButton) {
+      upcomingRefreshButton.disabled = true;
+    }
+
+    return;
+  }
+
+
+  upcomingManagerStatus.textContent =
+    "Loading upcoming bots...";
+
+
+  upcomingList.replaceChildren();
+
+
+  if (upcomingRefreshButton) {
+    upcomingRefreshButton.disabled = true;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("upcoming_bots")
+      .select(`
+        id,
+        bot_name,
+        bot_type,
+        expected_post_date,
+        status,
+        series_name,
+        notes,
+        sort_order,
+        public_visible,
+        created_at,
+        updated_at
+      `)
+      .order(
+        "sort_order",
+        {
+          ascending: true
+        }
+      )
+      .order(
+        "created_at",
+        {
+          ascending: true
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const upcomingBots =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin upcoming bots received:",
+      upcomingBots
+    );
+
+
+    upcomingList.replaceChildren();
+
+
+    if (upcomingBots.length === 0) {
+      upcomingManagerStatus.textContent =
+        "There are no upcoming bot entries yet.";
+
+      return;
+    }
+
+
+    upcomingBots.forEach(
+      (entry) => {
+        upcomingList.append(
+          createAdminUpcomingCard(
+            entry
+          )
+        );
+      }
+    );
+
+
+    upcomingManagerStatus.textContent =
+      upcomingBots.length === 1
+        ? "1 upcoming bot entry."
+        : `${upcomingBots.length} upcoming bot entries.`;
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin upcoming bots:",
+      error
+    );
+
+    upcomingList.replaceChildren();
+
+    upcomingManagerStatus.textContent =
+      "Unable to load upcoming bot entries.";
+
+  } finally {
+    if (upcomingRefreshButton) {
+      upcomingRefreshButton.disabled = false;
+    }
+  }
+}
+
+  /* ==========================================================
      ADD BOT
      ========================================================== */
 
@@ -2124,6 +2479,19 @@ if (assignmentRefreshButton) {
     "click",
     async () => {
       await loadAdminAssignments();
+    }
+  );
+}
+
+  /* ==========================================================
+   UPCOMING BOT MANAGER REFRESH
+   ========================================================== */
+
+if (upcomingRefreshButton) {
+  upcomingRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminUpcomingBots();
     }
   );
 }

@@ -972,6 +972,172 @@
     ></div>
 
 </section>
+
+            <!-- =====================================
+     EDIT SERIES
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-edit-series-panel
+    hidden
+>
+
+    <p class="panel-label">
+        Collections
+    </p>
+
+    <h2>
+        Edit Series
+    </h2>
+
+    <p data-admin-edit-series-heading>
+        Update an existing series.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-edit-series-form
+    >
+
+        <!-- SERIES NAME -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-series-name">
+                Series Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-series-name"
+                name="name"
+                autocomplete="off"
+                required
+            >
+
+        </div>
+
+
+        <!-- SLUG -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-series-slug">
+                Slug
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-series-slug"
+                name="slug"
+                autocomplete="off"
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                required
+            >
+
+            <p class="small-note">
+                Lowercase letters, numbers, and hyphens only.
+            </p>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-series-description">
+                Description
+            </label>
+
+            <textarea
+                id="admin-edit-series-description"
+                name="description"
+                rows="4"
+            ></textarea>
+
+        </div>
+
+
+        <!-- IMAGE URL -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-series-image-url">
+                Image URL
+            </label>
+
+            <input
+                type="url"
+                id="admin-edit-series-image-url"
+                name="image_url"
+                placeholder="https://..."
+            >
+
+        </div>
+
+
+        <!-- SORT ORDER -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-series-sort-order">
+                Sort Order
+            </label>
+
+            <input
+                type="number"
+                id="admin-edit-series-sort-order"
+                name="sort_order"
+                min="0"
+                step="1"
+                value="0"
+            >
+
+            <p class="small-note">
+                Lower numbers appear first.
+            </p>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-edit-series-submit
+            >
+                Save Changes
+            </button>
+
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-edit-series-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <p
+            class="admin-form-status"
+            data-admin-edit-series-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
             
             <div class="admin-management-grid">
 

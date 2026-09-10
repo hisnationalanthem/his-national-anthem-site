@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "#masterlist-search-input"
   );
 
+  const filterButtons = document.querySelectorAll(
+    "[data-masterlist-filter]"
+  );
+
   console.log("masterlist.js loaded.");
 
   if (!statusElement || !gridElement) {
@@ -23,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   let allBots = [];
+  let activeFilter = "all";
 
 
   /* ==========================================================
@@ -52,6 +57,17 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     return labels[value] || value || "";
+  }
+
+
+  function getFilterLabel(value) {
+    const labels = {
+      all: "All",
+      original: "Original",
+      media_inspired: "Media Inspired"
+    };
+
+    return labels[value] || value;
   }
 
 
@@ -96,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
     body.className = "masterlist-live-body";
 
 
-    /* NAME */
+    /* BOT NAME */
 
     const title = document.createElement("h3");
 
@@ -106,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     body.append(title);
 
 
-    /* POV + BOT TYPE */
+    /* POV + TYPE */
 
     const meta = document.createElement("div");
 
@@ -170,94 +186,147 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ==========================================================
-     RENDER BOT LIST
+     FILTERING
      ========================================================== */
 
-  function renderBots(bots, searchTerm = "") {
-    gridElement.replaceChildren();
+  function getVisibleBots() {
+    const searchTerm =
+      searchInput?.value.trim().toLowerCase() || "";
+
+    return allBots.filter((bot) => {
+      /*
+       * SEARCH MATCH
+       */
+      const botName =
+        String(bot.name || "").toLowerCase();
+
+      const matchesSearch =
+        !searchTerm ||
+        botName.includes(searchTerm);
+
+
+      /*
+       * TYPE FILTER MATCH
+       */
+      const matchesFilter =
+        activeFilter === "all" ||
+        bot.bot_type === activeFilter;
+
+
+      return matchesSearch && matchesFilter;
+    });
+  }
+
+
+  /* ==========================================================
+     STATUS MESSAGE
+     ========================================================== */
+
+  function getStatusMessage(bots) {
+    const searchTerm =
+      searchInput?.value.trim() || "";
 
     /*
      * No published bots exist at all.
      */
     if (allBots.length === 0) {
-      statusElement.textContent =
-        "There are no published bots in the masterlist yet.";
-
-      return;
+      return "There are no published bots in the masterlist yet.";
     }
 
+
     /*
-     * Bots exist, but search found nothing.
+     * Search/filter combination found nothing.
      */
     if (bots.length === 0) {
-      statusElement.textContent =
-        `No bots match "${searchTerm}".`;
+      if (searchTerm && activeFilter !== "all") {
+        return `No ${getFilterLabel(activeFilter)} bots match "${searchTerm}".`;
+      }
 
-      return;
+      if (searchTerm) {
+        return `No bots match "${searchTerm}".`;
+      }
+
+      if (activeFilter !== "all") {
+        return `There are no ${getFilterLabel(activeFilter)} bots currently listed.`;
+      }
+
+      return "No bots match the current filters.";
     }
 
+
     /*
-     * Create visible cards.
+     * Search active.
      */
-    bots.forEach((bot) => {
+    if (searchTerm) {
+      return bots.length === 1
+        ? `1 bot matches "${searchTerm}".`
+        : `${bots.length} bots match "${searchTerm}".`;
+    }
+
+
+    /*
+     * Type filter active.
+     */
+    if (activeFilter !== "all") {
+      return bots.length === 1
+        ? `1 ${getFilterLabel(activeFilter)} bot.`
+        : `${bots.length} ${getFilterLabel(activeFilter)} bots.`;
+    }
+
+
+    /*
+     * Normal masterlist.
+     */
+    return bots.length === 1
+      ? "1 bot in the masterlist."
+      : `${bots.length} bots in the masterlist.`;
+  }
+
+
+  /* ==========================================================
+     RENDER
+     ========================================================== */
+
+  function renderMasterlist() {
+    const visibleBots =
+      getVisibleBots();
+
+    gridElement.replaceChildren();
+
+    visibleBots.forEach((bot) => {
       gridElement.append(
         createBotCard(bot)
       );
     });
 
-    /*
-     * Search result message.
-     */
-    if (searchTerm) {
-      statusElement.textContent =
-        bots.length === 1
-          ? `1 bot matches "${searchTerm}".`
-          : `${bots.length} bots match "${searchTerm}".`;
-
-      return;
-    }
-
-    /*
-     * Normal full-masterlist message.
-     */
     statusElement.textContent =
-      bots.length === 1
-        ? "1 bot in the masterlist."
-        : `${bots.length} bots in the masterlist.`;
+      getStatusMessage(visibleBots);
   }
 
 
   /* ==========================================================
-     SEARCH
+     ACTIVE FILTER BUTTON
      ========================================================== */
 
-  function searchBots() {
-    const searchTerm =
-      searchInput?.value.trim() || "";
+  function setActiveFilter(newFilter) {
+    activeFilter = newFilter;
 
-    /*
-     * Empty search = show everything.
-     */
-    if (!searchTerm) {
-      renderBots(allBots);
+    filterButtons.forEach((button) => {
+      const isActive =
+        button.dataset.masterlistFilter === activeFilter;
 
-      return;
-    }
+      button.classList.toggle(
+        "active",
+        isActive
+      );
 
-    const normalizedSearch =
-      searchTerm.toLowerCase();
-
-    const matchingBots = allBots.filter((bot) => {
-      const botName =
-        String(bot.name || "").toLowerCase();
-
-      return botName.includes(normalizedSearch);
+      button.setAttribute(
+        "aria-pressed",
+        String(isActive)
+      );
     });
 
-    renderBots(
-      matchingBots,
-      searchTerm
-    );
+    renderMasterlist();
   }
 
 
@@ -313,7 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ? data
         : [];
 
-      renderBots(allBots);
+      renderMasterlist();
 
     } catch (error) {
       console.error(
@@ -334,9 +403,18 @@ document.addEventListener("DOMContentLoaded", () => {
   if (searchInput) {
     searchInput.addEventListener(
       "input",
-      searchBots
+      renderMasterlist
     );
   }
+
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setActiveFilter(
+        button.dataset.masterlistFilter
+      );
+    });
+  });
 
 
   loadMasterlist();

@@ -1118,3 +1118,220 @@
     border-style:
         dashed;
 }
+/* ========================================
+   UPCOMING BOTS PAGE
+   ======================================== */
+
+
+/* ========================================
+   WEEKLY SCHEDULE
+   ======================================== */
+
+.schedule-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-top: 30px;
+}
+
+
+.schedule-card {
+    min-height: 190px;
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(43, 39, 33, 0.74),
+            rgba(30, 27, 23, 0.94)
+        );
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-medium);
+
+    display: flex;
+
+    flex-direction: column;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+.schedule-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 2px;
+
+    background:
+        var(--color-accent-dark);
+
+    opacity: 0.6;
+}
+
+
+.schedule-day {
+    margin-bottom: 22px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.72rem;
+
+    letter-spacing: 0.14em;
+
+    text-transform: uppercase;
+}
+
+
+.schedule-card h3 {
+    margin-bottom: 10px;
+
+    font-size: 1.2rem;
+}
+
+
+.schedule-card > p:last-child {
+    margin-top: auto;
+}
+
+
+/* ========================================
+   FEATURED SCHEDULE DAY
+   ======================================== */
+
+.schedule-card-featured {
+    border-color:
+        var(--color-accent-dark);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(62, 53, 43, 0.88),
+            rgba(33, 29, 24, 0.98)
+        );
+}
+
+
+.schedule-card-featured::before {
+    background:
+        var(--color-accent-light);
+
+    opacity: 0.9;
+}
+
+
+/* ========================================
+   OFF DAY
+   ======================================== */
+
+.schedule-card-off {
+    opacity: 0.68;
+
+    border-style: dashed;
+}
+
+
+/* ========================================
+   UPCOMING QUEUE
+   ======================================== */
+
+.upcoming-placeholder {
+    margin-top: 28px;
+}
+
+
+.upcoming-placeholder-header {
+    margin-bottom: 28px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 24px;
+}
+
+
+.upcoming-placeholder-header h3 {
+    margin-bottom: 0;
+
+    font-size: 1.4rem;
+}
+
+
+/* ========================================
+   UPCOMING TABLE
+   ======================================== */
+
+.upcoming-table-placeholder {
+    overflow: hidden;
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-small);
+}
+
+
+.upcoming-row {
+    display: grid;
+
+    grid-template-columns:
+        2fr 1fr 1.2fr 1fr;
+
+    gap: 18px;
+
+    padding: 15px 18px;
+}
+
+
+.upcoming-row-heading {
+    background:
+        rgba(23, 21, 18, 0.48);
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.7rem;
+
+    letter-spacing:
+        0.08em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.upcoming-empty {
+    padding: 34px 18px;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.9rem;
+
+    text-align:
+        center;
+
+    border-top:
+        1px solid var(--color-border-soft);
+}

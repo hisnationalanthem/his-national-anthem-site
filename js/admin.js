@@ -98,13 +98,40 @@ const editBotCancelButton = document.querySelector(
   const editBotSubmitButton = document.querySelector(
   "[data-admin-edit-bot-submit]"
 );
+
+/* ==========================================================
+   CREATE SERIES ELEMENTS
+   ========================================================== */
+
+const seriesForm = document.querySelector(
+  "[data-admin-series-form]"
+);
+
+const seriesSubmitButton = document.querySelector(
+  "[data-admin-series-submit]"
+);
+
+const seriesStatusElement = document.querySelector(
+  "[data-admin-series-status]"
+);
+
+const seriesNameInput = document.querySelector(
+  "#admin-series-name"
+);
+
+const seriesSlugInput = document.querySelector(
+  "#admin-series-slug"
+);
   
   /* ==========================================================
      STATE
      ========================================================== */
 
 let adminAuthorized = false;
+
 let lastGeneratedSlug = "";
+let lastGeneratedSeriesSlug = "";
+
 let editingBotId = null;
 let editingBotPublished = false;
 
@@ -206,6 +233,49 @@ let editingBotPublished = false;
       : "Save Bot";
 }
 
+/* ==========================================================
+   CREATE SERIES UI HELPERS
+   ========================================================== */
+
+function setSeriesStatus(
+  message,
+  isError = false
+) {
+  if (!seriesStatusElement) {
+    return;
+  }
+
+  seriesStatusElement.textContent =
+    message;
+
+  seriesStatusElement.classList.toggle(
+    "admin-form-error",
+    isError
+  );
+
+  seriesStatusElement.classList.toggle(
+    "admin-form-success",
+    !isError && Boolean(message)
+  );
+}
+
+
+function setSeriesFormLoading(
+  isLoading
+) {
+  if (!seriesSubmitButton) {
+    return;
+  }
+
+  seriesSubmitButton.disabled =
+    isLoading;
+
+  seriesSubmitButton.textContent =
+    isLoading
+      ? "Saving..."
+      : "Save Series";
+}
+  
 /* ==========================================================
    BOT MANAGER LABEL HELPERS
    ========================================================== */
@@ -465,6 +535,39 @@ function getAdminBotTypeLabel(value) {
     });
   }
 
+  /* ==========================================================
+   SERIES SLUG GENERATION
+   ========================================================== */
+
+if (seriesNameInput && seriesSlugInput) {
+  seriesNameInput.addEventListener(
+    "input",
+    () => {
+      const generatedSlug =
+        createSlug(seriesNameInput.value);
+
+      if (
+        !seriesSlugInput.value ||
+        seriesSlugInput.value === lastGeneratedSeriesSlug
+      ) {
+        seriesSlugInput.value =
+          generatedSlug;
+
+        lastGeneratedSeriesSlug =
+          generatedSlug;
+      }
+    }
+  );
+
+
+  seriesSlugInput.addEventListener(
+    "input",
+    () => {
+      seriesSlugInput.value =
+        createSlug(seriesSlugInput.value);
+    }
+  );
+}
 
   /* ==========================================================
      CHECK ADMIN ROLE
@@ -1461,6 +1564,231 @@ async function loadAdminBots() {
     );
   }
 
+  /* ==========================================================
+   CREATE SERIES
+   ========================================================== */
+
+if (seriesForm) {
+  seriesForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        setSeriesStatus(
+          "Administrator authorization is required.",
+          true
+        );
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(seriesForm);
+
+      const name =
+        String(
+          formData.get("name") || ""
+        ).trim();
+
+      const slug =
+        createSlug(
+          formData.get("slug")
+        );
+
+      const description =
+        String(
+          formData.get("description") || ""
+        ).trim();
+
+      const imageUrl =
+        String(
+          formData.get("image_url") || ""
+        ).trim();
+
+      const published =
+        formData.get("published") === "on";
+
+
+      const sortOrderRaw =
+        Number(
+          formData.get("sort_order")
+        );
+
+      const sortOrder =
+        Number.isInteger(sortOrderRaw) &&
+        sortOrderRaw >= 0
+          ? sortOrderRaw
+          : 0;
+
+
+      /* VALIDATION */
+
+      if (!name) {
+        setSeriesStatus(
+          "Series name is required.",
+          true
+        );
+
+        return;
+      }
+
+
+      const validSlug =
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+      if (
+        !slug ||
+        !validSlug.test(slug)
+      ) {
+        setSeriesStatus(
+          "Slug can contain only lowercase letters, numbers, and single hyphens.",
+          true
+        );
+
+        return;
+      }
+
+
+      /* BUILD ROW */
+
+      const newSeries = {
+        name,
+        slug,
+
+        description:
+          description || null,
+
+        image_url:
+          imageUrl || null,
+
+        published,
+
+        sort_order:
+          sortOrder
+      };
+
+
+      /* SAVE */
+
+      setSeriesFormLoading(true);
+
+      setSeriesStatus(
+        published
+          ? "Publishing series..."
+          : "Saving series draft..."
+      );
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("series")
+          .insert(newSeries)
+          .select(
+            "id, name, slug, published, sort_order"
+          )
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to save series:",
+            error
+          );
+
+
+          if (error.code === "23505") {
+            setSeriesStatus(
+              "That series slug is already being used.",
+              true
+            );
+
+            return;
+          }
+
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            setSeriesStatus(
+              "One of the series values does not meet the database rules.",
+              true
+            );
+
+            return;
+          }
+
+
+          setSeriesStatus(
+            "The series could not be saved.",
+            true
+          );
+
+          return;
+        }
+
+
+        console.log(
+          "Series saved successfully:",
+          data
+        );
+
+
+        setSeriesStatus(
+          data.published
+            ? `"${data.name}" was published successfully.`
+            : `"${data.name}" was saved as a private draft.`
+        );
+
+
+        seriesForm.reset();
+
+        lastGeneratedSeriesSlug = "";
+
+
+        /*
+         * Restore default sort order after reset.
+         */
+        const sortOrderField =
+          seriesForm.elements.namedItem(
+            "sort_order"
+          );
+
+        if (sortOrderField) {
+          sortOrderField.value = "0";
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected error while saving series:",
+          error
+        );
+
+        setSeriesStatus(
+          "The series could not be saved right now.",
+          true
+        );
+
+      } finally {
+        setSeriesFormLoading(false);
+      }
+    }
+  );
+}
 
   /* ==========================================================
      RESTORE EXISTING SESSION

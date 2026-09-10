@@ -1642,6 +1642,355 @@
     </form>
 
 </section>
+
+            <!-- =====================================
+     CREATE ANNOUNCEMENT
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+        <div>
+            <p class="panel-label">Updates</p>
+            <h2>Add Announcement</h2>
+        </div>
+    </div>
+
+    <p>
+        Create a website update or announcement.
+        Draft announcements remain private until published.
+    </p>
+
+    <form
+        class="admin-series-form"
+        data-admin-announcement-form
+    >
+
+        <div class="form-field">
+            <label for="admin-announcement-title">
+                Title
+            </label>
+
+            <input
+                type="text"
+                id="admin-announcement-title"
+                name="title"
+                autocomplete="off"
+                required
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-announcement-category">
+                Category
+            </label>
+
+            <select
+                id="admin-announcement-category"
+                name="category"
+                required
+            >
+                <option value="general" selected>
+                    General
+                </option>
+
+                <option value="website">
+                    Website
+                </option>
+
+                <option value="commissions">
+                    Commissions
+                </option>
+
+                <option value="membership">
+                    Membership
+                </option>
+
+                <option value="requests">
+                    Requests
+                </option>
+
+                <option value="masterlist">
+                    Masterlist
+                </option>
+
+                <option value="schedule">
+                    Schedule
+                </option>
+            </select>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-announcement-content">
+                Announcement
+            </label>
+
+            <textarea
+                id="admin-announcement-content"
+                name="content"
+                rows="7"
+                required
+            ></textarea>
+        </div>
+
+
+        <div class="form-field">
+            <label>
+                <input
+                    type="checkbox"
+                    name="important"
+                >
+                Mark as Important
+            </label>
+
+            <p class="small-note">
+                Use this for announcements that should receive extra emphasis.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label>
+                <input
+                    type="checkbox"
+                    name="published"
+                >
+                Publish Immediately
+            </label>
+
+            <p class="small-note">
+                Leave unchecked to save this announcement as a private draft.
+            </p>
+        </div>
+
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-admin-announcement-submit
+            disabled
+        >
+            Save Announcement
+        </button>
+
+
+        <p
+            class="admin-form-status"
+            data-admin-announcement-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
+
+<!-- =====================================
+     MANAGE ANNOUNCEMENTS
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+            <p class="panel-label">Updates</p>
+            <h2>Manage Announcements</h2>
+        </div>
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-announcements-refresh
+            disabled
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        Review draft and published announcements,
+        update their content, or remove old entries.
+    </p>
+
+
+    <p
+        class="admin-form-status"
+        data-admin-announcement-manager-status
+        aria-live="polite"
+    >
+        Announcement management is loading...
+    </p>
+
+
+    <div
+        class="admin-management-grid"
+        data-admin-announcement-list
+    ></div>
+
+</section>
+
+
+            <!-- =====================================
+     EDIT ANNOUNCEMENT
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-edit-announcement-panel
+    hidden
+>
+
+    <div class="admin-dashboard-heading">
+        <div>
+            <p class="panel-label">Updates</p>
+            <h2>Edit Announcement</h2>
+        </div>
+    </div>
+
+
+    <p
+        class="small-note"
+        data-admin-edit-announcement-heading
+    >
+        Edit the selected announcement.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-edit-announcement-form
+    >
+
+        <div class="form-field">
+            <label for="admin-edit-announcement-title">
+                Title
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-announcement-title"
+                name="title"
+                autocomplete="off"
+                required
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-announcement-category">
+                Category
+            </label>
+
+            <select
+                id="admin-edit-announcement-category"
+                name="category"
+                required
+            >
+                <option value="general">
+                    General
+                </option>
+
+                <option value="website">
+                    Website
+                </option>
+
+                <option value="commissions">
+                    Commissions
+                </option>
+
+                <option value="membership">
+                    Membership
+                </option>
+
+                <option value="requests">
+                    Requests
+                </option>
+
+                <option value="masterlist">
+                    Masterlist
+                </option>
+
+                <option value="schedule">
+                    Schedule
+                </option>
+            </select>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-announcement-content">
+                Announcement
+            </label>
+
+            <textarea
+                id="admin-edit-announcement-content"
+                name="content"
+                rows="7"
+                required
+            ></textarea>
+        </div>
+
+
+        <div class="form-field">
+            <label>
+                <input
+                    type="checkbox"
+                    name="important"
+                >
+                Mark as Important
+            </label>
+        </div>
+
+
+        <div class="form-field">
+            <label>
+                <input
+                    type="checkbox"
+                    name="published"
+                >
+                Published
+            </label>
+
+            <p class="small-note">
+                Unchecking this removes the announcement from the public Updates page.
+            </p>
+        </div>
+
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-edit-announcement-submit
+            >
+                Save Changes
+            </button>
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-edit-announcement-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <p
+            class="admin-form-status"
+            data-admin-edit-announcement-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
             
             <!-- =====================================
      EDIT SERIES

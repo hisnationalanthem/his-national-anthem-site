@@ -3301,3 +3301,73 @@ a.creator-link-card:hover {
   color: var(--color-text-soft);
   white-space: pre-line;
 }
+/* ============================================================
+   LIVE BOT MASTERLIST
+   ============================================================ */
+
+.masterlist-load-status {
+    margin: 1rem 0 1.5rem;
+    color: var(--color-text-soft);
+    font-style: italic;
+}
+
+.masterlist-live-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.masterlist-live-card {
+    overflow: hidden;
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-medium);
+    background: var(--color-background-soft);
+}
+
+.masterlist-live-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.masterlist-live-body {
+    padding: 1.25rem;
+}
+
+.masterlist-live-name {
+    margin: 0 0 0.75rem;
+}
+
+.masterlist-live-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
+}
+
+.masterlist-meta-badge {
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    color: var(--color-text-soft);
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.masterlist-live-description {
+    margin: 0 0 1rem;
+    color: var(--color-text-soft);
+}
+
+.masterlist-live-link {
+    display: inline-block;
+    color: var(--color-accent-light);
+}
+
+.masterlist-live-link:hover,
+.masterlist-live-link:focus-visible {
+    text-decoration: none;
+}

@@ -606,3 +606,14 @@
     gap: 0.35rem;
   }
 }
+@media (max-width: 600px) {
+  .home-section-heading {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .home-update-date {
+    width: 100%;
+    margin-left: 0;
+  }
+}

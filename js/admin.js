@@ -94,14 +94,19 @@ const editBotStatus = document.querySelector(
 const editBotCancelButton = document.querySelector(
   "[data-admin-edit-bot-cancel]"
 );
+
+  const editBotSubmitButton = document.querySelector(
+  "[data-admin-edit-bot-submit]"
+);
   
   /* ==========================================================
      STATE
      ========================================================== */
 
- let adminAuthorized = false;
+let adminAuthorized = false;
 let lastGeneratedSlug = "";
 let editingBotId = null;
+let editingBotPublished = false;
 
 
   /* ==========================================================
@@ -684,6 +689,7 @@ function closeEditBot() {
   }
 
   editingBotId = null;
+  editingBotPublished = false;
 
   editBotForm.reset();
 
@@ -694,7 +700,20 @@ function closeEditBot() {
   editBotPanel.hidden = true;
 }
 
+function setEditBotLoading(isLoading) {
+  if (!editBotSubmitButton) {
+    return;
+  }
 
+  editBotSubmitButton.disabled =
+    isLoading;
+
+  editBotSubmitButton.textContent =
+    isLoading
+      ? "Saving..."
+      : "Save Changes";
+}
+  
 function openEditBot(bot) {
   if (!editBotPanel || !editBotForm) {
     console.error(
@@ -707,6 +726,8 @@ function openEditBot(bot) {
 
   editingBotId = bot.id;
 
+  editingBotPublished =
+  Boolean(bot.published);
 
   /* NAME */
 
@@ -1400,6 +1421,262 @@ if (botRefreshButton) {
     "click",
     async () => {
       await loadAdminBots();
+    }
+  );
+}
+
+  /* ==========================================================
+   SAVE EDITED BOT
+   ========================================================== */
+
+if (editBotForm) {
+  editBotForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (editBotStatus) {
+          editBotStatus.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* BOT SELECTED */
+
+      if (!editingBotId) {
+        if (editBotStatus) {
+          editBotStatus.textContent =
+            "No bot is currently selected for editing.";
+        }
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(editBotForm);
+
+      const name =
+        String(
+          formData.get("name") || ""
+        ).trim();
+
+      const slug =
+        createSlug(
+          formData.get("slug")
+        );
+
+      const pov =
+        String(
+          formData.get("pov") || ""
+        ).trim();
+
+      const botType =
+        String(
+          formData.get("bot_type") || ""
+        ).trim();
+
+      const description =
+        String(
+          formData.get("description") || ""
+        ).trim();
+
+      const imageUrl =
+        String(
+          formData.get("image_url") || ""
+        ).trim();
+
+      const janitorUrl =
+        String(
+          formData.get("janitor_url") || ""
+        ).trim();
+
+
+      /* VALIDATE NAME */
+
+      if (!name) {
+        if (editBotStatus) {
+          editBotStatus.textContent =
+            "Bot name is required.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE SLUG */
+
+      const validSlug =
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+      if (
+        !slug ||
+        !validSlug.test(slug)
+      ) {
+        if (editBotStatus) {
+          editBotStatus.textContent =
+            "Slug can contain only lowercase letters, numbers, and single hyphens.";
+        }
+
+        return;
+      }
+
+
+      /* PUBLISHED BOT VALIDATION */
+
+      if (
+        editingBotPublished &&
+        !janitorUrl
+      ) {
+        if (editBotStatus) {
+          editBotStatus.textContent =
+            "A published bot must have a JanitorAI URL.";
+        }
+
+        return;
+      }
+
+
+      /* BUILD UPDATE */
+
+      const updates = {
+        name,
+        slug,
+
+        description:
+          description || null,
+
+        pov:
+          pov || null,
+
+        bot_type:
+          botType || null,
+
+        image_url:
+          imageUrl || null,
+
+        janitor_url:
+          janitorUrl || null
+      };
+
+
+      setEditBotLoading(true);
+
+      if (editBotStatus) {
+        editBotStatus.textContent =
+          "Saving changes...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("bots")
+          .update(updates)
+          .eq("id", editingBotId)
+          .select(`
+            id,
+            name,
+            slug,
+            description,
+            pov,
+            bot_type,
+            image_url,
+            janitor_url,
+            published,
+            published_at
+          `)
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to update bot:",
+            error
+          );
+
+
+          if (error.code === "23505") {
+            if (editBotStatus) {
+              editBotStatus.textContent =
+                "That slug is already being used by another bot.";
+            }
+
+            return;
+          }
+
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            if (editBotStatus) {
+              editBotStatus.textContent =
+                "One of the edited values does not meet the database rules.";
+            }
+
+            return;
+          }
+
+
+          if (editBotStatus) {
+            editBotStatus.textContent =
+              "The bot could not be updated.";
+          }
+
+          return;
+        }
+
+
+        console.log(
+          "Bot updated successfully:",
+          data
+        );
+
+
+        const updatedName =
+          data.name;
+
+
+        closeEditBot();
+
+        await loadAdminBots();
+
+
+        if (botManagerStatus) {
+          botManagerStatus.textContent =
+            `"${updatedName}" was updated successfully.`;
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected error while updating bot:",
+          error
+        );
+
+        if (editBotStatus) {
+          editBotStatus.textContent =
+            "The bot could not be updated right now.";
+        }
+
+      } finally {
+        setEditBotLoading(false);
+      }
     }
   );
 }

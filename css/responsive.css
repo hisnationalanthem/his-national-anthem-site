@@ -241,3 +241,27 @@
     }
 
 }
+/* ========================================
+   FREE REQUESTS PAGE
+   ======================================== */
+
+@media (max-width: 700px) {
+
+    .request-grid {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            18px;
+    }
+
+
+    .request-card {
+        min-height:
+            auto;
+
+        padding:
+            24px;
+    }
+
+}

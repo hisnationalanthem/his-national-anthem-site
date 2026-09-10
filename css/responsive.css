@@ -632,3 +632,31 @@
         grid-template-columns: 1fr;
     }
 }
+/* ==========================================================
+   ADMIN DASHBOARD
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    .admin-dashboard-heading {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-dashboard-heading .secondary-button {
+        width: 100%;
+    }
+
+    .admin-management-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-bot-manager-header {
+        flex-direction: column;
+    }
+
+    .admin-bot-publication-status {
+        width: fit-content;
+    }
+
+}

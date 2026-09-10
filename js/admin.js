@@ -660,6 +660,25 @@ const assignmentRefreshButton = document.querySelector(
 );
 
 /* ==========================================================
+   ASSIGNMENT FORM STATE
+   ========================================================== */
+
+function updateAssignmentSubmitState() {
+  if (!assignmentSubmitButton) {
+    return;
+  }
+
+  const hasBot =
+    Boolean(assignmentBotSelect?.value);
+
+  const hasSeries =
+    Boolean(assignmentSeriesSelect?.value);
+
+  assignmentSubmitButton.disabled =
+    !hasBot || !hasSeries;
+}
+  
+/* ==========================================================
    ASSIGNMENT DROPDOWNS
    ========================================================== */
 
@@ -867,14 +886,7 @@ function createAdminAssignmentCard(
     seriesList.length === 0;
 
 
-  /*
-   * Keep this disabled for now.
-   * The next part will connect assignment creation.
-   */
-  if (assignmentSubmitButton) {
-    assignmentSubmitButton.disabled = true;
-  }
-}
+  updateAssignmentSubmitState();
   
   /* ==========================================================
      ADMIN SERIES CARD
@@ -2302,6 +2314,211 @@ if (editSeriesCancelButton) {
     }
   }
 
+  /* ==========================================================
+   ASSIGNMENT SELECT CHANGES
+   ========================================================== */
+
+if (assignmentBotSelect) {
+  assignmentBotSelect.addEventListener(
+    "change",
+    updateAssignmentSubmitState
+  );
+}
+
+
+if (assignmentSeriesSelect) {
+  assignmentSeriesSelect.addEventListener(
+    "change",
+    updateAssignmentSubmitState
+  );
+}
+
+  /* ==========================================================
+   CREATE BOT / SERIES ASSIGNMENT
+   ========================================================== */
+
+if (assignmentForm) {
+  assignmentForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (assignmentStatus) {
+          assignmentStatus.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(assignmentForm);
+
+      const botId =
+        String(
+          formData.get("bot_id") || ""
+        );
+
+      const seriesId =
+        String(
+          formData.get("series_id") || ""
+        );
+
+      const sortOrderRaw =
+        Number(
+          formData.get("sort_order")
+        );
+
+      const sortOrder =
+        Number.isInteger(sortOrderRaw) &&
+        sortOrderRaw >= 0
+          ? sortOrderRaw
+          : 0;
+
+
+      /* VALIDATION */
+
+      if (!botId || !seriesId) {
+        if (assignmentStatus) {
+          assignmentStatus.textContent =
+            "Choose both a bot and a series.";
+        }
+
+        return;
+      }
+
+
+      /* LOADING */
+
+      if (assignmentSubmitButton) {
+        assignmentSubmitButton.disabled = true;
+        assignmentSubmitButton.textContent =
+          "Adding...";
+      }
+
+
+      if (assignmentStatus) {
+        assignmentStatus.textContent =
+          "Adding bot to series...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("bot_series")
+          .insert({
+            bot_id: botId,
+            series_id: seriesId,
+            sort_order: sortOrder
+          })
+          .select(
+            "id, bot_id, series_id, sort_order"
+          )
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to create bot-series assignment:",
+            error
+          );
+
+
+          if (error.code === "23505") {
+            if (assignmentStatus) {
+              assignmentStatus.textContent =
+                "That bot is already assigned to this series.";
+            }
+
+            return;
+          }
+
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            if (assignmentStatus) {
+              assignmentStatus.textContent =
+                "The assignment does not meet the database rules.";
+            }
+
+            return;
+          }
+
+
+          if (assignmentStatus) {
+            assignmentStatus.textContent =
+              "The assignment could not be created.";
+          }
+
+          return;
+        }
+
+
+        console.log(
+          "Bot-series assignment created:",
+          data
+        );
+
+
+        if (assignmentStatus) {
+          assignmentStatus.textContent =
+            "Bot added to series successfully.";
+        }
+
+
+        assignmentForm.reset();
+
+
+        const sortOrderField =
+          assignmentForm.elements.namedItem(
+            "sort_order"
+          );
+
+        if (sortOrderField) {
+          sortOrderField.value = "0";
+        }
+
+
+        await loadAdminAssignments();
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected assignment error:",
+          error
+        );
+
+        if (assignmentStatus) {
+          assignmentStatus.textContent =
+            "The assignment could not be created right now.";
+        }
+
+      } finally {
+        if (assignmentSubmitButton) {
+          assignmentSubmitButton.textContent =
+            "Add to Series";
+        }
+
+        updateAssignmentSubmitState();
+      }
+    }
+  );
+}
 
   /* ==========================================================
      START

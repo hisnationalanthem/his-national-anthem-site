@@ -200,3 +200,70 @@ document.addEventListener("DOMContentLoaded", () => {
     createSiteHeader();
     createSiteFooter();
 });
+async function loadDonationBankBalance() {
+  const balanceElement = document.querySelector(
+    "[data-donation-bank-balance]"
+  );
+
+  const statusElement = document.querySelector(
+    "[data-donation-bank-status]"
+  );
+
+  // This page does not contain the Donation Bank component.
+  if (!balanceElement) {
+    return;
+  }
+
+  if (!window.supabaseClient) {
+    console.error("Donation Bank could not load: Supabase client unavailable.");
+
+    balanceElement.textContent = "—";
+
+    if (statusElement) {
+      statusElement.textContent =
+        "Donation Bank balance is temporarily unavailable.";
+    }
+
+    return;
+  }
+
+  try {
+    const { data, error } = await window.supabaseClient.rpc(
+      "get_public_donation_bank_balance"
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    const balance = Number(data ?? 0);
+
+    if (!Number.isFinite(balance)) {
+      throw new Error("Donation Bank returned an invalid balance.");
+    }
+
+    balanceElement.textContent = String(balance);
+
+    if (statusElement) {
+      statusElement.textContent =
+        balance === 1
+          ? "donated commission available"
+          : "donated commissions available";
+    }
+  } catch (error) {
+    console.error("Unable to load Donation Bank balance:", error);
+
+    balanceElement.textContent = "—";
+
+    if (statusElement) {
+      statusElement.textContent =
+        "Donation Bank balance is temporarily unavailable.";
+    }
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadDonationBankBalance);
+} else {
+  loadDonationBankBalance();
+}

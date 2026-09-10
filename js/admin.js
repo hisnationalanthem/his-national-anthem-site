@@ -291,16 +291,49 @@ function createAdminBotCard(bot) {
       ? "JanitorAI link added"
       : "No JanitorAI link";
 
+  /* ACTIONS */
+
+const actions = document.createElement("div");
+
+actions.className = "admin-bot-manager-actions";
+
+
+const publicationButton = document.createElement("button");
+
+publicationButton.type = "button";
+publicationButton.className = "secondary-button";
+
+publicationButton.textContent =
+  bot.published
+    ? "Unpublish"
+    : "Publish";
+
+
+publicationButton.addEventListener(
+  "click",
+  async () => {
+    await toggleBotPublication(
+      bot,
+      publicationButton
+    );
+  }
+);
+
+
+actions.append(
+  publicationButton
+);
 
   /* BUILD CARD */
 
-  article.append(
-    header,
-    slug,
-    meta,
-    description,
-    janitorStatus
-  );
+ article.append(
+  header,
+  slug,
+  meta,
+  description,
+  janitorStatus,
+  actions
+);
 
 
   return article;
@@ -601,6 +634,138 @@ return true;
     );
   }
 
+/* ==========================================================
+   PUBLISH / UNPUBLISH BOT
+   ========================================================== */
+
+async function toggleBotPublication(
+  bot,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (botManagerStatus) {
+      botManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const nextPublished =
+    !bot.published;
+
+
+  /*
+   * A published bot must have a JanitorAI URL.
+   */
+  if (
+    nextPublished &&
+    !bot.janitor_url
+  ) {
+    if (botManagerStatus) {
+      botManagerStatus.textContent =
+        `"${bot.name}" cannot be published until a JanitorAI URL is added.`;
+    }
+
+    return;
+  }
+
+
+  if (button) {
+    button.disabled = true;
+
+    button.textContent =
+      nextPublished
+        ? "Publishing..."
+        : "Unpublishing...";
+  }
+
+
+  if (botManagerStatus) {
+    botManagerStatus.textContent =
+      nextPublished
+        ? `Publishing "${bot.name}"...`
+        : `Unpublishing "${bot.name}"...`;
+  }
+
+
+  const updates =
+    nextPublished
+      ? {
+          published: true,
+          published_at:
+            new Date().toISOString()
+        }
+      : {
+          published: false,
+          published_at: null
+        };
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("bots")
+      .update(updates)
+      .eq("id", bot.id)
+      .select(
+        "id, name, published, published_at"
+      )
+      .single();
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Bot publication status updated:",
+      data
+    );
+
+
+    if (botManagerStatus) {
+      botManagerStatus.textContent =
+        data.published
+          ? `"${data.name}" was published successfully.`
+          : `"${data.name}" was unpublished successfully.`;
+    }
+
+
+    await loadAdminBots();
+
+
+  } catch (error) {
+    console.error(
+      "Unable to update bot publication status:",
+      error
+    );
+
+
+    if (botManagerStatus) {
+      botManagerStatus.textContent =
+        "Unable to update the bot's publication status.";
+    }
+
+
+    if (button) {
+      button.disabled = false;
+
+      button.textContent =
+        bot.published
+          ? "Unpublish"
+          : "Publish";
+    }
+  }
+}
+  
   /* ==========================================================
    LOAD ADMIN BOT MANAGER
    ========================================================== */

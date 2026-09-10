@@ -2513,3 +2513,417 @@ a.creator-link-card:hover {
     border-style:
         dashed;
 }
+/* ========================================
+   CURRENCY CONVERTER PAGE
+   ======================================== */
+
+
+/* ========================================
+   MAIN LAYOUT
+   ======================================== */
+
+.currency-layout {
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1.7fr)
+        minmax(260px, 0.7fr);
+
+    gap:
+        24px;
+
+    align-items:
+        start;
+
+    margin-bottom:
+        64px;
+}
+
+
+/* ========================================
+   CONVERTER PANEL
+   ======================================== */
+
+.currency-converter {
+    padding:
+        34px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(43, 39, 33, 0.8),
+            rgba(30, 27, 23, 0.97)
+        );
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-large);
+
+    box-shadow:
+        var(--shadow-soft);
+}
+
+
+.currency-converter-header {
+    margin-bottom:
+        30px;
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap:
+        20px;
+}
+
+
+.currency-converter-header h2 {
+    margin-bottom:
+        0;
+}
+
+
+/* ========================================
+   CURRENCY FIELDS
+   ======================================== */
+
+.currency-field {
+    width:
+        100%;
+}
+
+
+.currency-field label {
+    display:
+        block;
+
+    margin-bottom:
+        8px;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.74rem;
+
+    letter-spacing:
+        0.1em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.currency-field input,
+.currency-field select {
+    width:
+        100%;
+
+    min-height:
+        48px;
+
+    padding:
+        12px 14px;
+
+    background:
+        rgba(23, 21, 18, 0.6);
+
+    color:
+        var(--color-text);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-small);
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.95rem;
+}
+
+
+.currency-field input:disabled,
+.currency-field select:disabled {
+    opacity:
+        0.75;
+
+    cursor:
+        not-allowed;
+}
+
+
+/* ========================================
+   AMOUNT FIELD
+   ======================================== */
+
+.currency-input-wrapper {
+    position:
+        relative;
+}
+
+
+.currency-symbol {
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    left:
+        14px;
+
+    transform:
+        translateY(-50%);
+
+    color:
+        var(--color-text-muted);
+
+    pointer-events:
+        none;
+}
+
+
+.currency-input-wrapper input {
+    padding-left:
+        34px;
+}
+
+
+/* ========================================
+   CURRENCY SELECTORS
+   ======================================== */
+
+.currency-selector-row {
+    margin-top:
+        22px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto
+        minmax(0, 1fr);
+
+    gap:
+        14px;
+
+    align-items:
+        end;
+}
+
+
+/* ========================================
+   SWAP BUTTON
+   ======================================== */
+
+.currency-swap-button {
+    width:
+        48px;
+
+    height:
+        48px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        transparent;
+
+    color:
+        var(--color-accent-light);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-small);
+
+    font-family:
+        inherit;
+
+    font-size:
+        1.2rem;
+}
+
+
+.currency-swap-button:disabled {
+    opacity:
+        0.5;
+
+    cursor:
+        not-allowed;
+}
+
+
+/* ========================================
+   RESULT
+   ======================================== */
+
+.currency-result {
+    margin-top:
+        30px;
+
+    padding:
+        26px;
+
+    background:
+        rgba(23, 21, 18, 0.48);
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-medium);
+}
+
+
+.currency-result-label {
+    margin-bottom:
+        8px;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.72rem;
+
+    letter-spacing:
+        0.11em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.currency-result-amount {
+    margin:
+        0;
+
+    color:
+        var(--color-accent-light);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(2.2rem, 6vw, 3.5rem);
+
+    line-height:
+        1.1;
+}
+
+
+.currency-result-rate {
+    margin-top:
+        8px;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.8rem;
+
+    font-style:
+        italic;
+}
+
+
+/* ========================================
+   QUICK REFERENCE
+   ======================================== */
+
+.currency-info-card {
+    padding:
+        26px;
+
+    background:
+        var(--color-background-soft);
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-medium);
+
+    box-shadow:
+        var(--shadow-soft);
+}
+
+
+.currency-info-card h2 {
+    font-size:
+        1.45rem;
+}
+
+
+.currency-price-list {
+    margin-top:
+        24px;
+
+    border-top:
+        1px solid var(--color-border-soft);
+}
+
+
+.currency-price-item {
+    padding:
+        18px 0;
+
+    border-bottom:
+        1px solid var(--color-border-soft);
+}
+
+
+.currency-price-item > span {
+    display:
+        block;
+
+    margin-bottom:
+        5px;
+
+    color:
+        var(--color-accent-light);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        1.35rem;
+}
+
+
+.currency-price-item p {
+    margin:
+        0;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.82rem;
+
+    line-height:
+        1.55;
+}

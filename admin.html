@@ -1991,6 +1991,269 @@
     </form>
 
 </section>
+
+            <!-- =====================================
+     MANAGE FREE REQUESTS
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+            <p class="panel-label">Free Requests</p>
+            <h2>Manage Free Requests</h2>
+        </div>
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-free-requests-refresh
+            disabled
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        Review Jon Bernthal suggestions and free Graveyard requests
+        submitted through the website.
+    </p>
+
+
+    <div class="admin-series-form">
+
+        <div class="form-field">
+            <label for="admin-free-request-type-filter">
+                Request Type
+            </label>
+
+            <select
+                id="admin-free-request-type-filter"
+                data-admin-free-request-type-filter
+                disabled
+            >
+                <option value="all">
+                    All Request Types
+                </option>
+
+                <option value="jon_bernthal">
+                    Jon Bernthal Suggestions
+                </option>
+
+                <option value="graveyard">
+                    Graveyard Requests
+                </option>
+            </select>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-free-request-status-filter">
+                Status
+            </label>
+
+            <select
+                id="admin-free-request-status-filter"
+                data-admin-free-request-status-filter
+                disabled
+            >
+                <option value="all">
+                    All Statuses
+                </option>
+
+                <option value="submitted">
+                    Submitted
+                </option>
+
+                <option value="reviewing">
+                    Reviewing
+                </option>
+
+                <option value="accepted">
+                    Accepted
+                </option>
+
+                <option value="denied">
+                    Denied
+                </option>
+
+                <option value="created">
+                    Created
+                </option>
+
+                <option value="archived">
+                    Archived
+                </option>
+            </select>
+        </div>
+
+    </div>
+
+
+    <p
+        class="admin-form-status"
+        data-admin-free-request-manager-status
+        aria-live="polite"
+    >
+        Free Request management is loading...
+    </p>
+
+
+    <div
+        class="admin-management-grid"
+        data-admin-free-request-list
+    ></div>
+
+</section>
+
+            <!-- =====================================
+     EDIT FREE REQUEST
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-edit-free-request-panel
+    hidden
+>
+
+    <div class="admin-dashboard-heading">
+        <div>
+            <p class="panel-label">Free Requests</p>
+            <h2>Review Free Request</h2>
+        </div>
+    </div>
+
+
+    <p
+        class="small-note"
+        data-admin-edit-free-request-heading
+    >
+        Review the selected request.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-edit-free-request-form
+    >
+
+        <div class="form-field">
+            <label for="admin-edit-free-request-type">
+                Request Type
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-free-request-type"
+                data-admin-edit-free-request-type
+                readonly
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-free-request-submitter">
+                Submitted By
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-free-request-submitter"
+                data-admin-edit-free-request-submitter
+                readonly
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-free-request-details">
+                Request Details
+            </label>
+
+            <textarea
+                id="admin-edit-free-request-details"
+                data-admin-edit-free-request-details
+                rows="9"
+                readonly
+            ></textarea>
+
+            <p class="small-note">
+                Request text is read-only so moderation cannot accidentally alter
+                what the submitter originally sent.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-free-request-status">
+                Status
+            </label>
+
+            <select
+                id="admin-edit-free-request-status"
+                name="status"
+                required
+            >
+                <option value="submitted">
+                    Submitted
+                </option>
+
+                <option value="reviewing">
+                    Reviewing
+                </option>
+
+                <option value="accepted">
+                    Accepted
+                </option>
+
+                <option value="denied">
+                    Denied
+                </option>
+
+                <option value="created">
+                    Created
+                </option>
+
+                <option value="archived">
+                    Archived
+                </option>
+            </select>
+        </div>
+
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-edit-free-request-submit
+            >
+                Save Status
+            </button>
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-edit-free-request-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <p
+            class="admin-form-status"
+            data-admin-edit-free-request-status-message
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
             
             <!-- =====================================
      EDIT SERIES

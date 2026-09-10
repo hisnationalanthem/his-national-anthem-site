@@ -3118,3 +3118,31 @@ a.creator-link-card:hover {
     background:
         var(--color-accent);
 }
+/* ============================================================
+   DONATION BANK
+   ============================================================ */
+
+.donation-bank-panel {
+  text-align: center;
+}
+
+.donation-bank-total {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.donation-bank-number {
+  display: block;
+  font-size: clamp(3.5rem, 9vw, 6rem);
+  font-weight: 700;
+  line-height: 0.95;
+  color: var(--color-accent-light);
+}
+
+.donation-bank-status {
+  margin: 0 0 1.25rem;
+  color: var(--color-text-soft);
+  font-style: italic;
+}

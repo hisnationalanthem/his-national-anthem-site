@@ -494,11 +494,49 @@ document.addEventListener("DOMContentLoaded", () => {
     description.textContent = series.description || "No series description provided.";
 
     const imageStatus = document.createElement("p");
-    imageStatus.className = "admin-bot-manager-link-status";
-    imageStatus.textContent = series.image_url ? "Series image added" : "No series image";
+imageStatus.className = "admin-bot-manager-link-status";
+imageStatus.textContent = series.image_url
+  ? "Series image added"
+  : "No series image";
 
-    article.append(header, slug, meta, description, imageStatus);
-    return article;
+
+/* ACTIONS */
+
+const actions = document.createElement("div");
+actions.className = "admin-bot-manager-actions";
+
+
+const publicationButton = document.createElement("button");
+
+publicationButton.type = "button";
+publicationButton.className = "secondary-button";
+
+publicationButton.textContent = series.published
+  ? "Unpublish"
+  : "Publish";
+
+
+publicationButton.addEventListener("click", async () => {
+  await toggleSeriesPublication(
+    series,
+    publicationButton
+  );
+});
+
+
+actions.append(publicationButton);
+
+
+article.append(
+  header,
+  slug,
+  meta,
+  description,
+  imageStatus,
+  actions
+);
+
+return article;
   }
 
 
@@ -557,7 +595,111 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+/* ==========================================================
+   PUBLISH / UNPUBLISH SERIES
+   ========================================================== */
 
+async function toggleSeriesPublication(
+  series,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (seriesManagerStatus) {
+      seriesManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const nextPublished =
+    !series.published;
+
+
+  if (button) {
+    button.disabled = true;
+
+    button.textContent =
+      nextPublished
+        ? "Publishing..."
+        : "Unpublishing...";
+  }
+
+
+  if (seriesManagerStatus) {
+    seriesManagerStatus.textContent =
+      nextPublished
+        ? `Publishing "${series.name}"...`
+        : `Unpublishing "${series.name}"...`;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("series")
+      .update({
+        published: nextPublished
+      })
+      .eq("id", series.id)
+      .select(
+        "id, name, published"
+      )
+      .single();
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Series publication status updated:",
+      data
+    );
+
+
+    await loadAdminSeries();
+
+
+    if (seriesManagerStatus) {
+      seriesManagerStatus.textContent =
+        data.published
+          ? `"${data.name}" was published successfully.`
+          : `"${data.name}" was unpublished successfully.`;
+    }
+
+
+  } catch (error) {
+    console.error(
+      "Unable to update series publication status:",
+      error
+    );
+
+
+    if (seriesManagerStatus) {
+      seriesManagerStatus.textContent =
+        "Unable to update the series publication status.";
+    }
+
+
+    if (button) {
+      button.disabled = false;
+
+      button.textContent =
+        series.published
+          ? "Unpublish"
+          : "Publish";
+    }
+  }
+}
+  
   /* ==========================================================
      LOAD SERIES MANAGER
      ========================================================== */

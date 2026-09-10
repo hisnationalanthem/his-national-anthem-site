@@ -1,12 +1,31 @@
-/* ========================================
-   HIS_NATIONAL_ANTHEM
-   Supabase Connection
-   ======================================== */
+(() => {
+  const config = window.APP_CONFIG;
 
+  if (
+    !config ||
+    !config.SUPABASE_URL ||
+    !config.SUPABASE_PUBLISHABLE_KEY
+  ) {
+    console.error("Supabase configuration is missing.");
+    return;
+  }
 
-/*
-   Supabase setup will be added later.
+  if (!window.supabase || !window.supabase.createClient) {
+    console.error("Supabase JavaScript library failed to load.");
+    return;
+  }
 
-   This file will handle the website's
-   connection to the Supabase database.
-*/
+  window.supabaseClient = window.supabase.createClient(
+    config.SUPABASE_URL,
+    config.SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    }
+  );
+
+  console.log("Supabase client initialized.");
+})();

@@ -476,3 +476,36 @@
     }
 
 }
+/* ========================================
+   UPDATES & ANNOUNCEMENTS PAGE
+   ======================================== */
+
+@media (max-width: 650px) {
+
+    .announcement-featured {
+        padding:
+            26px;
+    }
+
+
+    .announcement-featured-header {
+        flex-direction:
+            column;
+
+        gap:
+            12px;
+    }
+
+
+    .update-card-meta {
+        flex-direction:
+            column;
+
+        align-items:
+            flex-start;
+
+        gap:
+            5px;
+    }
+
+}

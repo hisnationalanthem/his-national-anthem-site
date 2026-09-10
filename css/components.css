@@ -1689,3 +1689,128 @@
     margin-top:
         auto;
 }
+/* ========================================
+   FAQ PAGE
+   ======================================== */
+
+.faq-list {
+    margin-top: 28px;
+
+    border-top:
+        1px solid var(--color-border-soft);
+}
+
+
+/* ========================================
+   FAQ ITEM
+   ======================================== */
+
+.faq-item {
+    border-bottom:
+        1px solid var(--color-border-soft);
+}
+
+
+.faq-item summary {
+    padding:
+        22px 46px 22px 0;
+
+    color:
+        var(--color-text);
+
+    font-size:
+        1.05rem;
+
+    line-height:
+        1.5;
+
+    cursor:
+        pointer;
+
+    list-style:
+        none;
+
+    position:
+        relative;
+}
+
+
+.faq-item summary::-webkit-details-marker {
+    display:
+        none;
+}
+
+
+/* ========================================
+   FAQ OPEN / CLOSE SYMBOL
+   ======================================== */
+
+.faq-item summary::after {
+    content:
+        "+";
+
+    position:
+        absolute;
+
+    right:
+        8px;
+
+    top:
+        50%;
+
+    transform:
+        translateY(-50%);
+
+    color:
+        var(--color-accent-light);
+
+    font-size:
+        1.35rem;
+
+    font-weight:
+        400;
+}
+
+
+.faq-item[open] summary::after {
+    content:
+        "−";
+}
+
+
+/* ========================================
+   FAQ ANSWER
+   ======================================== */
+
+.faq-answer {
+    padding:
+        0 46px 24px 0;
+}
+
+
+.faq-answer p {
+    max-width:
+        68ch;
+
+    color:
+        var(--color-text-soft);
+}
+
+
+/* ========================================
+   FAQ HOVER
+   ======================================== */
+
+.faq-item summary:hover {
+    color:
+        var(--color-accent-light);
+}
+
+
+.faq-item summary:focus-visible {
+    outline:
+        2px solid var(--color-accent-light);
+
+    outline-offset:
+        4px;
+}

@@ -725,3 +725,264 @@
     border-style:
         dashed;
 }
+/* ========================================
+   MEMBERSHIP PAGE
+   ======================================== */
+
+.membership-tier {
+    margin-bottom: 64px;
+}
+
+
+/* ========================================
+   MEMBERSHIP CARD
+   ======================================== */
+
+.membership-card {
+    padding: 38px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(43, 39, 33, 0.82),
+            rgba(30, 27, 23, 0.96)
+        );
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-large);
+
+    box-shadow:
+        var(--shadow-soft);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+.membership-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 2px;
+
+    background:
+        linear-gradient(
+            to right,
+            transparent,
+            var(--color-accent-light),
+            transparent
+        );
+
+    opacity: 0.8;
+}
+
+
+/* ========================================
+   MEMBERSHIP HEADER
+   ======================================== */
+
+.membership-card-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 30px;
+
+    margin-bottom: 24px;
+}
+
+
+.membership-card-header h2 {
+    margin-bottom: 0;
+}
+
+
+.membership-price {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+}
+
+
+.membership-price-amount {
+    color: var(--color-accent-light);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 2.4rem;
+
+    line-height: 1;
+}
+
+
+.membership-price-period {
+    color: var(--color-text-muted);
+
+    font-size: 0.85rem;
+}
+
+
+.membership-description {
+    max-width: 650px;
+
+    margin-bottom: 34px;
+
+    font-size: 1.02rem;
+}
+
+
+/* ========================================
+   MEMBERSHIP BENEFITS
+   ======================================== */
+
+.membership-benefits {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    border-top:
+        1px solid var(--color-border-soft);
+
+    border-left:
+        1px solid var(--color-border-soft);
+}
+
+
+.membership-benefit {
+    min-height: 170px;
+
+    padding: 26px;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 20px;
+
+    border-right:
+        1px solid var(--color-border-soft);
+
+    border-bottom:
+        1px solid var(--color-border-soft);
+}
+
+
+.membership-benefit-number {
+    min-width: 46px;
+
+    margin: 0;
+
+    color: var(--color-accent-light);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size: 2rem;
+
+    line-height: 1;
+}
+
+
+.membership-benefit h3 {
+    margin-bottom: 8px;
+
+    font-size: 1.1rem;
+}
+
+
+.membership-benefit p {
+    margin: 0;
+}
+
+
+/* ========================================
+   CREDIT COUNTER
+   ======================================== */
+
+.credit-counter-placeholder {
+    margin-top: 28px;
+
+    padding: 24px;
+
+    background:
+        rgba(23, 21, 18, 0.48);
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-medium);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 24px;
+}
+
+
+.credit-counter-label {
+    margin-bottom: 4px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.75rem;
+
+    letter-spacing: 0.1em;
+
+    text-transform: uppercase;
+}
+
+
+.credit-counter-number {
+    margin: 0;
+
+    color: var(--color-accent-light);
+
+    font-size: 2.4rem;
+
+    line-height: 1;
+}
+
+
+.credit-counter-note {
+    margin: 0;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.82rem;
+
+    font-style: italic;
+}
+
+
+/* ========================================
+   MEMBER REQUEST PLACEHOLDER
+   ======================================== */
+
+.member-request-placeholder {
+    border-style: dashed;
+}

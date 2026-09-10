@@ -733,48 +733,255 @@ function openEditSeries(series) {
      CREATE ASSIGNMENT CARD
      ========================================================== */
 
-  function createAdminAssignmentCard(relationship) {
-    const article = document.createElement("article");
-    article.className = "admin-bot-manager-card admin-assignment-card";
+ function createAdminAssignmentCard(relationship) {
+  const article = document.createElement("article");
+  article.className =
+    "admin-bot-manager-card admin-assignment-card";
 
-    const seriesName = relationship.series?.name || "Unknown Series";
-    const botName = relationship.bots?.name || "Unknown Bot";
 
-    const header = document.createElement("div");
-    header.className = "admin-bot-manager-header";
+  const seriesName =
+    relationship.series?.name ||
+    "Unknown Series";
 
-    const title = document.createElement("h3");
-    title.className = "admin-bot-manager-name";
-    title.textContent = seriesName;
+  const botName =
+    relationship.bots?.name ||
+    "Unknown Bot";
 
-    const position = document.createElement("span");
-    position.className = "admin-bot-publication-status is-draft";
-    position.textContent = `Position ${relationship.sort_order ?? 0}`;
 
-    header.append(title, position);
+  /* HEADER */
 
-    const botLabel = document.createElement("p");
-    botLabel.className = "admin-bot-manager-description";
-    botLabel.textContent = botName;
+  const header =
+    document.createElement("div");
 
-    const meta = document.createElement("div");
-    meta.className = "admin-bot-manager-meta";
+  header.className =
+    "admin-bot-manager-header";
 
-    const botStatus = document.createElement("span");
-    botStatus.textContent = relationship.bots?.published
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    seriesName;
+
+
+  const position =
+    document.createElement("span");
+
+  position.className =
+    "admin-bot-publication-status is-draft";
+
+  position.textContent =
+    `Position ${relationship.sort_order ?? 0}`;
+
+
+  header.append(
+    title,
+    position
+  );
+
+
+  /* BOT */
+
+  const botLabel =
+    document.createElement("p");
+
+  botLabel.className =
+    "admin-bot-manager-description";
+
+  botLabel.textContent =
+    botName;
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const botStatus =
+    document.createElement("span");
+
+  botStatus.textContent =
+    relationship.bots?.published
       ? "Bot Published"
       : "Bot Draft";
 
-    const seriesStatus = document.createElement("span");
-    seriesStatus.textContent = relationship.series?.published
+
+  const seriesStatus =
+    document.createElement("span");
+
+  seriesStatus.textContent =
+    relationship.series?.published
       ? "Series Published"
       : "Series Draft";
 
-    meta.append(botStatus, seriesStatus);
-    article.append(header, botLabel, meta);
 
-    return article;
+  meta.append(
+    botStatus,
+    seriesStatus
+  );
+
+
+  /* ACTIONS */
+
+  const actions =
+    document.createElement("div");
+
+  actions.className =
+    "admin-bot-manager-actions";
+
+
+  const removeButton =
+    document.createElement("button");
+
+  removeButton.type =
+    "button";
+
+  removeButton.className =
+    "secondary-button danger-button";
+
+  removeButton.textContent =
+    "Remove From Series";
+
+
+  removeButton.addEventListener(
+    "click",
+    async () => {
+      await removeBotSeriesAssignment(
+        relationship,
+        removeButton
+      );
+    }
+  );
+
+
+  actions.append(
+    removeButton
+  );
+
+
+  article.append(
+    header,
+    botLabel,
+    meta,
+    actions
+  );
+
+
+  return article;
+}
+
+  /* ==========================================================
+   REMOVE BOT / SERIES ASSIGNMENT
+   ========================================================== */
+
+async function removeBotSeriesAssignment(
+  relationship,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (assignmentManagerStatus) {
+      assignmentManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
   }
+
+
+  const botName =
+    relationship.bots?.name ||
+    "this bot";
+
+  const seriesName =
+    relationship.series?.name ||
+    "this series";
+
+
+  const confirmed =
+    window.confirm(
+      `Remove "${botName}" from "${seriesName}"?\n\nThe bot and series themselves will not be deleted.`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Removing...";
+  }
+
+
+  if (assignmentManagerStatus) {
+    assignmentManagerStatus.textContent =
+      `Removing "${botName}" from "${seriesName}"...`;
+  }
+
+
+  try {
+    const {
+      error
+    } = await window.supabaseClient
+      .from("bot_series")
+      .delete()
+      .eq(
+        "id",
+        relationship.id
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Bot-series assignment removed:",
+      relationship.id
+    );
+
+
+    await loadAdminAssignments();
+
+
+    if (assignmentManagerStatus) {
+      assignmentManagerStatus.textContent =
+        `"${botName}" was removed from "${seriesName}".`;
+    }
+
+
+  } catch (error) {
+    console.error(
+      "Unable to remove bot-series assignment:",
+      error
+    );
+
+
+    if (assignmentManagerStatus) {
+      assignmentManagerStatus.textContent =
+        "Unable to remove the bot from this series.";
+    }
+
+
+    if (button) {
+      button.disabled = false;
+      button.textContent =
+        "Remove From Series";
+    }
+  }
+}
 
   /* ==========================================================
      ADMIN SERIES CARD

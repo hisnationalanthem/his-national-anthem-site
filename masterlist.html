@@ -34,22 +34,295 @@
 
     <main>
 
-        <section>
-            <h2>All Bots</h2>
+       <!-- =====================================
+     PAGE INTRO
+     ===================================== -->
+
+<section class="page-intro">
+
+    <p class="page-kicker">
+        Bot Archive
+    </p>
+
+    <h1 class="page-title">
+        Bot Masterlist
+    </h1>
+
+    <p class="page-lede">
+        Browse the full bot archive, search by name,
+        filter by category, and explore organized series.
+    </p>
+
+</section>
+
+
+<!-- =====================================
+     SEARCH + FILTERS
+     ===================================== -->
+
+<section class="journal-panel masterlist-tools">
+
+    <p class="panel-label">
+        Browse
+    </p>
+
+    <h2>Find a Bot</h2>
+
+    <p>
+        Search and filtering will become functional
+        once the masterlist database is connected.
+    </p>
+
+
+    <div class="masterlist-search">
+
+        <label for="masterlist-search-input">
+            Search by bot name
+        </label>
+
+        <input
+            type="search"
+            id="masterlist-search-input"
+            placeholder="Search bots..."
+            disabled
+        >
+
+    </div>
+
+
+    <div class="masterlist-filters">
+
+        <button
+            type="button"
+            class="filter-button active"
+            disabled
+        >
+            All
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            disabled
+        >
+            Original
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            disabled
+        >
+            Media Inspired
+        </button>
+
+        <button
+            type="button"
+            class="filter-button"
+            disabled
+        >
+            Series
+        </button>
+
+    </div>
+
+
+    <p class="small-note">
+        Search and filters are intentionally inactive for now.
+    </p>
+
+</section>
+
+
+<hr class="section-divider">
+
+
+<!-- =====================================
+     ALL BOTS
+     ===================================== -->
+
+<section>
+
+    <div class="section-heading">
+
+        <p class="panel-label">
+            Full Archive
+        </p>
+
+        <h2>All Bots</h2>
+
+        <p>
+            Bot cards will automatically appear here
+            once the masterlist is connected to Supabase.
+        </p>
+
+    </div>
+
+
+    <div class="bot-grid">
+
+        <article class="bot-card bot-card-placeholder">
+
+            <div class="bot-image-placeholder">
+                Image
+            </div>
+
+            <div class="bot-card-content">
+
+                <p class="bot-card-category">
+                    Category
+                </p>
+
+                <h3>Bot Name</h3>
+
+                <p>
+                    Bot information will appear here.
+                </p>
+
+                <div class="bot-card-meta">
+
+                    <span>POV</span>
+                    <span>Type</span>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <article class="bot-card bot-card-placeholder">
+
+            <div class="bot-image-placeholder">
+                Image
+            </div>
+
+            <div class="bot-card-content">
+
+                <p class="bot-card-category">
+                    Category
+                </p>
+
+                <h3>Bot Name</h3>
+
+                <p>
+                    Bot information will appear here.
+                </p>
+
+                <div class="bot-card-meta">
+
+                    <span>POV</span>
+                    <span>Type</span>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <article class="bot-card bot-card-placeholder">
+
+            <div class="bot-image-placeholder">
+                Image
+            </div>
+
+            <div class="bot-card-content">
+
+                <p class="bot-card-category">
+                    Category
+                </p>
+
+                <h3>Bot Name</h3>
+
+                <p>
+                    Bot information will appear here.
+                </p>
+
+                <div class="bot-card-meta">
+
+                    <span>POV</span>
+                    <span>Type</span>
+
+                </div>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+<hr class="section-divider">
+
+
+<!-- =====================================
+     SERIES ORGANIZER
+     ===================================== -->
+
+<section>
+
+    <div class="section-heading">
+
+        <p class="panel-label">
+            Collections
+        </p>
+
+        <h2>Series</h2>
+
+        <p>
+            Bots belonging to the same universe,
+            theme, or collection can be grouped here.
+        </p>
+
+    </div>
+
+
+    <div class="series-grid">
+
+        <article class="series-card">
+
+            <p class="panel-label">
+                Series
+            </p>
+
+            <h3>Series Name</h3>
 
             <p>
-                The full bot masterlist will be added here.
+                Series description and included bots
+                will appear here.
             </p>
-        </section>
+
+            <span class="request-status">
+                Coming soon
+            </span>
+
+        </article>
 
 
-        <section>
-            <h2>Series</h2>
+        <article class="series-card">
+
+            <p class="panel-label">
+                Collection
+            </p>
+
+            <h3>Collection Name</h3>
 
             <p>
-                Bot series and collections will be organized here.
+                Collection information will appear here.
             </p>
-        </section>
+
+            <span class="request-status">
+                Coming soon
+            </span>
+
+        </article>
+
+    </div>
+
+</section>
 
     </main>
 

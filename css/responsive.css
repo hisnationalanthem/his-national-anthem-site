@@ -363,3 +363,30 @@
     }
 
 }
+/* ========================================
+   FAQ PAGE
+   ======================================== */
+
+@media (max-width: 600px) {
+
+    .faq-item summary {
+        padding:
+            18px 38px 18px 0;
+
+        font-size:
+            1rem;
+    }
+
+
+    .faq-answer {
+        padding:
+            0 38px 20px 0;
+    }
+
+
+    .faq-item summary::after {
+        right:
+            4px;
+    }
+
+}

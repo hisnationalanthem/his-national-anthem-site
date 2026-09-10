@@ -164,9 +164,17 @@ const botRefreshButton = document.querySelector(
 
 
   function setBotFormLoading(isLoading) {
-    if (!botSubmitButton) {
-      return;
-    }
+  if (!botSubmitButton) {
+    return;
+  }
+
+  botSubmitButton.disabled = isLoading;
+
+  botSubmitButton.textContent =
+    isLoading
+      ? "Saving..."
+      : "Save Bot";
+}
 
 /* ==========================================================
    BOT MANAGER LABEL HELPERS

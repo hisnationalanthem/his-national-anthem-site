@@ -1343,18 +1343,6 @@ async function loadAdminBots() {
     return;
   }
 
-  /* ==========================================================
-   LOAD ADMIN SERIES MANAGER
-   ========================================================== */
-
-async function loadAdminSeries() {
-  if (
-    !seriesManagerList ||
-    !seriesManagerStatus
-  ) {
-    return;
-  }
-
 
   if (
     !window.supabaseClient ||
@@ -1546,6 +1534,19 @@ async function loadAdminSeries() {
       "Unable to load bot entries.";
   }
 }
+
+   /* ==========================================================
+   LOAD ADMIN SERIES MANAGER
+   ========================================================== */
+
+async function loadAdminSeries() {
+  if (
+    !seriesManagerList ||
+    !seriesManagerStatus
+  ) {
+    return;
+  }
+
 
   /* ==========================================================
      ADD BOT

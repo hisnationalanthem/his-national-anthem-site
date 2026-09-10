@@ -742,6 +742,236 @@
     </form>
 
 </section>
+
+            <!-- =====================================
+     CREATE SERIES
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <p class="panel-label">
+        Collections
+    </p>
+
+    <h2>Create Series</h2>
+
+    <p>
+        Create a collection that can be used to organize
+        related bots on the public masterlist.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-series-form
+    >
+
+        <!-- SERIES NAME -->
+
+        <div class="form-field">
+
+            <label for="admin-series-name">
+                Series Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-series-name"
+                name="name"
+                autocomplete="off"
+                required
+            >
+
+        </div>
+
+
+        <!-- SLUG -->
+
+        <div class="form-field">
+
+            <label for="admin-series-slug">
+                Slug
+            </label>
+
+            <input
+                type="text"
+                id="admin-series-slug"
+                name="slug"
+                autocomplete="off"
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                placeholder="pine-ridge"
+                required
+            >
+
+            <p class="small-note">
+                Lowercase letters, numbers, and hyphens only.
+                This must be unique for every series.
+            </p>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-field">
+
+            <label for="admin-series-description">
+                Description
+            </label>
+
+            <textarea
+                id="admin-series-description"
+                name="description"
+                rows="4"
+                placeholder="Short description shown in the Series section."
+            ></textarea>
+
+        </div>
+
+
+        <!-- IMAGE URL -->
+
+        <div class="form-field">
+
+            <label for="admin-series-image-url">
+                Image URL
+            </label>
+
+            <input
+                type="url"
+                id="admin-series-image-url"
+                name="image_url"
+                placeholder="https://..."
+            >
+
+            <p class="small-note">
+                Optional banner or collection artwork.
+            </p>
+
+        </div>
+
+
+        <!-- SORT ORDER -->
+
+        <div class="form-field">
+
+            <label for="admin-series-sort-order">
+                Sort Order
+            </label>
+
+            <input
+                type="number"
+                id="admin-series-sort-order"
+                name="sort_order"
+                min="0"
+                step="1"
+                value="0"
+            >
+
+            <p class="small-note">
+                Lower numbers appear first.
+            </p>
+
+        </div>
+
+
+        <!-- PUBLISH -->
+
+        <div class="form-field admin-checkbox-field">
+
+            <label for="admin-series-published">
+
+                <input
+                    type="checkbox"
+                    id="admin-series-published"
+                    name="published"
+                >
+
+                Publish immediately
+
+            </label>
+
+            <p class="small-note">
+                Leave unchecked to keep the series private
+                while you are setting it up.
+            </p>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-admin-series-submit
+        >
+            Save Series
+        </button>
+
+
+        <!-- STATUS -->
+
+        <p
+            class="admin-form-status"
+            data-admin-series-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
+            <!-- =====================================
+     MANAGE SERIES
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+
+            <p class="panel-label">
+                Collections
+            </p>
+
+            <h2>Manage Series</h2>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-series-refresh
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        View private and published series,
+        then manage the bots assigned to each collection.
+    </p>
+
+
+    <p
+        class="admin-form-status"
+        data-admin-series-manager-status
+        aria-live="polite"
+    >
+        Loading series...
+    </p>
+
+
+    <div
+        class="admin-series-manager-list"
+        data-admin-series-manager-list
+    ></div>
+
+</section>
             
             <div class="admin-management-grid">
 

@@ -37,6 +37,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const seriesManagerStatus = document.querySelector("[data-admin-series-manager-status]");
   const seriesRefreshButton = document.querySelector("[data-admin-series-refresh]");
 
+  /* ==========================================================
+   EDIT SERIES ELEMENTS
+   ========================================================== */
+
+const editSeriesPanel = document.querySelector(
+  "[data-admin-edit-series-panel]"
+);
+
+const editSeriesForm = document.querySelector(
+  "[data-admin-edit-series-form]"
+);
+
+const editSeriesHeading = document.querySelector(
+  "[data-admin-edit-series-heading]"
+);
+
+const editSeriesStatus = document.querySelector(
+  "[data-admin-edit-series-status]"
+);
+
+const editSeriesSubmitButton = document.querySelector(
+  "[data-admin-edit-series-submit]"
+);
+
+const editSeriesCancelButton = document.querySelector(
+  "[data-admin-edit-series-cancel]"
+);
+  
   console.log("admin.js loaded.");
 
 
@@ -49,6 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let lastGeneratedSeriesSlug = "";
   let editingBotId = null;
   let editingBotPublished = false;
+  let editingSeriesId = null;
 
 
   /* ==========================================================
@@ -454,7 +483,132 @@ document.addEventListener("DOMContentLoaded", () => {
     return article;
   }
 
+/* ==========================================================
+   EDIT SERIES FORM
+   ========================================================== */
 
+function closeEditSeries() {
+  if (
+    !editSeriesPanel ||
+    !editSeriesForm
+  ) {
+    return;
+  }
+
+  editingSeriesId = null;
+
+  editSeriesForm.reset();
+
+  if (editSeriesStatus) {
+    editSeriesStatus.textContent = "";
+  }
+
+  editSeriesPanel.hidden = true;
+}
+
+
+function openEditSeries(series) {
+  if (
+    !editSeriesPanel ||
+    !editSeriesForm
+  ) {
+    console.error(
+      "Edit Series form elements are unavailable."
+    );
+
+    return;
+  }
+
+
+  editingSeriesId = series.id;
+
+
+  /* NAME */
+
+  const nameField =
+    editSeriesForm.elements.namedItem("name");
+
+  if (nameField) {
+    nameField.value =
+      series.name || "";
+  }
+
+
+  /* SLUG */
+
+  const slugField =
+    editSeriesForm.elements.namedItem("slug");
+
+  if (slugField) {
+    slugField.value =
+      series.slug || "";
+  }
+
+
+  /* DESCRIPTION */
+
+  const descriptionField =
+    editSeriesForm.elements.namedItem(
+      "description"
+    );
+
+  if (descriptionField) {
+    descriptionField.value =
+      series.description || "";
+  }
+
+
+  /* IMAGE URL */
+
+  const imageField =
+    editSeriesForm.elements.namedItem(
+      "image_url"
+    );
+
+  if (imageField) {
+    imageField.value =
+      series.image_url || "";
+  }
+
+
+  /* SORT ORDER */
+
+  const sortOrderField =
+    editSeriesForm.elements.namedItem(
+      "sort_order"
+    );
+
+  if (sortOrderField) {
+    sortOrderField.value =
+      String(series.sort_order ?? 0);
+  }
+
+
+  /* HEADING */
+
+  if (editSeriesHeading) {
+    editSeriesHeading.textContent =
+      `Editing "${series.name}".`;
+  }
+
+
+  /* STATUS */
+
+  if (editSeriesStatus) {
+    editSeriesStatus.textContent = "";
+  }
+
+
+  /* SHOW */
+
+  editSeriesPanel.hidden = false;
+
+  editSeriesPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+  
   /* ==========================================================
      ADMIN SERIES CARD
      ========================================================== */
@@ -505,7 +659,21 @@ imageStatus.textContent = series.image_url
 const actions = document.createElement("div");
 actions.className = "admin-bot-manager-actions";
 
+const editButton =
+  document.createElement("button");
 
+editButton.type = "button";
+editButton.className = "secondary-button";
+editButton.textContent = "Edit";
+
+
+editButton.addEventListener(
+  "click",
+  () => {
+    openEditSeries(series);
+  }
+);
+    
 const publicationButton = document.createElement("button");
 
 publicationButton.type = "button";
@@ -524,7 +692,10 @@ publicationButton.addEventListener("click", async () => {
 });
 
 
-actions.append(publicationButton);
+actions.append(
+  editButton,
+  publicationButton
+);
 
 
 article.append(
@@ -1238,6 +1409,19 @@ async function toggleSeriesPublication(
       closeEditBot();
     });
   }
+
+  /* ==========================================================
+   EDIT SERIES CANCEL
+   ========================================================== */
+
+if (editSeriesCancelButton) {
+  editSeriesCancelButton.addEventListener(
+    "click",
+    () => {
+      closeEditSeries();
+    }
+  );
+}
 
 
   /* ==========================================================

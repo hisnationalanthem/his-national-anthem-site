@@ -2548,6 +2548,136 @@ async function loadAdminUpcomingBots() {
   }
 }
 
+/* ==========================================================
+   ADMIN ANNOUNCEMENT CARD
+   ========================================================== */
+
+function createAdminAnnouncementCard(announcement) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-announcement-manager-card";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    announcement.title;
+
+
+  const publicationStatus =
+    document.createElement("span");
+
+  publicationStatus.className =
+    announcement.published
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  publicationStatus.textContent =
+    announcement.published
+      ? "Published"
+      : "Draft";
+
+
+  header.append(
+    title,
+    publicationStatus
+  );
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const category =
+    document.createElement("span");
+
+  category.textContent =
+    getAdminAnnouncementCategoryLabel(
+      announcement.category
+    );
+
+
+  const importance =
+    document.createElement("span");
+
+  importance.textContent =
+    announcement.important
+      ? "Important"
+      : "Standard";
+
+
+  meta.append(
+    category,
+    importance
+  );
+
+
+  /* CONTENT */
+
+  const content =
+    document.createElement("p");
+
+  content.className =
+    "admin-bot-manager-description";
+
+  content.textContent =
+    announcement.content;
+
+
+  /* PUBLICATION DATE */
+
+  const date =
+    document.createElement("p");
+
+  date.className =
+    "admin-bot-manager-link-status";
+
+
+  if (
+    announcement.published &&
+    announcement.published_at
+  ) {
+    date.textContent =
+      `Published: ${new Date(
+        announcement.published_at
+      ).toLocaleString()}`;
+  } else {
+    date.textContent =
+      "Not published";
+  }
+
+
+  article.append(
+    header,
+    meta,
+    content,
+    date
+  );
+
+
+  return article;
+}
+  
   /* ==========================================================
    LOAD ANNOUNCEMENTS
    ========================================================== */

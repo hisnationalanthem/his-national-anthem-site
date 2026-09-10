@@ -122,6 +122,22 @@ const seriesNameInput = document.querySelector(
 const seriesSlugInput = document.querySelector(
   "#admin-series-slug"
 );
+
+/* ==========================================================
+   MANAGE SERIES ELEMENTS
+   ========================================================== */
+
+const seriesManagerList = document.querySelector(
+  "[data-admin-series-manager-list]"
+);
+
+const seriesManagerStatus = document.querySelector(
+  "[data-admin-series-manager-status]"
+);
+
+const seriesRefreshButton = document.querySelector(
+  "[data-admin-series-refresh]"
+);
   
   /* ==========================================================
      STATE
@@ -636,6 +652,7 @@ if (seriesNameInput && seriesSlugInput) {
 showDashboard();
 
 await loadAdminBots();
+await loadAdminSeries();
 
 return true;
 
@@ -957,6 +974,131 @@ function openEditBot(bot) {
 }
 
 /* ==========================================================
+   CREATE ADMIN SERIES CARD
+   ========================================================== */
+
+function createAdminSeriesCard(series) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-series-manager-card";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    series.name;
+
+
+  const status =
+    document.createElement("span");
+
+  status.className =
+    series.published
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  status.textContent =
+    series.published
+      ? "Published"
+      : "Draft";
+
+
+  header.append(
+    title,
+    status
+  );
+
+
+  /* SLUG */
+
+  const slug =
+    document.createElement("p");
+
+  slug.className =
+    "admin-bot-manager-slug";
+
+  slug.textContent =
+    series.slug;
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const sortOrder =
+    document.createElement("span");
+
+  sortOrder.textContent =
+    `Sort Order: ${series.sort_order ?? 0}`;
+
+
+  meta.append(
+    sortOrder
+  );
+
+
+  /* DESCRIPTION */
+
+  const description =
+    document.createElement("p");
+
+  description.className =
+    "admin-bot-manager-description";
+
+  description.textContent =
+    series.description ||
+    "No series description provided.";
+
+
+  /* IMAGE STATUS */
+
+  const imageStatus =
+    document.createElement("p");
+
+  imageStatus.className =
+    "admin-bot-manager-link-status";
+
+  imageStatus.textContent =
+    series.image_url
+      ? "Series image added"
+      : "No series image";
+
+
+  /* BUILD */
+
+  article.append(
+    header,
+    slug,
+    meta,
+    description,
+    imageStatus
+  );
+
+
+  return article;
+}
+  
+/* ==========================================================
    DELETE BOT
    ========================================================== */
 
@@ -1201,6 +1343,114 @@ async function loadAdminBots() {
     return;
   }
 
+  /* ==========================================================
+   LOAD ADMIN SERIES MANAGER
+   ========================================================== */
+
+async function loadAdminSeries() {
+  if (
+    !seriesManagerList ||
+    !seriesManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    seriesManagerList.replaceChildren();
+
+    seriesManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+    return;
+  }
+
+
+  seriesManagerStatus.textContent =
+    "Loading series...";
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("series")
+      .select(`
+        id,
+        name,
+        slug,
+        description,
+        image_url,
+        published,
+        sort_order,
+        created_at,
+        updated_at
+      `)
+      .order("sort_order", {
+        ascending: true
+      })
+      .order("name", {
+        ascending: true
+      });
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const seriesList =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin series received:",
+      seriesList
+    );
+
+
+    seriesManagerList.replaceChildren();
+
+
+    if (seriesList.length === 0) {
+      seriesManagerStatus.textContent =
+        "There are no series entries yet.";
+
+      return;
+    }
+
+
+    seriesList.forEach((series) => {
+      seriesManagerList.append(
+        createAdminSeriesCard(series)
+      );
+    });
+
+
+    seriesManagerStatus.textContent =
+      seriesList.length === 1
+        ? "1 series entry."
+        : `${seriesList.length} series entries.`;
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin series:",
+      error
+    );
+
+    seriesManagerList.replaceChildren();
+
+    seriesManagerStatus.textContent =
+      "Unable to load series entries.";
+  }
+}
 
   if (
     !window.supabaseClient ||
@@ -1754,10 +2004,11 @@ if (seriesForm) {
         );
 
 
-        seriesForm.reset();
+       seriesForm.reset();
 
-        lastGeneratedSeriesSlug = "";
+lastGeneratedSeriesSlug = "";
 
+await loadAdminSeries();
 
         /*
          * Restore default sort order after reset.
@@ -1875,6 +2126,19 @@ if (botRefreshButton) {
   );
 }
 
+/* ==========================================================
+   SERIES MANAGER REFRESH
+   ========================================================== */
+
+if (seriesRefreshButton) {
+  seriesRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminSeries();
+    }
+  );
+}
+  
   /* ==========================================================
    SAVE EDITED BOT
    ========================================================== */

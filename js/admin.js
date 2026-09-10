@@ -1910,8 +1910,34 @@ editButton.addEventListener(
 );
 
 
+/* DELETE */
+
+const deleteButton =
+  document.createElement("button");
+
+deleteButton.type =
+  "button";
+
+deleteButton.className =
+  "secondary-button danger-button";
+
+deleteButton.textContent =
+  "Delete";
+
+
+deleteButton.addEventListener(
+  "click",
+  async () => {
+    await deleteAnnouncement(
+      announcement,
+      deleteButton
+    );
+  }
+);
+  
 actions.append(
-  editButton
+  editButton,
+  deleteButton
 );
 
 
@@ -1925,6 +1951,116 @@ article.append(
 
 
 return article;
+}
+
+  /* ==========================================================
+   DELETE ANNOUNCEMENT
+   ========================================================== */
+
+async function deleteAnnouncement(
+  announcement,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (announcementManagerStatus) {
+      announcementManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const confirmed =
+    window.confirm(
+      `Permanently delete "${announcement.title}"?\n\nThis announcement will be removed completely. This cannot be undone.`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (button) {
+    button.disabled = true;
+    button.textContent =
+      "Deleting...";
+  }
+
+
+  if (announcementManagerStatus) {
+    announcementManagerStatus.textContent =
+      `Deleting "${announcement.title}"...`;
+  }
+
+
+  try {
+    const {
+      error
+    } = await window.supabaseClient
+      .from("announcements")
+      .delete()
+      .eq(
+        "id",
+        announcement.id
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Announcement deleted:",
+      announcement.id
+    );
+
+
+    /*
+     * If this announcement happened to be
+     * open in the Edit panel, close it.
+     */
+    if (
+      editingAnnouncementId ===
+      announcement.id
+    ) {
+      closeEditAnnouncement();
+    }
+
+
+    await loadAdminAnnouncements();
+
+
+    if (announcementManagerStatus) {
+      announcementManagerStatus.textContent =
+        `"${announcement.title}" was deleted permanently.`;
+    }
+
+
+  } catch (error) {
+    console.error(
+      "Unable to delete announcement:",
+      error
+    );
+
+
+    if (announcementManagerStatus) {
+      announcementManagerStatus.textContent =
+        `"${announcement.title}" could not be deleted.`;
+    }
+
+
+    if (button) {
+      button.disabled = false;
+      button.textContent =
+        "Delete";
+    }
+  }
 }
 
   /* ==========================================================

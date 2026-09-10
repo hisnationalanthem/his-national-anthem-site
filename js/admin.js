@@ -71,12 +71,37 @@ const botRefreshButton = document.querySelector(
   "[data-admin-bots-refresh]"
 );
 
+/* ==========================================================
+   EDIT BOT ELEMENTS
+   ========================================================== */
+
+const editBotPanel = document.querySelector(
+  "[data-admin-edit-bot-panel]"
+);
+
+const editBotForm = document.querySelector(
+  "[data-admin-edit-bot-form]"
+);
+
+const editBotHeading = document.querySelector(
+  "[data-admin-edit-bot-heading]"
+);
+
+const editBotStatus = document.querySelector(
+  "[data-admin-edit-bot-status]"
+);
+
+const editBotCancelButton = document.querySelector(
+  "[data-admin-edit-bot-cancel]"
+);
+  
   /* ==========================================================
      STATE
      ========================================================== */
 
-  let adminAuthorized = false;
-  let lastGeneratedSlug = "";
+ let adminAuthorized = false;
+let lastGeneratedSlug = "";
+let editingBotId = null;
 
 
   /* ==========================================================
@@ -297,6 +322,20 @@ const actions = document.createElement("div");
 
 actions.className = "admin-bot-manager-actions";
 
+  const editButton =
+  document.createElement("button");
+
+editButton.type = "button";
+editButton.className = "secondary-button";
+editButton.textContent = "Edit";
+
+
+editButton.addEventListener(
+  "click",
+  () => {
+    openEditBot(bot);
+  }
+);
 
 const publicationButton = document.createElement("button");
 
@@ -321,6 +360,7 @@ publicationButton.addEventListener(
 
 
 actions.append(
+  editButton,
   publicationButton
 );
 
@@ -634,6 +674,143 @@ return true;
     );
   }
 
+/* ==========================================================
+   EDIT BOT FORM
+   ========================================================== */
+
+function closeEditBot() {
+  if (!editBotPanel || !editBotForm) {
+    return;
+  }
+
+  editingBotId = null;
+
+  editBotForm.reset();
+
+  if (editBotStatus) {
+    editBotStatus.textContent = "";
+  }
+
+  editBotPanel.hidden = true;
+}
+
+
+function openEditBot(bot) {
+  if (!editBotPanel || !editBotForm) {
+    console.error(
+      "Edit Bot form elements are unavailable."
+    );
+
+    return;
+  }
+
+
+  editingBotId = bot.id;
+
+
+  /* NAME */
+
+  const nameField =
+    editBotForm.elements.namedItem("name");
+
+  if (nameField) {
+    nameField.value =
+      bot.name || "";
+  }
+
+
+  /* SLUG */
+
+  const slugField =
+    editBotForm.elements.namedItem("slug");
+
+  if (slugField) {
+    slugField.value =
+      bot.slug || "";
+  }
+
+
+  /* POV */
+
+  const povField =
+    editBotForm.elements.namedItem("pov");
+
+  if (povField) {
+    povField.value =
+      bot.pov || "";
+  }
+
+
+  /* BOT TYPE */
+
+  const typeField =
+    editBotForm.elements.namedItem("bot_type");
+
+  if (typeField) {
+    typeField.value =
+      bot.bot_type || "";
+  }
+
+
+  /* DESCRIPTION */
+
+  const descriptionField =
+    editBotForm.elements.namedItem("description");
+
+  if (descriptionField) {
+    descriptionField.value =
+      bot.description || "";
+  }
+
+
+  /* IMAGE URL */
+
+  const imageField =
+    editBotForm.elements.namedItem("image_url");
+
+  if (imageField) {
+    imageField.value =
+      bot.image_url || "";
+  }
+
+
+  /* JANITORAI URL */
+
+  const janitorField =
+    editBotForm.elements.namedItem("janitor_url");
+
+  if (janitorField) {
+    janitorField.value =
+      bot.janitor_url || "";
+  }
+
+
+  /* HEADING */
+
+  if (editBotHeading) {
+    editBotHeading.textContent =
+      `Editing "${bot.name}".`;
+  }
+
+
+  /* STATUS */
+
+  if (editBotStatus) {
+    editBotStatus.textContent = "";
+  }
+
+
+  /* SHOW PANEL */
+
+  editBotPanel.hidden = false;
+
+
+  editBotPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+  
 /* ==========================================================
    PUBLISH / UNPUBLISH BOT
    ========================================================== */
@@ -1223,6 +1400,19 @@ if (botRefreshButton) {
     "click",
     async () => {
       await loadAdminBots();
+    }
+  );
+}
+
+  /* ==========================================================
+   EDIT BOT CANCEL
+   ========================================================== */
+
+if (editBotCancelButton) {
+  editBotCancelButton.addEventListener(
+    "click",
+    () => {
+      closeEditBot();
     }
   );
 }

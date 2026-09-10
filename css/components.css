@@ -3443,3 +3443,288 @@ a.creator-link-card:hover {
     color: var(--color-text-muted);
     font-style: italic;
 }
+/* ==========================================================
+   ADMIN DASHBOARD
+   ========================================================== */
+
+.admin-tool-panel {
+    margin-top: 1.5rem;
+}
+
+
+/* ADMIN HEADER */
+
+.admin-dashboard-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.admin-dashboard-heading h2,
+.admin-dashboard-heading h3 {
+    margin-top: 0;
+}
+
+
+/* ADMIN MANAGEMENT GRID */
+
+.admin-management-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+
+/* ADMIN FORMS */
+
+.admin-login-form,
+.admin-bot-form {
+    display: grid;
+    gap: 1.1rem;
+    margin-top: 1.5rem;
+}
+
+.admin-login-form {
+    max-width: 34rem;
+}
+
+.admin-bot-form {
+    max-width: 48rem;
+}
+
+.admin-login-form input,
+.admin-bot-form input,
+.admin-bot-form select,
+.admin-bot-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 0.9rem;
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+
+    background: var(--color-background-soft);
+    color: var(--color-text);
+
+    font: inherit;
+}
+
+.admin-bot-form textarea {
+    resize: vertical;
+    min-height: 8rem;
+}
+
+.admin-login-form input:focus,
+.admin-bot-form input:focus,
+.admin-bot-form select:focus,
+.admin-bot-form textarea:focus {
+    outline: 1px solid var(--color-accent-light);
+    border-color: var(--color-accent-light);
+}
+
+
+/* CHECKBOX */
+
+.admin-checkbox-field label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.admin-checkbox-field input {
+    width: auto;
+}
+
+
+/* FORM STATUS */
+
+.admin-auth-status,
+.admin-form-status {
+    color: var(--color-text-soft);
+}
+
+.admin-auth-error,
+.admin-form-error {
+    color: var(--color-danger);
+}
+
+.admin-form-success {
+    color: var(--color-success);
+}
+
+
+/* ==========================================================
+   ADMIN BOT MANAGER
+   ========================================================== */
+
+.admin-bot-manager-list {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.25rem;
+}
+
+
+.admin-bot-manager-card {
+    padding: 1.25rem;
+
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-medium);
+
+    background: var(--color-background-soft);
+}
+
+
+.admin-bot-manager-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    margin-bottom: 0.35rem;
+}
+
+
+.admin-bot-manager-name {
+    margin: 0;
+
+    font-size: 1.25rem;
+    line-height: 1.25;
+}
+
+
+.admin-bot-publication-status {
+    flex-shrink: 0;
+
+    padding: 0.3rem 0.55rem;
+
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+.admin-bot-publication-status.is-published {
+    color: var(--color-success);
+}
+
+
+.admin-bot-publication-status.is-draft {
+    color: var(--color-text-muted);
+}
+
+
+.admin-bot-manager-slug {
+    margin: 0 0 0.75rem;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.8rem;
+    font-family: monospace;
+}
+
+
+.admin-bot-manager-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+
+    margin-bottom: 0.8rem;
+}
+
+
+.admin-bot-manager-meta span {
+    padding: 0.25rem 0.5rem;
+
+    border: 1px solid var(--color-border-soft);
+    border-radius: 999px;
+
+    color: var(--color-accent-light);
+
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+
+.admin-bot-manager-description {
+    margin: 0.75rem 0;
+
+    color: var(--color-text-soft);
+}
+
+
+.admin-bot-manager-link-status {
+    margin-bottom: 0;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+
+/* ==========================================================
+   ADMIN BUTTONS
+   ========================================================== */
+
+.primary-button,
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+
+    padding: 0.65rem 1rem;
+
+    border-radius: var(--radius-small);
+
+    font: inherit;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        opacity 0.15s ease;
+}
+
+
+.primary-button {
+    border: 1px solid var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-background);
+}
+
+
+.primary-button:hover {
+    background: var(--color-accent-light);
+    border-color: var(--color-accent-light);
+}
+
+
+.secondary-button {
+    border: 1px solid var(--color-border);
+    background: transparent;
+    color: var(--color-text-soft);
+}
+
+
+.secondary-button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-text);
+}
+
+
+.primary-button:disabled,
+.secondary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

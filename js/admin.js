@@ -276,9 +276,10 @@ const editSeriesCancelButton = document.querySelector(
       setAuthStatus("");
       showDashboard();
 
-      // Content-loading errors should never make a valid admin look unauthorized.
-      void loadAdminBots();
-      void loadAdminSeries();
+     // Content-loading errors should never make a valid admin look unauthorized.
+void loadAdminBots();
+void loadAdminSeries();
+void loadAdminAssignments();
 
       return true;
     } catch (error) {
@@ -620,6 +621,259 @@ function openEditSeries(series) {
     behavior: "smooth",
     block: "start"
   });
+}
+
+  /* ==========================================================
+   BOT / SERIES ASSIGNMENT ELEMENTS
+   ========================================================== */
+
+const assignmentForm = document.querySelector(
+  "[data-admin-assignment-form]"
+);
+
+const assignmentBotSelect = document.querySelector(
+  "[data-admin-assignment-bot]"
+);
+
+const assignmentSeriesSelect = document.querySelector(
+  "[data-admin-assignment-series]"
+);
+
+const assignmentSubmitButton = document.querySelector(
+  "[data-admin-assignment-submit]"
+);
+
+const assignmentStatus = document.querySelector(
+  "[data-admin-assignment-status]"
+);
+
+const assignmentManagerStatus = document.querySelector(
+  "[data-admin-assignment-manager-status]"
+);
+
+const assignmentList = document.querySelector(
+  "[data-admin-assignment-list]"
+);
+
+const assignmentRefreshButton = document.querySelector(
+  "[data-admin-assignments-refresh]"
+);
+
+/* ==========================================================
+   ASSIGNMENT DROPDOWNS
+   ========================================================== */
+
+function populateAssignmentDropdowns(
+  bots,
+  seriesList
+) {
+  if (
+    !assignmentBotSelect ||
+    !assignmentSeriesSelect
+  ) {
+    return;
+  }
+
+  /* ==========================================================
+   CREATE ASSIGNMENT CARD
+   ========================================================== */
+
+function createAdminAssignmentCard(
+  relationship
+) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-assignment-card";
+
+
+  const seriesName =
+    relationship.series?.name ||
+    "Unknown Series";
+
+  const botName =
+    relationship.bots?.name ||
+    "Unknown Bot";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    seriesName;
+
+
+  const position =
+    document.createElement("span");
+
+  position.className =
+    "admin-bot-publication-status is-draft";
+
+  position.textContent =
+    `Position ${relationship.sort_order ?? 0}`;
+
+
+  header.append(
+    title,
+    position
+  );
+
+
+  /* BOT */
+
+  const botLabel =
+    document.createElement("p");
+
+  botLabel.className =
+    "admin-bot-manager-description";
+
+  botLabel.textContent =
+    botName;
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const botStatus =
+    document.createElement("span");
+
+  botStatus.textContent =
+    relationship.bots?.published
+      ? "Bot Published"
+      : "Bot Draft";
+
+
+  const seriesStatus =
+    document.createElement("span");
+
+  seriesStatus.textContent =
+    relationship.series?.published
+      ? "Series Published"
+      : "Series Draft";
+
+
+  meta.append(
+    botStatus,
+    seriesStatus
+  );
+
+
+  article.append(
+    header,
+    botLabel,
+    meta
+  );
+
+
+  return article;
+}
+
+  /* BOT DROPDOWN */
+
+  assignmentBotSelect.replaceChildren();
+
+  const botPlaceholder =
+    document.createElement("option");
+
+  botPlaceholder.value = "";
+
+  botPlaceholder.textContent =
+    bots.length > 0
+      ? "Choose a bot..."
+      : "No bots available";
+
+  assignmentBotSelect.append(
+    botPlaceholder
+  );
+
+
+  bots.forEach((bot) => {
+    const option =
+      document.createElement("option");
+
+    option.value = bot.id;
+
+    option.textContent =
+      bot.published
+        ? `${bot.name} — Published`
+        : `${bot.name} — Draft`;
+
+    assignmentBotSelect.append(
+      option
+    );
+  });
+
+
+  assignmentBotSelect.disabled =
+    bots.length === 0;
+
+
+  /* SERIES DROPDOWN */
+
+  assignmentSeriesSelect.replaceChildren();
+
+  const seriesPlaceholder =
+    document.createElement("option");
+
+  seriesPlaceholder.value = "";
+
+  seriesPlaceholder.textContent =
+    seriesList.length > 0
+      ? "Choose a series..."
+      : "No series available";
+
+  assignmentSeriesSelect.append(
+    seriesPlaceholder
+  );
+
+
+  seriesList.forEach((series) => {
+    const option =
+      document.createElement("option");
+
+    option.value = series.id;
+
+    option.textContent =
+      series.published
+        ? `${series.name} — Published`
+        : `${series.name} — Draft`;
+
+    assignmentSeriesSelect.append(
+      option
+    );
+  });
+
+
+  assignmentSeriesSelect.disabled =
+    seriesList.length === 0;
+
+
+  /*
+   * Keep this disabled for now.
+   * The next part will connect assignment creation.
+   */
+  if (assignmentSubmitButton) {
+    assignmentSubmitButton.disabled = true;
+  }
 }
   
   /* ==========================================================
@@ -1064,6 +1318,220 @@ async function toggleSeriesPublication(
     }
   }
 
+  /* ==========================================================
+   LOAD BOT / SERIES ASSIGNMENTS
+   ========================================================== */
+
+async function loadAdminAssignments() {
+  if (
+    !assignmentBotSelect ||
+    !assignmentSeriesSelect ||
+    !assignmentList ||
+    !assignmentManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    assignmentList.replaceChildren();
+
+    assignmentManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+    return;
+  }
+
+
+  assignmentManagerStatus.textContent =
+    "Loading assignments...";
+
+
+  if (assignmentStatus) {
+    assignmentStatus.textContent = "";
+  }
+
+
+  try {
+    /*
+     * Load every bot, including drafts.
+     */
+    const {
+      data: botData,
+      error: botError
+    } = await window.supabaseClient
+      .from("bots")
+      .select(
+        "id, name, slug, published"
+      )
+      .order("name", {
+        ascending: true
+      });
+
+
+    if (botError) {
+      throw botError;
+    }
+
+
+    /*
+     * Load every series, including drafts.
+     */
+    const {
+      data: seriesData,
+      error: seriesError
+    } = await window.supabaseClient
+      .from("series")
+      .select(
+        "id, name, slug, published, sort_order"
+      )
+      .order("sort_order", {
+        ascending: true
+      })
+      .order("name", {
+        ascending: true
+      });
+
+
+    if (seriesError) {
+      throw seriesError;
+    }
+
+
+    /*
+     * Load current bot_series relationships.
+     */
+    const {
+      data: relationshipData,
+      error: relationshipError
+    } = await window.supabaseClient
+      .from("bot_series")
+      .select(`
+        id,
+        bot_id,
+        series_id,
+        sort_order,
+        bots (
+          id,
+          name,
+          slug,
+          published
+        ),
+        series (
+          id,
+          name,
+          slug,
+          published
+        )
+      `)
+      .order("sort_order", {
+        ascending: true
+      });
+
+
+    if (relationshipError) {
+      throw relationshipError;
+    }
+
+
+    const bots =
+      Array.isArray(botData)
+        ? botData
+        : [];
+
+    const seriesList =
+      Array.isArray(seriesData)
+        ? seriesData
+        : [];
+
+    const relationships =
+      Array.isArray(relationshipData)
+        ? relationshipData
+        : [];
+
+
+    console.log(
+      "Assignment bots received:",
+      bots
+    );
+
+    console.log(
+      "Assignment series received:",
+      seriesList
+    );
+
+    console.log(
+      "Bot-series assignments received:",
+      relationships
+    );
+
+
+    /* DROPDOWNS */
+
+    populateAssignmentDropdowns(
+      bots,
+      seriesList
+    );
+
+
+    /* CURRENT ASSIGNMENTS */
+
+    assignmentList.replaceChildren();
+
+
+    if (relationships.length === 0) {
+      assignmentManagerStatus.textContent =
+        "There are no bot-to-series assignments yet.";
+
+      return;
+    }
+
+
+    relationships.forEach(
+      (relationship) => {
+        assignmentList.append(
+          createAdminAssignmentCard(
+            relationship
+          )
+        );
+      }
+    );
+
+
+    assignmentManagerStatus.textContent =
+      relationships.length === 1
+        ? "1 bot-to-series assignment."
+        : `${relationships.length} bot-to-series assignments.`;
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load bot-series assignments:",
+      error
+    );
+
+    assignmentList.replaceChildren();
+
+    assignmentManagerStatus.textContent =
+      "Unable to load bot-to-series assignments.";
+
+
+    if (assignmentBotSelect) {
+      assignmentBotSelect.disabled = true;
+    }
+
+    if (assignmentSeriesSelect) {
+      assignmentSeriesSelect.disabled = true;
+    }
+
+    if (assignmentSubmitButton) {
+      assignmentSubmitButton.disabled = true;
+    }
+  }
+}
 
   /* ==========================================================
      ADD BOT
@@ -1539,6 +2007,19 @@ async function toggleSeriesPublication(
       await loadAdminSeries();
     });
   }
+
+  /* ==========================================================
+   ASSIGNMENT MANAGER REFRESH
+   ========================================================== */
+
+if (assignmentRefreshButton) {
+  assignmentRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminAssignments();
+    }
+  );
+}
 
   if (editBotCancelButton) {
     editBotCancelButton.addEventListener("click", () => {

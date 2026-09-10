@@ -506,7 +506,20 @@ function closeEditSeries() {
   editSeriesPanel.hidden = true;
 }
 
+function setEditSeriesLoading(isLoading) {
+  if (!editSeriesSubmitButton) {
+    return;
+  }
 
+  editSeriesSubmitButton.disabled =
+    isLoading;
+
+  editSeriesSubmitButton.textContent =
+    isLoading
+      ? "Saving..."
+      : "Save Changes";
+}
+  
 function openEditSeries(series) {
   if (
     !editSeriesPanel ||
@@ -1410,6 +1423,234 @@ async function toggleSeriesPublication(
     });
   }
 
+/* ==========================================================
+   SAVE EDITED SERIES
+   ========================================================== */
+
+if (editSeriesForm) {
+  editSeriesForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (editSeriesStatus) {
+          editSeriesStatus.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* SERIES SELECTED */
+
+      if (!editingSeriesId) {
+        if (editSeriesStatus) {
+          editSeriesStatus.textContent =
+            "No series is currently selected for editing.";
+        }
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(editSeriesForm);
+
+      const name =
+        String(
+          formData.get("name") || ""
+        ).trim();
+
+      const slug =
+        createSlug(
+          formData.get("slug")
+        );
+
+      const description =
+        String(
+          formData.get("description") || ""
+        ).trim();
+
+      const imageUrl =
+        String(
+          formData.get("image_url") || ""
+        ).trim();
+
+      const sortOrderRaw =
+        Number(
+          formData.get("sort_order")
+        );
+
+      const sortOrder =
+        Number.isInteger(sortOrderRaw) &&
+        sortOrderRaw >= 0
+          ? sortOrderRaw
+          : 0;
+
+
+      /* VALIDATE NAME */
+
+      if (!name) {
+        if (editSeriesStatus) {
+          editSeriesStatus.textContent =
+            "Series name is required.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE SLUG */
+
+      const validSlug =
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+      if (
+        !slug ||
+        !validSlug.test(slug)
+      ) {
+        if (editSeriesStatus) {
+          editSeriesStatus.textContent =
+            "Slug can contain only lowercase letters, numbers, and single hyphens.";
+        }
+
+        return;
+      }
+
+
+      /* BUILD UPDATE */
+
+      const updates = {
+        name,
+        slug,
+
+        description:
+          description || null,
+
+        image_url:
+          imageUrl || null,
+
+        sort_order:
+          sortOrder
+      };
+
+
+      setEditSeriesLoading(true);
+
+      if (editSeriesStatus) {
+        editSeriesStatus.textContent =
+          "Saving changes...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("series")
+          .update(updates)
+          .eq("id", editingSeriesId)
+          .select(`
+            id,
+            name,
+            slug,
+            description,
+            image_url,
+            published,
+            sort_order
+          `)
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to update series:",
+            error
+          );
+
+
+          if (error.code === "23505") {
+            if (editSeriesStatus) {
+              editSeriesStatus.textContent =
+                "That series slug is already being used.";
+            }
+
+            return;
+          }
+
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            if (editSeriesStatus) {
+              editSeriesStatus.textContent =
+                "One of the edited values does not meet the database rules.";
+            }
+
+            return;
+          }
+
+
+          if (editSeriesStatus) {
+            editSeriesStatus.textContent =
+              "The series could not be updated.";
+          }
+
+          return;
+        }
+
+
+        console.log(
+          "Series updated successfully:",
+          data
+        );
+
+
+        const updatedName =
+          data.name;
+
+
+        closeEditSeries();
+
+        await loadAdminSeries();
+
+
+        if (seriesManagerStatus) {
+          seriesManagerStatus.textContent =
+            `"${updatedName}" was updated successfully.`;
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected error while updating series:",
+          error
+        );
+
+        if (editSeriesStatus) {
+          editSeriesStatus.textContent =
+            "The series could not be updated right now.";
+        }
+
+      } finally {
+        setEditSeriesLoading(false);
+      }
+    }
+  );
+}
+  
   /* ==========================================================
    EDIT SERIES CANCEL
    ========================================================== */

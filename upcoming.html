@@ -227,11 +227,21 @@
 
             <div>
 
-                <p class="panel-label">
-                    Queue Preview
-                </p>
+               <section class="journal-panel upcoming-live-section" aria-labelledby="upcoming-live-title">
+  <p class="panel-label">Current Queue</p>
 
-                <h3>Upcoming Releases</h3>
+  <h2 id="upcoming-live-title">Upcoming Bots</h2>
+
+  <p class="small-note">
+    Planned releases and bots currently in progress.
+  </p>
+
+  <p class="upcoming-load-status" data-upcoming-status aria-live="polite">
+    Loading upcoming bots...
+  </p>
+
+  <div class="upcoming-live-list" data-upcoming-list></div>
+</section>
 
             </div>
 

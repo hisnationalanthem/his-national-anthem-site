@@ -314,3 +314,52 @@
     }
 
 }
+/* ========================================
+   BOT MASTERLIST PAGE
+   ======================================== */
+
+@media (max-width: 950px) {
+
+    .bot-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .bot-grid {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            16px;
+    }
+
+
+    .series-grid {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            16px;
+    }
+
+
+    .masterlist-filters {
+        flex-direction:
+            column;
+    }
+
+
+    .filter-button {
+        width:
+            100%;
+
+        text-align:
+            left;
+    }
+
+}

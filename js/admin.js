@@ -178,6 +178,24 @@ function setUpcomingFormLoading(isLoading) {
 }
 
   /* ==========================================================
+   ANNOUNCEMENT FORM LOADING
+   ========================================================== */
+
+function setAnnouncementFormLoading(isLoading) {
+  if (!announcementSubmitButton) {
+    return;
+  }
+
+  announcementSubmitButton.disabled =
+    isLoading || !adminAuthorized;
+
+  announcementSubmitButton.textContent =
+    isLoading
+      ? "Saving..."
+      : "Save Announcement";
+}
+
+  /* ==========================================================
      LABEL HELPERS
      ========================================================== */
 
@@ -330,6 +348,7 @@ function getAdminAnnouncementCategoryLabel(value) {
       setAuthStatus("");
       showDashboard();
       setUpcomingFormLoading(false);
+      setAnnouncementFormLoading(false);
 
      // Content-loading errors should never make a valid admin look unauthorized.
 void loadAdminBots();
@@ -403,11 +422,13 @@ void loadAdminAnnouncements();
         await window.supabaseClient.auth.signOut();
         adminAuthorized = false;
         setUpcomingFormLoading(false);
+        setAnnouncementFormLoading(false);
         seriesForm?.reset();
         upcomingForm?.reset();
         loginForm.reset();
         botForm?.reset();
         seriesForm?.reset();
+        announcementForm?.reset();
         closeEditBot();
         showLogin();
         closeEditUpcoming();
@@ -3012,6 +3033,230 @@ async function loadAdminAnnouncements() {
       }
     }
   }
+
+  /* ==========================================================
+   CREATE ANNOUNCEMENT
+   ========================================================== */
+
+if (announcementForm) {
+  announcementForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (announcementStatus) {
+          announcementStatus.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(announcementForm);
+
+
+      const title =
+        String(
+          formData.get("title") || ""
+        ).trim();
+
+
+      const content =
+        String(
+          formData.get("content") || ""
+        ).trim();
+
+
+      const category =
+        String(
+          formData.get("category") || "general"
+        ).trim();
+
+
+      const important =
+        formData.get("important") === "on";
+
+
+      const published =
+        formData.get("published") === "on";
+
+
+      /* VALIDATE TITLE */
+
+      if (!title) {
+        if (announcementStatus) {
+          announcementStatus.textContent =
+            "Announcement title is required.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE CONTENT */
+
+      if (!content) {
+        if (announcementStatus) {
+          announcementStatus.textContent =
+            "Announcement content is required.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE CATEGORY */
+
+      const allowedCategories = [
+        "general",
+        "website",
+        "commissions",
+        "membership",
+        "requests",
+        "masterlist",
+        "schedule"
+      ];
+
+
+      if (
+        !allowedCategories.includes(category)
+      ) {
+        if (announcementStatus) {
+          announcementStatus.textContent =
+            "Choose a valid announcement category.";
+        }
+
+        return;
+      }
+
+
+      /* BUILD RECORD */
+
+      const newAnnouncement = {
+        title,
+        content,
+        category,
+        important,
+        published,
+
+        published_at:
+          published
+            ? new Date().toISOString()
+            : null
+      };
+
+
+      /* SAVE */
+
+      setAnnouncementFormLoading(true);
+
+
+      if (announcementStatus) {
+        announcementStatus.textContent =
+          published
+            ? "Publishing announcement..."
+            : "Saving announcement draft...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("announcements")
+          .insert(newAnnouncement)
+          .select(`
+            id,
+            title,
+            content,
+            category,
+            important,
+            published,
+            published_at
+          `)
+          .single();
+
+
+        if (error) {
+          console.error(
+            "Unable to save announcement:",
+            error
+          );
+
+
+          if (
+            error.code === "23514" ||
+            error.code === "23502"
+          ) {
+            if (announcementStatus) {
+              announcementStatus.textContent =
+                "One of the announcement values does not meet the database rules.";
+            }
+
+            return;
+          }
+
+
+          if (announcementStatus) {
+            announcementStatus.textContent =
+              "The announcement could not be saved.";
+          }
+
+          return;
+        }
+
+
+        console.log(
+          "Announcement saved successfully:",
+          data
+        );
+
+
+        announcementForm.reset();
+
+
+        if (announcementStatus) {
+          announcementStatus.textContent =
+            data.published
+              ? `"${data.title}" was published successfully.`
+              : `"${data.title}" was saved as a private draft.`;
+        }
+
+
+        await loadAdminAnnouncements();
+
+
+      } catch (error) {
+        console.error(
+          "Unexpected error while saving announcement:",
+          error
+        );
+
+
+        if (announcementStatus) {
+          announcementStatus.textContent =
+            "The announcement could not be saved right now.";
+        }
+
+
+      } finally {
+        setAnnouncementFormLoading(false);
+      }
+    }
+  );
+}
 
   /* ==========================================================
    CREATE UPCOMING BOT

@@ -509,3 +509,55 @@
     }
 
 }
+/* ========================================
+   CURRENCY CONVERTER PAGE
+   ======================================== */
+
+@media (max-width: 800px) {
+
+    .currency-layout {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            18px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .currency-converter {
+        padding:
+            24px;
+    }
+
+
+    .currency-converter-header {
+        flex-direction:
+            column;
+
+        gap:
+            12px;
+    }
+
+
+    .currency-selector-row {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .currency-swap-button {
+        width:
+            100%;
+    }
+
+
+    .currency-info-card {
+        padding:
+            22px;
+    }
+
+}

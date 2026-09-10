@@ -1144,6 +1144,505 @@
 
 </section>
 
+<!-- =====================================
+     CREATE UPCOMING BOT
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+        <div>
+            <p class="panel-label">Posting Queue</p>
+            <h2>Add Upcoming Bot</h2>
+        </div>
+    </div>
+
+    <p>
+        Add a bot to the upcoming-post queue.
+        Entries remain private unless Publicly Visible is checked.
+    </p>
+
+    <form
+        class="admin-series-form"
+        data-admin-upcoming-form
+    >
+
+        <div class="form-field">
+            <label for="admin-upcoming-name">
+                Bot Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-upcoming-name"
+                name="bot_name"
+                autocomplete="off"
+                required
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-upcoming-type">
+                Bot Type
+            </label>
+
+            <select
+                id="admin-upcoming-type"
+                name="bot_type"
+            >
+                <option value="">
+                    Not specified
+                </option>
+
+                <option value="original">
+                    Original
+                </option>
+
+                <option value="alt">
+                    Alt
+                </option>
+
+                <option value="commission">
+                    Commission
+                </option>
+
+                <option value="media_inspired">
+                    Media Inspired
+                </option>
+
+                <option value="remaster">
+                    Remaster
+                </option>
+            </select>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-upcoming-date">
+                Expected Post Date
+            </label>
+
+            <input
+                type="date"
+                id="admin-upcoming-date"
+                name="expected_post_date"
+            >
+
+            <p class="small-note">
+                Leave blank if the posting date is not known yet.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-upcoming-status">
+                Status
+            </label>
+
+            <select
+                id="admin-upcoming-status"
+                name="status"
+                required
+            >
+                <option value="planned" selected>
+                    Planned
+                </option>
+
+                <option value="writing">
+                    Writing
+                </option>
+
+                <option value="in_progress">
+                    In Progress
+                </option>
+
+                <option value="ready">
+                    Ready
+                </option>
+
+                <option value="scheduled">
+                    Scheduled
+                </option>
+
+                <option value="delayed">
+                    Delayed
+                </option>
+
+                <option value="posted">
+                    Posted
+                </option>
+
+                <option value="cancelled">
+                    Cancelled
+                </option>
+            </select>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-upcoming-series">
+                Series Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-upcoming-series"
+                name="series_name"
+                autocomplete="off"
+            >
+
+            <p class="small-note">
+                Optional. This is the displayed series name for the queue entry.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-upcoming-notes">
+                Notes
+            </label>
+
+            <textarea
+                id="admin-upcoming-notes"
+                name="notes"
+                rows="4"
+            ></textarea>
+
+            <p class="small-note">
+                Optional extra information shown with the upcoming entry.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-upcoming-sort-order">
+                Sort Order
+            </label>
+
+            <input
+                type="number"
+                id="admin-upcoming-sort-order"
+                name="sort_order"
+                min="0"
+                step="1"
+                value="0"
+            >
+
+            <p class="small-note">
+                Lower numbers appear first when other ordering rules are equal.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label>
+                <input
+                    type="checkbox"
+                    name="public_visible"
+                    data-admin-upcoming-visible
+                >
+                Publicly Visible
+            </label>
+
+            <p class="small-note">
+                Leave unchecked to keep this entry private while preparing it.
+            </p>
+        </div>
+
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-admin-upcoming-submit
+            disabled
+        >
+            Save Upcoming Bot
+        </button>
+
+
+        <p
+            class="admin-form-status"
+            data-admin-upcoming-status-message
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
+
+            <!-- =====================================
+     MANAGE UPCOMING BOTS
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+            <p class="panel-label">Posting Queue</p>
+            <h2>Manage Upcoming Bots</h2>
+        </div>
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-upcoming-refresh
+            disabled
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        Review upcoming entries, publication visibility,
+        scheduling status, and queue order.
+    </p>
+
+
+    <p
+        class="admin-form-status"
+        data-admin-upcoming-manager-status
+        aria-live="polite"
+    >
+        Upcoming Bot management is loading...
+    </p>
+
+
+    <div
+        class="admin-management-grid"
+        data-admin-upcoming-list
+    ></div>
+
+</section>
+
+            <!-- =====================================
+     EDIT UPCOMING BOT
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-edit-upcoming-panel
+    hidden
+>
+
+    <div class="admin-dashboard-heading">
+        <div>
+            <p class="panel-label">Posting Queue</p>
+            <h2>Edit Upcoming Bot</h2>
+        </div>
+    </div>
+
+
+    <p
+        class="small-note"
+        data-admin-edit-upcoming-heading
+    >
+        Edit the selected upcoming entry.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-edit-upcoming-form
+    >
+
+        <div class="form-field">
+            <label for="admin-edit-upcoming-name">
+                Bot Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-upcoming-name"
+                name="bot_name"
+                autocomplete="off"
+                required
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-upcoming-type">
+                Bot Type
+            </label>
+
+            <select
+                id="admin-edit-upcoming-type"
+                name="bot_type"
+            >
+                <option value="">
+                    Not specified
+                </option>
+
+                <option value="original">
+                    Original
+                </option>
+
+                <option value="alt">
+                    Alt
+                </option>
+
+                <option value="commission">
+                    Commission
+                </option>
+
+                <option value="media_inspired">
+                    Media Inspired
+                </option>
+
+                <option value="remaster">
+                    Remaster
+                </option>
+            </select>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-upcoming-date">
+                Expected Post Date
+            </label>
+
+            <input
+                type="date"
+                id="admin-edit-upcoming-date"
+                name="expected_post_date"
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-upcoming-status">
+                Status
+            </label>
+
+            <select
+                id="admin-edit-upcoming-status"
+                name="status"
+                required
+            >
+                <option value="planned">
+                    Planned
+                </option>
+
+                <option value="writing">
+                    Writing
+                </option>
+
+                <option value="in_progress">
+                    In Progress
+                </option>
+
+                <option value="ready">
+                    Ready
+                </option>
+
+                <option value="scheduled">
+                    Scheduled
+                </option>
+
+                <option value="delayed">
+                    Delayed
+                </option>
+
+                <option value="posted">
+                    Posted
+                </option>
+
+                <option value="cancelled">
+                    Cancelled
+                </option>
+            </select>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-upcoming-series">
+                Series Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-upcoming-series"
+                name="series_name"
+                autocomplete="off"
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-upcoming-notes">
+                Notes
+            </label>
+
+            <textarea
+                id="admin-edit-upcoming-notes"
+                name="notes"
+                rows="4"
+            ></textarea>
+        </div>
+
+
+        <div class="form-field">
+            <label for="admin-edit-upcoming-sort-order">
+                Sort Order
+            </label>
+
+            <input
+                type="number"
+                id="admin-edit-upcoming-sort-order"
+                name="sort_order"
+                min="0"
+                step="1"
+                value="0"
+            >
+        </div>
+
+
+        <div class="form-field">
+            <label>
+                <input
+                    type="checkbox"
+                    name="public_visible"
+                >
+                Publicly Visible
+            </label>
+        </div>
+
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-edit-upcoming-submit
+            >
+                Save Changes
+            </button>
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-edit-upcoming-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <p
+            class="admin-form-status"
+            data-admin-edit-upcoming-status-message
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
+            
             <!-- =====================================
      EDIT SERIES
      ===================================== -->

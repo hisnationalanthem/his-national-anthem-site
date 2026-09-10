@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
     "[data-masterlist-filter]"
   );
 
+  const seriesSelect = document.querySelector(
+    "[data-masterlist-series-filter]"
+  );
+
   console.log("masterlist.js loaded.");
 
   if (!statusElement || !gridElement) {
@@ -26,8 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+
+  /* ==========================================================
+     STATE
+     ========================================================== */
+
   let allBots = [];
+  let allSeries = [];
+  let botSeriesRelationships = [];
+
   let activeFilter = "all";
+  let activeSeries = "all";
 
 
   /* ==========================================================
@@ -71,6 +84,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
+  function getActiveSeriesName() {
+    if (activeSeries === "all") {
+      return "All Series";
+    }
+
+    const series = allSeries.find(
+      (item) => item.id === activeSeries
+    );
+
+    return series?.name || "Selected Series";
+  }
+
+
   /* ==========================================================
      CARD ELEMENTS
      ========================================================== */
@@ -105,14 +131,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    /* CARD BODY */
+    /* BODY */
 
     const body = document.createElement("div");
 
     body.className = "masterlist-live-body";
 
 
-    /* BOT NAME */
+    /* NAME */
 
     const title = document.createElement("h3");
 
@@ -122,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     body.append(title);
 
 
-    /* POV + TYPE */
+    /* META */
 
     const meta = document.createElement("div");
 
@@ -186,6 +212,68 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ==========================================================
+     SERIES DROPDOWN
+     ========================================================== */
+
+  function populateSeriesSelect() {
+    if (!seriesSelect) {
+      return;
+    }
+
+    seriesSelect.replaceChildren();
+
+
+    /* ALL SERIES OPTION */
+
+    const allOption = document.createElement("option");
+
+    allOption.value = "all";
+    allOption.textContent = "All Series";
+
+    seriesSelect.append(allOption);
+
+
+    /* PUBLISHED SERIES */
+
+    allSeries.forEach((series) => {
+      const option = document.createElement("option");
+
+      option.value = series.id;
+      option.textContent = series.name;
+
+      seriesSelect.append(option);
+    });
+
+
+    /*
+     * Disable only when there are no published series.
+     */
+    seriesSelect.disabled =
+      allSeries.length === 0;
+
+    seriesSelect.value = "all";
+    activeSeries = "all";
+  }
+
+
+  /* ==========================================================
+     SERIES RELATIONSHIP CHECK
+     ========================================================== */
+
+  function botBelongsToActiveSeries(botId) {
+    if (activeSeries === "all") {
+      return true;
+    }
+
+    return botSeriesRelationships.some(
+      (relationship) =>
+        relationship.bot_id === botId &&
+        relationship.series_id === activeSeries
+    );
+  }
+
+
+  /* ==========================================================
      FILTERING
      ========================================================== */
 
@@ -194,26 +282,35 @@ document.addEventListener("DOMContentLoaded", () => {
       searchInput?.value.trim().toLowerCase() || "";
 
     return allBots.filter((bot) => {
-      /*
-       * SEARCH MATCH
-       */
       const botName =
         String(bot.name || "").toLowerCase();
+
+
+      /* SEARCH */
 
       const matchesSearch =
         !searchTerm ||
         botName.includes(searchTerm);
 
 
-      /*
-       * TYPE FILTER MATCH
-       */
-      const matchesFilter =
+      /* BOT TYPE */
+
+      const matchesType =
         activeFilter === "all" ||
         bot.bot_type === activeFilter;
 
 
-      return matchesSearch && matchesFilter;
+      /* SERIES */
+
+      const matchesSeries =
+        botBelongsToActiveSeries(bot.id);
+
+
+      return (
+        matchesSearch &&
+        matchesType &&
+        matchesSeries
+      );
     });
   }
 
@@ -226,8 +323,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchTerm =
       searchInput?.value.trim() || "";
 
+    const seriesName =
+      getActiveSeriesName();
+
+
     /*
-     * No published bots exist at all.
+     * No bots exist.
      */
     if (allBots.length === 0) {
       return "There are no published bots in the masterlist yet.";
@@ -235,20 +336,53 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /*
-     * Search/filter combination found nothing.
+     * No matches.
      */
     if (bots.length === 0) {
+      if (
+        searchTerm &&
+        activeFilter !== "all" &&
+        activeSeries !== "all"
+      ) {
+        return `No ${getFilterLabel(activeFilter)} bots in ${seriesName} match "${searchTerm}".`;
+      }
+
+
+      if (
+        searchTerm &&
+        activeSeries !== "all"
+      ) {
+        return `No bots in ${seriesName} match "${searchTerm}".`;
+      }
+
+
+      if (
+        activeFilter !== "all" &&
+        activeSeries !== "all"
+      ) {
+        return `There are no ${getFilterLabel(activeFilter)} bots in ${seriesName}.`;
+      }
+
+
       if (searchTerm && activeFilter !== "all") {
         return `No ${getFilterLabel(activeFilter)} bots match "${searchTerm}".`;
       }
+
 
       if (searchTerm) {
         return `No bots match "${searchTerm}".`;
       }
 
+
+      if (activeSeries !== "all") {
+        return `There are no published bots in ${seriesName}.`;
+      }
+
+
       if (activeFilter !== "all") {
         return `There are no ${getFilterLabel(activeFilter)} bots currently listed.`;
       }
+
 
       return "No bots match the current filters.";
     }
@@ -265,7 +399,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     /*
-     * Type filter active.
+     * Series active.
+     */
+    if (activeSeries !== "all") {
+      return bots.length === 1
+        ? `1 bot in ${seriesName}.`
+        : `${bots.length} bots in ${seriesName}.`;
+    }
+
+
+    /*
+     * Bot type active.
      */
     if (activeFilter !== "all") {
       return bots.length === 1
@@ -305,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ==========================================================
-     ACTIVE FILTER BUTTON
+     BOT TYPE FILTER
      ========================================================== */
 
   function setActiveFilter(newFilter) {
@@ -313,7 +457,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     filterButtons.forEach((button) => {
       const isActive =
-        button.dataset.masterlistFilter === activeFilter;
+        button.dataset.masterlistFilter ===
+        activeFilter;
 
       button.classList.toggle(
         "active",
@@ -331,7 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /* ==========================================================
-     LOAD FROM SUPABASE
+     LOAD DATA
      ========================================================== */
 
   async function loadMasterlist() {
@@ -348,10 +493,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       console.log(
-        "Loading published bots from Supabase..."
+        "Loading masterlist data from Supabase..."
       );
 
-      const { data, error } = await window.supabaseClient
+
+      /* ------------------------------------------------------
+         1. PUBLISHED BOTS
+         ------------------------------------------------------ */
+
+      const {
+        data: botData,
+        error: botError
+      } = await window.supabaseClient
         .from("bots")
         .select(
           "id, name, slug, description, pov, bot_type, image_url, janitor_url, published_at"
@@ -361,32 +514,112 @@ document.addEventListener("DOMContentLoaded", () => {
           ascending: false
         });
 
-      if (error) {
-        console.error(
-          "Supabase masterlist error:",
-          error
-        );
 
-        statusElement.textContent =
-          "Bot masterlist is temporarily unavailable.";
-
-        return;
+      if (botError) {
+        throw botError;
       }
 
+
+      /* ------------------------------------------------------
+         2. PUBLISHED SERIES
+         ------------------------------------------------------ */
+
+      const {
+        data: seriesData,
+        error: seriesError
+      } = await window.supabaseClient
+        .from("series")
+        .select(
+          "id, name, slug, sort_order"
+        )
+        .eq("published", true)
+        .order("sort_order", {
+          ascending: true
+        })
+        .order("name", {
+          ascending: true
+        });
+
+
+      if (seriesError) {
+        throw seriesError;
+      }
+
+
+      /* ------------------------------------------------------
+         3. PUBLIC BOT/SERIES RELATIONSHIPS
+         ------------------------------------------------------ */
+
+      const {
+        data: relationshipData,
+        error: relationshipError
+      } = await window.supabaseClient
+        .from("bot_series")
+        .select(
+          "bot_id, series_id, sort_order"
+        )
+        .order("sort_order", {
+          ascending: true
+        });
+
+
+      if (relationshipError) {
+        throw relationshipError;
+      }
+
+
+      /* ------------------------------------------------------
+         SAVE DATA
+         ------------------------------------------------------ */
+
+      allBots =
+        Array.isArray(botData)
+          ? botData
+          : [];
+
+      allSeries =
+        Array.isArray(seriesData)
+          ? seriesData
+          : [];
+
+      botSeriesRelationships =
+        Array.isArray(relationshipData)
+          ? relationshipData
+          : [];
+
+
       console.log(
-        "Published bots received:",
-        data
+        "Published bots:",
+        allBots
       );
 
-      allBots = Array.isArray(data)
-        ? data
-        : [];
+      console.log(
+        "Published series:",
+        allSeries
+      );
+
+      console.log(
+        "Public bot-series relationships:",
+        botSeriesRelationships
+      );
+
+
+      /* ------------------------------------------------------
+         BUILD SERIES DROPDOWN
+         ------------------------------------------------------ */
+
+      populateSeriesSelect();
+
+
+      /* ------------------------------------------------------
+         RENDER BOTS
+         ------------------------------------------------------ */
 
       renderMasterlist();
 
     } catch (error) {
       console.error(
-        "Unexpected error while loading masterlist:",
+        "Unable to load masterlist data:",
         error
       );
 
@@ -416,6 +649,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+
+  if (seriesSelect) {
+    seriesSelect.addEventListener(
+      "change",
+      () => {
+        activeSeries =
+          seriesSelect.value;
+
+        renderMasterlist();
+      }
+    );
+  }
+
+
+  /* ==========================================================
+     START
+     ========================================================== */
 
   loadMasterlist();
 });

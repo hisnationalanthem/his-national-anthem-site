@@ -178,7 +178,270 @@
                 </p>
 
             </div>
+            
+<!-- =====================================
+     ADD BOT
+     ===================================== -->
 
+<section class="journal-panel admin-tool-panel">
+
+    <p class="panel-label">
+        Masterlist
+    </p>
+
+    <h2>Add Bot</h2>
+
+    <p>
+        Create a new bot entry for the website masterlist.
+        New entries can be saved privately as drafts or
+        published immediately.
+    </p>
+
+
+    <form
+        class="admin-bot-form"
+        data-admin-bot-form
+    >
+
+        <!-- BOT NAME -->
+
+        <div class="form-field">
+
+            <label for="admin-bot-name">
+                Bot Name
+            </label>
+
+            <input
+                type="text"
+                id="admin-bot-name"
+                name="name"
+                autocomplete="off"
+                required
+            >
+
+        </div>
+
+
+        <!-- SLUG -->
+
+        <div class="form-field">
+
+            <label for="admin-bot-slug">
+                Slug
+            </label>
+
+            <input
+                type="text"
+                id="admin-bot-slug"
+                name="slug"
+                autocomplete="off"
+                pattern="[a-z0-9]+(-[a-z0-9]+)*"
+                placeholder="clay-crowder"
+                required
+            >
+
+            <p class="small-note">
+                Lowercase letters, numbers, and hyphens only.
+                This must be unique for every bot.
+            </p>
+
+        </div>
+
+
+        <!-- POV -->
+
+        <div class="form-field">
+
+            <label for="admin-bot-pov">
+                POV
+            </label>
+
+            <select
+                id="admin-bot-pov"
+                name="pov"
+            >
+
+                <option value="">
+                    Not specified
+                </option>
+
+                <option value="anypov">
+                    AnyPOV
+                </option>
+
+                <option value="fempov">
+                    FemPOV
+                </option>
+
+                <option value="malepov">
+                    MalePOV
+                </option>
+
+                <option value="mlm">
+                    MLM
+                </option>
+
+                <option value="wlw">
+                    WLW
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- BOT TYPE -->
+
+        <div class="form-field">
+
+            <label for="admin-bot-type">
+                Bot Type
+            </label>
+
+            <select
+                id="admin-bot-type"
+                name="bot_type"
+            >
+
+                <option value="">
+                    Not specified
+                </option>
+
+                <option value="original">
+                    Original
+                </option>
+
+                <option value="alt">
+                    Alt
+                </option>
+
+                <option value="commission">
+                    Commission
+                </option>
+
+                <option value="media_inspired">
+                    Media Inspired
+                </option>
+
+                <option value="remaster">
+                    Remaster
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- DESCRIPTION -->
+
+        <div class="form-field">
+
+            <label for="admin-bot-description">
+                Description
+            </label>
+
+            <textarea
+                id="admin-bot-description"
+                name="description"
+                rows="5"
+                placeholder="Short description shown on the masterlist."
+            ></textarea>
+
+        </div>
+
+
+        <!-- IMAGE URL -->
+
+        <div class="form-field">
+
+            <label for="admin-bot-image-url">
+                Image URL
+            </label>
+
+            <input
+                type="url"
+                id="admin-bot-image-url"
+                name="image_url"
+                placeholder="https://..."
+            >
+
+            <p class="small-note">
+                Optional. This will be used as the bot's
+                masterlist artwork.
+            </p>
+
+        </div>
+
+
+        <!-- JANITORAI URL -->
+
+        <div class="form-field">
+
+            <label for="admin-bot-janitor-url">
+                JanitorAI URL
+            </label>
+
+            <input
+                type="url"
+                id="admin-bot-janitor-url"
+                name="janitor_url"
+                placeholder="https://janitorai.com/..."
+            >
+
+            <p class="small-note">
+                Required before a bot can be published.
+                Draft bots can leave this blank.
+            </p>
+
+        </div>
+
+
+        <!-- PUBLISH -->
+
+        <div class="form-field admin-checkbox-field">
+
+            <label for="admin-bot-published">
+
+                <input
+                    type="checkbox"
+                    id="admin-bot-published"
+                    name="published"
+                >
+
+                Publish immediately
+
+            </label>
+
+            <p class="small-note">
+                Leave unchecked to save this bot privately
+                as a draft.
+            </p>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-admin-bot-submit
+        >
+            Save Bot
+        </button>
+
+
+        <!-- STATUS -->
+
+        <p
+            class="admin-form-status"
+            data-admin-bot-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
 
             <div class="admin-management-grid">
 

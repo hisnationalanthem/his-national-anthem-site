@@ -221,6 +221,24 @@ function getAdminUpcomingStatusLabel(value) {
 
   return labels[value] || value || "Not specified";
 }
+
+  /* ==========================================================
+   ANNOUNCEMENT CATEGORY LABEL
+   ========================================================== */
+
+function getAdminAnnouncementCategoryLabel(value) {
+  const labels = {
+    general: "General",
+    website: "Website",
+    commissions: "Commissions",
+    membership: "Membership",
+    requests: "Requests",
+    masterlist: "Masterlist",
+    schedule: "Schedule"
+  };
+
+  return labels[value] || value || "General";
+}
   
   /* ==========================================================
      SLUG HELPERS
@@ -318,6 +336,7 @@ void loadAdminBots();
 void loadAdminSeries();
 void loadAdminAssignments();
 void loadAdminUpcomingBots();
+void loadAdminAnnouncements();
 
       return true;
     } catch (error) {
@@ -753,6 +772,58 @@ const editUpcomingStatusMessage = document.querySelector(
   "[data-admin-edit-upcoming-status-message]"
 );
 
+/* ==========================================================
+   ANNOUNCEMENT ELEMENTS
+   ========================================================== */
+
+const announcementForm = document.querySelector(
+  "[data-admin-announcement-form]"
+);
+
+const announcementSubmitButton = document.querySelector(
+  "[data-admin-announcement-submit]"
+);
+
+const announcementStatus = document.querySelector(
+  "[data-admin-announcement-status]"
+);
+
+const announcementRefreshButton = document.querySelector(
+  "[data-admin-announcements-refresh]"
+);
+
+const announcementManagerStatus = document.querySelector(
+  "[data-admin-announcement-manager-status]"
+);
+
+const announcementList = document.querySelector(
+  "[data-admin-announcement-list]"
+);
+
+const editAnnouncementPanel = document.querySelector(
+  "[data-admin-edit-announcement-panel]"
+);
+
+const editAnnouncementForm = document.querySelector(
+  "[data-admin-edit-announcement-form]"
+);
+
+const editAnnouncementHeading = document.querySelector(
+  "[data-admin-edit-announcement-heading]"
+);
+
+const editAnnouncementSubmitButton = document.querySelector(
+  "[data-admin-edit-announcement-submit]"
+);
+
+const editAnnouncementCancelButton = document.querySelector(
+  "[data-admin-edit-announcement-cancel]"
+);
+
+const editAnnouncementStatus = document.querySelector(
+  "[data-admin-edit-announcement-status]"
+);
+  
   /* ==========================================================
      ASSIGNMENT FORM STATE
      ========================================================== */
@@ -1530,6 +1601,135 @@ deleteButton.addEventListener(
     );
   }
 );
+
+  /* ==========================================================
+   ADMIN ANNOUNCEMENT CARD
+   ========================================================== */
+
+function createAdminAnnouncementCard(announcement) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-announcement-manager-card";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    announcement.title;
+
+
+  const publicationStatus =
+    document.createElement("span");
+
+  publicationStatus.className =
+    announcement.published
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  publicationStatus.textContent =
+    announcement.published
+      ? "Published"
+      : "Draft";
+
+
+  header.append(
+    title,
+    publicationStatus
+  );
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const category =
+    document.createElement("span");
+
+  category.textContent =
+    getAdminAnnouncementCategoryLabel(
+      announcement.category
+    );
+
+
+  const importance =
+    document.createElement("span");
+
+  importance.textContent =
+    announcement.important
+      ? "Important"
+      : "Standard";
+
+
+  meta.append(
+    category,
+    importance
+  );
+
+
+  /* CONTENT */
+
+  const content =
+    document.createElement("p");
+
+  content.className =
+    "admin-bot-manager-description";
+
+  content.textContent =
+    announcement.content;
+
+
+  /* PUBLICATION DATE */
+
+  const date =
+    document.createElement("p");
+
+  date.className =
+    "admin-bot-manager-link-status";
+
+  if (
+    announcement.published &&
+    announcement.published_at
+  ) {
+    date.textContent =
+      `Published: ${new Date(
+        announcement.published_at
+      ).toLocaleString()}`;
+  } else {
+    date.textContent =
+      "Not published";
+  }
+
+
+  article.append(
+    header,
+    meta,
+    content,
+    date
+  );
+
+
+  return article;
+}
 
 
 actions.append(
@@ -2328,6 +2528,135 @@ async function loadAdminUpcomingBots() {
 }
 
   /* ==========================================================
+   LOAD ANNOUNCEMENTS
+   ========================================================== */
+
+async function loadAdminAnnouncements() {
+  if (
+    !announcementList ||
+    !announcementManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    announcementList.replaceChildren();
+
+    announcementManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+    if (announcementRefreshButton) {
+      announcementRefreshButton.disabled = true;
+    }
+
+    return;
+  }
+
+
+  announcementManagerStatus.textContent =
+    "Loading announcements...";
+
+  announcementList.replaceChildren();
+
+
+  if (announcementRefreshButton) {
+    announcementRefreshButton.disabled = true;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("announcements")
+      .select(`
+        id,
+        title,
+        content,
+        category,
+        important,
+        published,
+        published_at,
+        created_at,
+        updated_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    const announcements =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin announcements received:",
+      announcements
+    );
+
+
+    announcementList.replaceChildren();
+
+
+    if (announcements.length === 0) {
+      announcementManagerStatus.textContent =
+        "There are no announcement entries yet.";
+
+      return;
+    }
+
+
+    announcements.forEach(
+      (announcement) => {
+        announcementList.append(
+          createAdminAnnouncementCard(
+            announcement
+          )
+        );
+      }
+    );
+
+
+    announcementManagerStatus.textContent =
+      announcements.length === 1
+        ? "1 announcement entry."
+        : `${announcements.length} announcement entries.`;
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin announcements:",
+      error
+    );
+
+    announcementList.replaceChildren();
+
+    announcementManagerStatus.textContent =
+      "Unable to load announcement entries.";
+
+  } finally {
+    if (announcementRefreshButton) {
+      announcementRefreshButton.disabled = false;
+    }
+  }
+}
+
+  /* ==========================================================
      ADD BOT
      ========================================================== */
 
@@ -3104,6 +3433,19 @@ if (upcomingRefreshButton) {
     "click",
     async () => {
       await loadAdminUpcomingBots();
+    }
+  );
+}
+
+  /* ==========================================================
+   ANNOUNCEMENT MANAGER REFRESH
+   ========================================================== */
+
+if (announcementRefreshButton) {
+  announcementRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminAnnouncements();
     }
   );
 }

@@ -1740,7 +1740,27 @@ function openEditAnnouncement(announcement) {
   });
 }
   
-  /* ==========================================================
+
+actions.append(
+  editButton,
+  deleteButton
+);
+
+
+article.append(
+  header,
+  date,
+  meta,
+  series,
+  notes,
+  actions
+);
+
+
+return article;
+}
+
+    /* ==========================================================
    ADMIN ANNOUNCEMENT CARD
    ========================================================== */
 
@@ -1900,26 +1920,6 @@ article.append(
   meta,
   content,
   date,
-  actions
-);
-
-
-return article;
-}
-
-
-actions.append(
-  editButton,
-  deleteButton
-);
-
-
-article.append(
-  header,
-  date,
-  meta,
-  series,
-  notes,
   actions
 );
 

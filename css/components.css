@@ -3371,3 +3371,75 @@ a.creator-link-card:hover {
 .masterlist-live-link:focus-visible {
     text-decoration: none;
 }
+/* ============================================================
+   SERIES BOT LISTS
+   ============================================================ */
+
+.series-card-live {
+    overflow: hidden;
+}
+
+.series-card-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.series-card-body {
+    padding: 1.25rem;
+}
+
+.series-card-title {
+    margin-top: 0;
+}
+
+.series-card-description {
+    color: var(--color-text-soft);
+}
+
+.series-bot-count {
+    margin: 1.25rem 0 0.65rem;
+    color: var(--color-accent-light);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.series-bot-list {
+    border-top: 1px solid var(--color-border-soft);
+}
+
+.series-bot-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border-soft);
+}
+
+.series-bot-item:last-child {
+    border-bottom: 0;
+}
+
+.series-bot-link,
+.series-bot-name {
+    font-weight: 700;
+}
+
+.series-bot-link {
+    color: var(--color-accent-light);
+}
+
+.series-bot-meta {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+}
+
+.series-empty-message {
+    margin-bottom: 0;
+    color: var(--color-text-muted);
+    font-style: italic;
+}

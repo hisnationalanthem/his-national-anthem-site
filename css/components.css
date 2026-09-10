@@ -3480,24 +3480,30 @@ a.creator-link-card:hover {
 /* ADMIN FORMS */
 
 .admin-login-form,
-.admin-bot-form {
+.admin-bot-form,
+.admin-series-form {
     display: grid;
     gap: 1.1rem;
     margin-top: 1.5rem;
+}
 }
 
 .admin-login-form {
     max-width: 34rem;
 }
 
-.admin-bot-form {
+.admin-bot-form,
+.admin-series-form {
     max-width: 48rem;
 }
 
 .admin-login-form input,
 .admin-bot-form input,
 .admin-bot-form select,
-.admin-bot-form textarea {
+.admin-bot-form textarea,
+.admin-series-form input,
+.admin-series-form select,
+.admin-series-form textarea {
     width: 100%;
     box-sizing: border-box;
     padding: 0.8rem 0.9rem;
@@ -3511,7 +3517,8 @@ a.creator-link-card:hover {
     font: inherit;
 }
 
-.admin-bot-form textarea {
+.admin-bot-form textarea,
+.admin-series-form textarea {
     resize: vertical;
     min-height: 8rem;
 }
@@ -3519,7 +3526,10 @@ a.creator-link-card:hover {
 .admin-login-form input:focus,
 .admin-bot-form input:focus,
 .admin-bot-form select:focus,
-.admin-bot-form textarea:focus {
+.admin-bot-form textarea:focus,
+.admin-series-form input:focus,
+.admin-series-form select:focus,
+.admin-series-form textarea:focus {
     outline: 1px solid var(--color-accent-light);
     border-color: var(--color-accent-light);
 }

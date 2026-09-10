@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Private website administration."
+    >
+
+    <title>Admin | his_national_anthem</title>
+
+    <!-- Global website styles -->
+    <link rel="stylesheet" href="css/global.css">
+
+    <!-- Reusable components -->
+    <link rel="stylesheet" href="css/components.css">
+
+    <!-- Mobile and responsive styles -->
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+
+<body>
+
+    <div id="site-header"></div>
+
+
+    <main>
+
+        <!-- =====================================
+             PAGE INTRO
+             ===================================== -->
+
+        <section class="page-intro">
+
+            <p class="page-kicker">
+                Private Access
+            </p>
+
+            <h1 class="page-title">
+                Admin Dashboard
+            </h1>
+
+            <p class="page-lede">
+                Manage website content and submissions.
+            </p>
+
+        </section>
+
+
+        <!-- =====================================
+             LOGIN
+             ===================================== -->
+
+        <section
+            class="journal-panel admin-login-panel"
+            data-admin-login
+        >
+
+            <p class="panel-label">
+                Authentication
+            </p>
+
+            <h2>Admin Sign In</h2>
+
+            <p>
+                Sign in with the Supabase account authorized
+                to manage this website.
+            </p>
+
+
+            <form
+                class="admin-login-form"
+                data-admin-login-form
+            >
+
+                <div class="form-field">
+
+                    <label for="admin-email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="admin-email"
+                        name="email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label for="admin-password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="admin-password"
+                        name="password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="primary-button"
+                    data-admin-login-button
+                >
+                    Sign In
+                </button>
+
+
+                <p
+                    class="admin-auth-status"
+                    data-admin-auth-status
+                    aria-live="polite"
+                ></p>
+
+            </form>
+
+        </section>
+
+
+        <!-- =====================================
+             ADMIN-ONLY AREA
+             ===================================== -->
+
+        <section
+            class="admin-dashboard"
+            data-admin-dashboard
+            hidden
+        >
+
+            <div class="journal-panel">
+
+                <div class="admin-dashboard-heading">
+
+                    <div>
+
+                        <p class="panel-label">
+                            Authorized
+                        </p>
+
+                        <h2>
+                            Website Management
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="secondary-button"
+                        data-admin-logout
+                    >
+                        Sign Out
+                    </button>
+
+                </div>
+
+
+                <p>
+                    You are signed in as an authorized administrator.
+                </p>
+
+            </div>
+
+
+            <div class="admin-management-grid">
+
+                <article class="journal-panel">
+
+                    <p class="panel-label">
+                        Archive
+                    </p>
+
+                    <h3>Bots</h3>
+
+                    <p>
+                        Add, edit, publish, and unpublish
+                        masterlist bot entries.
+                    </p>
+
+                </article>
+
+
+                <article class="journal-panel">
+
+                    <p class="panel-label">
+                        Collections
+                    </p>
+
+                    <h3>Series</h3>
+
+                    <p>
+                        Create series and organize bots
+                        into collections.
+                    </p>
+
+                </article>
+
+
+                <article class="journal-panel">
+
+                    <p class="panel-label">
+                        Schedule
+                    </p>
+
+                    <h3>Upcoming Bots</h3>
+
+                    <p>
+                        Manage the public upcoming queue
+                        and private planning information.
+                    </p>
+
+                </article>
+
+
+                <article class="journal-panel">
+
+                    <p class="panel-label">
+                        Notices
+                    </p>
+
+                    <h3>Announcements</h3>
+
+                    <p>
+                        Publish website updates and
+                        featured notices.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <div id="site-footer"></div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/config.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/site.js"></script>
+    <script src="js/admin.js"></script>
+
+</body>
+
+</html>

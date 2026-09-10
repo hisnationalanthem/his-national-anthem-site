@@ -34,13 +34,278 @@
 
     <main>
 
-        <section>
-            <h2>Convert Commission Prices</h2>
+       <!-- =====================================
+     PAGE INTRO
+     ===================================== -->
 
-            <p>
-                The live currency converter will be added here.
+<section class="page-intro">
+
+    <p class="page-kicker">
+        Price Helper
+    </p>
+
+    <h1 class="page-title">
+        Currency Converter
+    </h1>
+
+    <p class="page-lede">
+        Get an estimated conversion of commission
+        and membership prices into another currency.
+    </p>
+
+</section>
+
+
+<!-- =====================================
+     CONVERTER
+     ===================================== -->
+
+<section class="currency-layout">
+
+    <div class="currency-converter">
+
+        <div class="currency-converter-header">
+
+            <div>
+
+                <p class="panel-label">
+                    Converter
+                </p>
+
+                <h2>Convert a Price</h2>
+
+            </div>
+
+
+            <span class="request-status">
+                Live rates coming soon
+            </span>
+
+        </div>
+
+
+        <!-- Amount -->
+        <div class="currency-field">
+
+            <label for="currency-amount">
+                Amount
+            </label>
+
+            <div class="currency-input-wrapper">
+
+                <span class="currency-symbol">
+                    $
+                </span>
+
+                <input
+                    type="number"
+                    id="currency-amount"
+                    value="15"
+                    min="0"
+                    step="0.01"
+                    disabled
+                >
+
+            </div>
+
+        </div>
+
+
+        <!-- Currency selectors -->
+        <div class="currency-selector-row">
+
+            <div class="currency-field">
+
+                <label for="currency-from">
+                    From
+                </label>
+
+                <select
+                    id="currency-from"
+                    disabled
+                >
+                    <option selected>
+                        CAD — Canadian Dollar
+                    </option>
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="currency-swap-button"
+                aria-label="Swap currencies"
+                disabled
+            >
+                ⇄
+            </button>
+
+
+            <div class="currency-field">
+
+                <label for="currency-to">
+                    To
+                </label>
+
+                <select
+                    id="currency-to"
+                    disabled
+                >
+                    <option selected>
+                        USD — US Dollar
+                    </option>
+
+                    <option>
+                        GBP — British Pound
+                    </option>
+
+                    <option>
+                        EUR — Euro
+                    </option>
+
+                    <option>
+                        AUD — Australian Dollar
+                    </option>
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <!-- Result -->
+        <div class="currency-result">
+
+            <p class="currency-result-label">
+                Estimated Conversion
             </p>
-        </section>
+
+            <p class="currency-result-amount">
+                —
+            </p>
+
+            <p class="currency-result-rate">
+                Live exchange rate unavailable
+            </p>
+
+        </div>
+
+
+        <p class="small-note">
+            The converter is intentionally inactive until
+            live exchange-rate data is connected.
+        </p>
+
+    </div>
+
+
+    <!-- =================================
+         SIDE INFORMATION
+         ================================= -->
+
+    <aside class="currency-sidebar">
+
+        <div class="currency-info-card">
+
+            <p class="panel-label">
+                Quick Reference
+            </p>
+
+            <h2>Common Prices</h2>
+
+
+            <div class="currency-price-list">
+
+                <div class="currency-price-item">
+
+                    <span>
+                        $10
+                    </span>
+
+                    <p>
+                        Alt Bot, Bot Remaster,
+                        or monthly membership
+                    </p>
+
+                </div>
+
+
+                <div class="currency-price-item">
+
+                    <span>
+                        $15
+                    </span>
+
+                    <p>
+                        New Bot, Graveyard Resurrection,
+                        or OC creation
+                    </p>
+
+                </div>
+
+
+                <div class="currency-price-item">
+
+                    <span>
+                        $20
+                    </span>
+
+                    <p>
+                        Media Inspired Bot
+                    </p>
+
+                </div>
+
+
+                <div class="currency-price-item">
+
+                    <span>
+                        $1
+                    </span>
+
+                    <p>
+                        Each additional commission image
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+</section>
+
+
+<hr class="section-divider">
+
+
+<!-- =====================================
+     RATE INFORMATION
+     ===================================== -->
+
+<section class="journal-panel">
+
+    <p class="panel-label">
+        Exchange Rates
+    </p>
+
+    <h2>About Conversions</h2>
+
+    <p>
+        Converted prices shown here will be estimates
+        based on the most recently available exchange rate.
+    </p>
+
+    <p>
+        The final amount charged by a payment provider
+        may differ slightly because of exchange rates,
+        conversion fees, or other payment-provider charges.
+    </p>
+
+</section>
 
     </main>
 

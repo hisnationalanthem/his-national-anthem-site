@@ -561,3 +561,33 @@
     }
 
 }
+/* ========================================
+   FOLLOWER MILESTONE
+   ======================================== */
+
+@media (max-width: 650px) {
+
+    .follower-panel {
+        padding:
+            26px;
+    }
+
+
+    .follower-panel-content {
+        flex-direction:
+            column;
+
+        gap:
+            24px;
+    }
+
+
+    .follower-count-display {
+        min-width:
+            0;
+
+        text-align:
+            left;
+    }
+
+}

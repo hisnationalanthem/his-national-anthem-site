@@ -6783,160 +6783,23 @@ if (freeRequestStatusFilter) {
   );
 }
 
-  /* ==========================================================
-   SAVE REVIEWED COMMISSION
-   ========================================================== */
+ const {
+  data,
+  error
+} = await window.supabaseClient
+  .rpc(
+    "admin_update_commission",
+    {
+      p_commission_id:
+        reviewingCommissionId,
 
-if (reviewCommissionSaveButton) {
-  reviewCommissionSaveButton.addEventListener(
-    "click",
-    async () => {
+      p_status:
+        status,
 
-      /* AUTHORIZATION */
-
-      if (
-        !window.supabaseClient ||
-        !adminAuthorized
-      ) {
-        if (reviewCommissionStatusMessage) {
-          reviewCommissionStatusMessage.textContent =
-            "Administrator authorization is required.";
-        }
-
-        return;
-      }
-
-
-      /* SELECTED COMMISSION */
-
-      if (!reviewingCommissionId) {
-        if (reviewCommissionStatusMessage) {
-          reviewCommissionStatusMessage.textContent =
-            "No commission request is currently selected.";
-        }
-
-        return;
-      }
-
-
-      /* VALUES */
-
-      const status =
-        String(
-          reviewCommissionStatus?.value ||
-          ""
-        ).trim();
-
-
-      const paymentStatus =
-        String(
-          reviewCommissionPayment?.value ||
-          ""
-        ).trim();
-
-
-      /* VALIDATE STATUS */
-
-      const allowedStatuses = [
-        "submitted",
-        "reviewing",
-        "accepted",
-        "declined",
-        "in_progress",
-        "completed",
-        "cancelled"
-      ];
-
-
-      if (
-        !allowedStatuses.includes(
-          status
-        )
-      ) {
-        if (reviewCommissionStatusMessage) {
-          reviewCommissionStatusMessage.textContent =
-            "Choose a valid commission status.";
-        }
-
-        return;
-      }
-
-
-      /* VALIDATE PAYMENT */
-
-      const allowedPaymentStatuses = [
-        "unpaid",
-        "pending",
-        "paid",
-        "refunded"
-      ];
-
-
-      if (
-        !allowedPaymentStatuses.includes(
-          paymentStatus
-        )
-      ) {
-        if (reviewCommissionStatusMessage) {
-          reviewCommissionStatusMessage.textContent =
-            "Choose a valid payment status.";
-        }
-
-        return;
-      }
-
-
-      /* LOADING */
-
-      setReviewCommissionLoading(
-        true
-      );
-
-
-      if (reviewCommissionStatusMessage) {
-        reviewCommissionStatusMessage.textContent =
-          "Saving commission changes...";
-      }
-
-
-      try {
-        const {
-          data,
-          error
-        } = await window.supabaseClient
-          .from("commission_requests")
-          .update({
-            status,
-            payment_status:
-              paymentStatus
-          })
-          .eq(
-            "id",
-            reviewingCommissionId
-          )
-          .select(`
-            id,
-            user_id,
-            commission_type,
-            request_title,
-            request_details,
-            submitter_name,
-            contact,
-            reference_details,
-            graveyard_entry_id,
-            graveyard_code,
-            graveyard_title,
-            private_use,
-            extra_images,
-            base_price_cad,
-            addon_price_cad,
-            total_price_cad,
-            status,
-            payment_status,
-            created_at,
-            updated_at
-          `)
-          .single();
+      p_payment_status:
+        paymentStatus
+    }
+  );
 
 
         if (error) {
@@ -6944,18 +6807,24 @@ if (reviewCommissionSaveButton) {
         }
 
 
-        if (!data) {
-          throw new Error(
-            "The updated commission could not be returned."
-          );
-        }
+        const updatedCommission =
+  Array.isArray(data)
+    ? data[0]
+    : data;
+
+
+if (!updatedCommission) {
+  throw new Error(
+    "The updated commission could not be returned."
+  );
+}
 
 
         adminCommissionRequests =
           adminCommissionRequests.map(
             (commission) =>
-              commission.id === data.id
-                ? data
+              commission.id === updatedCommission.id
+                ? updatedCommission
                 : commission
           );
 
@@ -6964,9 +6833,11 @@ if (reviewCommissionSaveButton) {
 
         renderAdminCommissions();
 
+  await loadAdminGraveyardEntries();
+
 
         openReviewCommission(
-          data
+          updatedCommission
         );
 
 

@@ -1992,6 +1992,546 @@
 
 </section>
 
+    <!-- =====================================
+     MANAGE COMMISSIONS
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+
+            <p class="panel-label">
+                Paid Requests
+            </p>
+
+            <h2>
+                Manage Commissions
+            </h2>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-commissions-refresh
+            disabled
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        Review commission requests submitted through the website,
+        including pricing, payment state, and Graveyard-linked requests.
+    </p>
+
+
+    <!-- =====================================
+         COMMISSION FILTERS
+         ===================================== -->
+
+    <div class="admin-series-form">
+
+
+        <!-- SEARCH -->
+
+        <div class="form-field">
+
+            <label for="admin-commission-search">
+                Search Commissions
+            </label>
+
+            <input
+                type="search"
+                id="admin-commission-search"
+                data-admin-commission-search
+                placeholder="Search name, contact, details, RG number..."
+                autocomplete="off"
+                disabled
+            >
+
+        </div>
+
+
+        <!-- COMMISSION TYPE -->
+
+        <div class="form-field">
+
+            <label for="admin-commission-type-filter">
+                Commission Type
+            </label>
+
+            <select
+                id="admin-commission-type-filter"
+                data-admin-commission-type-filter
+                disabled
+            >
+
+                <option value="all">
+                    All Commission Types
+                </option>
+
+                <option value="new_bot">
+                    New Bot
+                </option>
+
+                <option value="alt_bot">
+                    Alt Bot
+                </option>
+
+                <option value="graveyard_resurrection">
+                    Graveyard Resurrection
+                </option>
+
+                <option value="bot_remaster">
+                    Bot Remaster
+                </option>
+
+                <option value="media_inspired">
+                    Media Inspired Bot
+                </option>
+
+                <option value="oc_creation">
+                    Have Your OC Created
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="form-field">
+
+            <label for="admin-commission-status-filter">
+                Commission Status
+            </label>
+
+            <select
+                id="admin-commission-status-filter"
+                data-admin-commission-status-filter
+                disabled
+            >
+
+                <option value="all">
+                    All Statuses
+                </option>
+
+            </select>
+
+            <p class="small-note">
+                Status options will be loaded by the Commission Manager.
+            </p>
+
+        </div>
+
+
+        <!-- PAYMENT STATUS -->
+
+        <div class="form-field">
+
+            <label for="admin-commission-payment-filter">
+                Payment Status
+            </label>
+
+            <select
+                id="admin-commission-payment-filter"
+                data-admin-commission-payment-filter
+                disabled
+            >
+
+                <option value="all">
+                    All Payment States
+                </option>
+
+                <option value="unpaid">
+                    Unpaid
+                </option>
+
+                <option value="pending">
+                    Pending
+                </option>
+
+                <option value="paid">
+                    Paid
+                </option>
+
+                <option value="refunded">
+                    Refunded
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- MANAGER STATUS -->
+
+    <p
+        class="admin-form-status"
+        data-admin-commission-manager-status
+        aria-live="polite"
+    >
+        Commission management is loading...
+    </p>
+
+
+    <!-- COMMISSION CARDS -->
+
+    <div
+        class="admin-management-grid"
+        data-admin-commission-list
+    ></div>
+
+</section>
+
+
+<!-- =====================================
+     REVIEW COMMISSION
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-review-commission-panel
+    hidden
+>
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+
+            <p class="panel-label">
+                Paid Requests
+            </p>
+
+            <h2>
+                Review Commission
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <p
+        class="small-note"
+        data-admin-review-commission-heading
+    >
+        Review the selected commission request.
+    </p>
+
+
+    <!-- =====================================
+         COMMISSION TYPE
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-type">
+            Commission Type
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-type"
+            data-admin-review-commission-type
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         SUBMITTER
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-submitter">
+            Name / Handle
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-submitter"
+            data-admin-review-commission-submitter
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         CONTACT
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-contact">
+            Contact Information
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-contact"
+            data-admin-review-commission-contact
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         REQUEST DETAILS
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-details">
+            Commission Details
+        </label>
+
+        <textarea
+            id="admin-review-commission-details"
+            data-admin-review-commission-details
+            rows="9"
+            readonly
+        ></textarea>
+
+    </div>
+
+
+    <!-- =====================================
+         REFERENCE DETAILS
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-reference">
+            Existing Bot / Media / Reference
+        </label>
+
+        <textarea
+            id="admin-review-commission-reference"
+            data-admin-review-commission-reference
+            rows="5"
+            readonly
+        ></textarea>
+
+    </div>
+
+
+    <!-- =====================================
+         GRAVEYARD LINK
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-graveyard">
+            Request Graveyard Entry
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-graveyard"
+            data-admin-review-commission-graveyard
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         PRIVATE USE
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-private">
+            Private Use
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-private"
+            data-admin-review-commission-private
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         EXTRA IMAGES
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-images">
+            Extra Images
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-images"
+            data-admin-review-commission-images
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         BASE PRICE
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-base-price">
+            Base Price
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-base-price"
+            data-admin-review-commission-base-price
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         ADD-ON PRICE
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-addon-price">
+            Add-On Price
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-addon-price"
+            data-admin-review-commission-addon-price
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         TOTAL
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-total">
+            Total
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-total"
+            data-admin-review-commission-total
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         CURRENT COMMISSION STATUS
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-status">
+            Current Commission Status
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-status"
+            data-admin-review-commission-status
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         CURRENT PAYMENT STATUS
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-payment">
+            Current Payment Status
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-payment"
+            data-admin-review-commission-payment
+            readonly
+        >
+
+    </div>
+
+
+    <!-- =====================================
+         SUBMITTED
+         ===================================== -->
+
+    <div class="form-field">
+
+        <label for="admin-review-commission-created">
+            Submitted
+        </label>
+
+        <input
+            type="text"
+            id="admin-review-commission-created"
+            data-admin-review-commission-created
+            readonly
+        >
+
+    </div>
+
+
+    <!-- ACTIONS -->
+
+    <div class="admin-bot-manager-actions">
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-review-commission-close
+        >
+            Close
+        </button>
+
+    </div>
+
+
+    <p
+        class="admin-form-status"
+        data-admin-review-commission-status-message
+        aria-live="polite"
+    ></p>
+
+</section>
+
             <!-- =====================================
      MANAGE FREE REQUESTS
      ===================================== -->

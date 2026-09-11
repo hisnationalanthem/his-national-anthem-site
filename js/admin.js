@@ -465,6 +465,7 @@ void loadAdminFreeRequests();
         announcementForm?.reset();
         closeEditBot();
         closeEditAnnouncement();
+        closeEditFreeRequest();
         showLogin();
         closeEditUpcoming();
         setAuthStatus("Signed out.");
@@ -2261,6 +2262,101 @@ async function deleteUpcomingBot(
 }
 
   /* ==========================================================
+   FREE REQUEST REVIEW HELPERS
+   ========================================================== */
+
+function closeEditFreeRequest() {
+  editingFreeRequestId = null;
+
+  if (editFreeRequestForm) {
+    editFreeRequestForm.reset();
+  }
+
+  if (editFreeRequestStatusMessage) {
+    editFreeRequestStatusMessage.textContent = "";
+  }
+
+  if (editFreeRequestPanel) {
+    editFreeRequestPanel.hidden = true;
+  }
+}
+
+
+function openEditFreeRequest(request) {
+  if (
+    !editFreeRequestPanel ||
+    !editFreeRequestForm
+  ) {
+    console.error(
+      "Free Request review form elements are unavailable."
+    );
+
+    return;
+  }
+
+
+  editingFreeRequestId =
+    request.id;
+
+
+  if (editFreeRequestType) {
+    editFreeRequestType.value =
+      getAdminFreeRequestTypeLabel(
+        request.request_type
+      );
+  }
+
+
+  if (editFreeRequestSubmitter) {
+    editFreeRequestSubmitter.value =
+      request.submitter_name ||
+      "Anonymous";
+  }
+
+
+  if (editFreeRequestDetails) {
+    editFreeRequestDetails.value =
+      request.request_details || "";
+  }
+
+
+  const statusField =
+    editFreeRequestForm.elements.namedItem(
+      "status"
+    );
+
+
+  if (statusField) {
+    statusField.value =
+      request.status || "submitted";
+  }
+
+
+  if (editFreeRequestHeading) {
+    editFreeRequestHeading.textContent =
+      `Reviewing ${getAdminFreeRequestTypeLabel(
+        request.request_type
+      )}.`;
+  }
+
+
+  if (editFreeRequestStatusMessage) {
+    editFreeRequestStatusMessage.textContent =
+      "";
+  }
+
+
+  editFreeRequestPanel.hidden =
+    false;
+
+
+  editFreeRequestPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+  /* ==========================================================
    ADMIN FREE REQUEST CARD
    ========================================================== */
 
@@ -2360,15 +2456,53 @@ function createAdminFreeRequestCard(request) {
   }
 
 
-  article.append(
-    header,
-    submitter,
-    details,
-    date
-  );
+  /* ACTIONS */
+
+const actions =
+  document.createElement("div");
+
+actions.className =
+  "admin-bot-manager-actions";
 
 
-  return article;
+const reviewButton =
+  document.createElement("button");
+
+reviewButton.type =
+  "button";
+
+reviewButton.className =
+  "secondary-button";
+
+reviewButton.textContent =
+  "Review";
+
+
+reviewButton.addEventListener(
+  "click",
+  () => {
+    openEditFreeRequest(
+      request
+    );
+  }
+);
+
+
+actions.append(
+  reviewButton
+);
+
+
+article.append(
+  header,
+  submitter,
+  details,
+  date,
+  actions
+);
+
+
+return article;
 }
 
   /* ==========================================================
@@ -5503,6 +5637,192 @@ if (editAnnouncementForm) {
 
           editAnnouncementSubmitButton.textContent =
             "Save Changes";
+        }
+      }
+    }
+  );
+}
+
+  /* ==========================================================
+   CANCEL FREE REQUEST REVIEW
+   ========================================================== */
+
+if (editFreeRequestCancelButton) {
+  editFreeRequestCancelButton.addEventListener(
+    "click",
+    () => {
+      closeEditFreeRequest();
+    }
+  );
+}
+
+  /* ==========================================================
+   SAVE FREE REQUEST STATUS
+   ========================================================== */
+
+if (editFreeRequestForm) {
+  editFreeRequestForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTH */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (editFreeRequestStatusMessage) {
+          editFreeRequestStatusMessage.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* REQUEST SELECTED */
+
+      if (!editingFreeRequestId) {
+        if (editFreeRequestStatusMessage) {
+          editFreeRequestStatusMessage.textContent =
+            "No free request is currently selected.";
+        }
+
+        return;
+      }
+
+
+      /* READ STATUS */
+
+      const formData =
+        new FormData(
+          editFreeRequestForm
+        );
+
+
+      const status =
+        String(
+          formData.get("status") || ""
+        ).trim();
+
+
+      const allowedStatuses = [
+        "submitted",
+        "reviewing",
+        "accepted",
+        "denied",
+        "created",
+        "archived"
+      ];
+
+
+      if (
+        !allowedStatuses.includes(status)
+      ) {
+        if (editFreeRequestStatusMessage) {
+          editFreeRequestStatusMessage.textContent =
+            "Choose a valid request status.";
+        }
+
+        return;
+      }
+
+
+      /* LOADING */
+
+      if (editFreeRequestSubmitButton) {
+        editFreeRequestSubmitButton.disabled =
+          true;
+
+        editFreeRequestSubmitButton.textContent =
+          "Saving...";
+      }
+
+
+      if (editFreeRequestStatusMessage) {
+        editFreeRequestStatusMessage.textContent =
+          "Saving request status...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("free_requests")
+          .update({
+            status
+          })
+          .eq(
+            "id",
+            editingFreeRequestId
+          )
+          .select(`
+            id,
+            request_type,
+            submitter_name,
+            request_details,
+            status,
+            created_at,
+            updated_at
+          `)
+          .single();
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        console.log(
+          "Free request status updated:",
+          data
+        );
+
+
+        const requestTypeLabel =
+          getAdminFreeRequestTypeLabel(
+            data.request_type
+          );
+
+
+        closeEditFreeRequest();
+
+
+        await loadAdminFreeRequests();
+
+
+        if (freeRequestManagerStatus) {
+          freeRequestManagerStatus.textContent =
+            `${requestTypeLabel} status changed to ${getAdminFreeRequestStatusLabel(
+              data.status
+            )}.`;
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unable to update free request:",
+          error
+        );
+
+
+        if (editFreeRequestStatusMessage) {
+          editFreeRequestStatusMessage.textContent =
+            "The request status could not be updated.";
+        }
+
+
+      } finally {
+        if (editFreeRequestSubmitButton) {
+          editFreeRequestSubmitButton.disabled =
+            false;
+
+          editFreeRequestSubmitButton.textContent =
+            "Save Status";
         }
       }
     }

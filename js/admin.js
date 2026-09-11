@@ -6783,23 +6783,140 @@ if (freeRequestStatusFilter) {
   );
 }
 
- const {
-  data,
-  error
-} = await window.supabaseClient
-  .rpc(
-    "admin_update_commission",
-    {
-      p_commission_id:
-        reviewingCommissionId,
+  /* ==========================================================
+   SAVE REVIEWED COMMISSION
+   ========================================================== */
 
-      p_status:
-        status,
+if (reviewCommissionSaveButton) {
+  reviewCommissionSaveButton.addEventListener(
+    "click",
+    async () => {
 
-      p_payment_status:
-        paymentStatus
-    }
-  );
+      /* AUTHORIZATION */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* SELECTED COMMISSION */
+
+      if (!reviewingCommissionId) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "No commission request is currently selected.";
+        }
+
+        return;
+      }
+
+
+      /* VALUES */
+
+      const status =
+        String(
+          reviewCommissionStatus?.value ||
+          ""
+        ).trim();
+
+
+      const paymentStatus =
+        String(
+          reviewCommissionPayment?.value ||
+          ""
+        ).trim();
+
+
+      /* VALIDATE STATUS */
+
+      const allowedStatuses = [
+        "submitted",
+        "reviewing",
+        "accepted",
+        "declined",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ];
+
+
+      if (
+        !allowedStatuses.includes(
+          status
+        )
+      ) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "Choose a valid commission status.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE PAYMENT */
+
+      const allowedPaymentStatuses = [
+        "unpaid",
+        "pending",
+        "paid",
+        "refunded"
+      ];
+
+
+      if (
+        !allowedPaymentStatuses.includes(
+          paymentStatus
+        )
+      ) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "Choose a valid payment status.";
+        }
+
+        return;
+      }
+
+
+      /* LOADING */
+
+      setReviewCommissionLoading(
+        true
+      );
+
+
+      if (reviewCommissionStatusMessage) {
+        reviewCommissionStatusMessage.textContent =
+          "Saving commission changes...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .rpc(
+            "admin_update_commission",
+            {
+              p_commission_id:
+                reviewingCommissionId,
+
+              p_status:
+                status,
+
+              p_payment_status:
+                paymentStatus
+            }
+          );
 
 
         if (error) {
@@ -6808,22 +6925,25 @@ if (freeRequestStatusFilter) {
 
 
         const updatedCommission =
-  Array.isArray(data)
-    ? data[0]
-    : data;
+          Array.isArray(data)
+            ? data[0]
+            : data;
 
 
-if (!updatedCommission) {
-  throw new Error(
-    "The updated commission could not be returned."
-  );
-}
+        if (!updatedCommission) {
+          throw new Error(
+            "The updated commission could not be returned."
+          );
+        }
 
+
+        /* UPDATE LOCAL COMMISSION */
 
         adminCommissionRequests =
           adminCommissionRequests.map(
             (commission) =>
-              commission.id === updatedCommission.id
+              commission.id ===
+              updatedCommission.id
                 ? updatedCommission
                 : commission
           );
@@ -6833,8 +6953,17 @@ if (!updatedCommission) {
 
         renderAdminCommissions();
 
-  void loadAdminGraveyardEntries();
 
+        /*
+         * Refresh the Graveyard Manager because
+         * Graveyard commissions can change the
+         * linked RG entry's status.
+         */
+
+        void loadAdminGraveyardEntries();
+
+
+        /* KEEP REVIEW PANEL CURRENT */
 
         openReviewCommission(
           updatedCommission
@@ -6869,21 +6998,7 @@ if (!updatedCommission) {
     }
   );
 }
-
-
-/* ==========================================================
-   CLOSE REVIEW COMMISSION
-   ========================================================== */
-
-if (reviewCommissionCloseButton) {
-  reviewCommissionCloseButton.addEventListener(
-    "click",
-    () => {
-      closeReviewCommission();
-    }
-  );
-}
-
+ 
   /* ==========================================================
    CLOSE REVIEW COMMISSION
    ========================================================== */

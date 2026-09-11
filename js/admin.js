@@ -205,6 +205,24 @@ function setAnnouncementFormLoading(isLoading) {
       : "Save Announcement";
 }
 
+/* ==========================================================
+   REVIEW COMMISSION LOADING
+   ========================================================== */
+
+function setReviewCommissionLoading(isLoading) {
+  if (!reviewCommissionSaveButton) {
+    return;
+  }
+
+  reviewCommissionSaveButton.disabled =
+    isLoading;
+
+  reviewCommissionSaveButton.textContent =
+    isLoading
+      ? "Saving..."
+      : "Save Changes";
+}
+  
   /* ==========================================================
      LABEL HELPERS
      ========================================================== */

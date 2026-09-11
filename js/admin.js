@@ -519,6 +519,7 @@ void loadAdminSeries();
 void loadAdminAssignments();
 void loadAdminUpcomingBots();
 void loadAdminAnnouncements();
+void loadAdminCommissions();
 void loadAdminFreeRequests();
 void loadAdminGraveyardEntries();
 
@@ -4686,6 +4687,641 @@ async function loadAdminAnnouncements() {
 }
 
 /* ==========================================================
+   ADMIN COMMISSION CARD
+   ========================================================== */
+
+function createAdminCommissionCard(commission) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-commission-card";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    commission.submitter_name ||
+    "Commission Request";
+
+
+  const status =
+    document.createElement("span");
+
+  status.className =
+    commission.status === "accepted" ||
+    commission.status === "in_progress" ||
+    commission.status === "completed"
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  status.textContent =
+    getAdminCommissionStatusLabel(
+      commission.status
+    );
+
+
+  header.append(
+    title,
+    status
+  );
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const type =
+    document.createElement("span");
+
+  type.textContent =
+    getAdminCommissionTypeLabel(
+      commission.commission_type
+    );
+
+
+  const payment =
+    document.createElement("span");
+
+  payment.textContent =
+    getAdminCommissionPaymentLabel(
+      commission.payment_status
+    );
+
+
+  const total =
+    document.createElement("span");
+
+  total.textContent =
+    formatAdminCommissionPrice(
+      commission.total_price_cad
+    );
+
+
+  meta.append(
+    type,
+    payment,
+    total
+  );
+
+
+  /* GRAVEYARD */
+
+  const graveyard =
+    document.createElement("p");
+
+  graveyard.className =
+    "admin-bot-manager-link-status";
+
+  if (
+    commission.graveyard_code ||
+    commission.graveyard_title
+  ) {
+    graveyard.textContent =
+      [
+        commission.graveyard_code,
+        commission.graveyard_title
+      ]
+        .filter(Boolean)
+        .join(" — ");
+  } else {
+    graveyard.textContent =
+      "Not linked to the Request Graveyard";
+  }
+
+
+  /* CONTACT */
+
+  const contact =
+    document.createElement("p");
+
+  contact.className =
+    "admin-bot-manager-link-status";
+
+  contact.textContent =
+    commission.contact
+      ? `Contact: ${commission.contact}`
+      : "No contact information";
+
+
+  /* DETAILS */
+
+  const details =
+    document.createElement("p");
+
+  details.className =
+    "admin-bot-manager-description";
+
+  details.textContent =
+    commission.request_details ||
+    "No commission details provided.";
+
+
+  /* DATE */
+
+  const date =
+    document.createElement("p");
+
+  date.className =
+    "admin-bot-manager-slug";
+
+  date.textContent =
+    `Submitted: ${formatAdminCommissionDate(
+      commission.created_at
+    )}`;
+
+
+  /* ACTIONS */
+
+  const actions =
+    document.createElement("div");
+
+  actions.className =
+    "admin-bot-manager-actions";
+
+
+  const reviewButton =
+    document.createElement("button");
+
+  reviewButton.type =
+    "button";
+
+  reviewButton.className =
+    "secondary-button";
+
+  reviewButton.textContent =
+    "Review";
+
+
+  reviewButton.addEventListener(
+    "click",
+    () => {
+      openReviewCommission(
+        commission
+      );
+    }
+  );
+
+
+  actions.append(
+    reviewButton
+  );
+
+
+  article.append(
+    header,
+    meta,
+    graveyard,
+    contact,
+    details,
+    date,
+    actions
+  );
+
+
+  return article;
+}
+
+  /* ==========================================================
+   COMMISSION STATUS FILTER OPTIONS
+   ========================================================== */
+
+function populateAdminCommissionStatusFilter() {
+  if (!commissionStatusFilter) {
+    return;
+  }
+
+
+  const currentValue =
+    commissionStatusFilter.value ||
+    "all";
+
+
+  const statuses =
+    [
+      ...new Set(
+        adminCommissionRequests
+          .map(
+            (commission) =>
+              commission.status
+          )
+          .filter(Boolean)
+      )
+    ];
+
+
+  commissionStatusFilter.replaceChildren();
+
+
+  const allOption =
+    document.createElement("option");
+
+  allOption.value =
+    "all";
+
+  allOption.textContent =
+    "All Statuses";
+
+  commissionStatusFilter.append(
+    allOption
+  );
+
+
+  statuses.forEach(
+    (statusValue) => {
+      const option =
+        document.createElement("option");
+
+      option.value =
+        statusValue;
+
+      option.textContent =
+        getAdminCommissionStatusLabel(
+          statusValue
+        );
+
+      commissionStatusFilter.append(
+        option
+      );
+    }
+  );
+
+
+  const stillExists =
+    Array.from(
+      commissionStatusFilter.options
+    ).some(
+      (option) =>
+        option.value === currentValue
+    );
+
+
+  commissionStatusFilter.value =
+    stillExists
+      ? currentValue
+      : "all";
+}
+
+  /* ==========================================================
+   RENDER ADMIN COMMISSIONS
+   ========================================================== */
+
+function renderAdminCommissions() {
+  if (
+    !commissionList ||
+    !commissionManagerStatus
+  ) {
+    return;
+  }
+
+
+  const searchTerm =
+    String(
+      commissionSearch?.value || ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const selectedType =
+    commissionTypeFilter?.value ||
+    "all";
+
+
+  const selectedStatus =
+    commissionStatusFilter?.value ||
+    "all";
+
+
+  const selectedPayment =
+    commissionPaymentFilter?.value ||
+    "all";
+
+
+  const filteredCommissions =
+    adminCommissionRequests.filter(
+      (commission) => {
+
+        const searchableText = [
+          commission.submitter_name,
+          commission.contact,
+          commission.request_title,
+          commission.request_details,
+          commission.reference_details,
+          commission.graveyard_code,
+          commission.graveyard_title,
+          getAdminCommissionTypeLabel(
+            commission.commission_type
+          ),
+          getAdminCommissionStatusLabel(
+            commission.status
+          ),
+          getAdminCommissionPaymentLabel(
+            commission.payment_status
+          )
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        const matchesSearch =
+          !searchTerm ||
+          searchableText.includes(
+            searchTerm
+          );
+
+
+        const matchesType =
+          selectedType === "all" ||
+          commission.commission_type ===
+            selectedType;
+
+
+        const matchesStatus =
+          selectedStatus === "all" ||
+          commission.status ===
+            selectedStatus;
+
+
+        const matchesPayment =
+          selectedPayment === "all" ||
+          commission.payment_status ===
+            selectedPayment;
+
+
+        return (
+          matchesSearch &&
+          matchesType &&
+          matchesStatus &&
+          matchesPayment
+        );
+      }
+    );
+
+
+  commissionList.replaceChildren();
+
+
+  if (
+    adminCommissionRequests.length === 0
+  ) {
+    commissionManagerStatus.textContent =
+      "There are no commission requests yet.";
+
+    return;
+  }
+
+
+  if (
+    filteredCommissions.length === 0
+  ) {
+    commissionManagerStatus.textContent =
+      "No commission requests match those filters.";
+
+    return;
+  }
+
+
+  filteredCommissions.forEach(
+    (commission) => {
+      commissionList.append(
+        createAdminCommissionCard(
+          commission
+        )
+      );
+    }
+  );
+
+
+  if (
+    filteredCommissions.length ===
+    adminCommissionRequests.length
+  ) {
+    commissionManagerStatus.textContent =
+      adminCommissionRequests.length === 1
+        ? "1 commission request."
+        : `${adminCommissionRequests.length} commission requests.`;
+  } else {
+    commissionManagerStatus.textContent =
+      `Showing ${filteredCommissions.length} of ${adminCommissionRequests.length} commission requests.`;
+  }
+}
+
+  /* ==========================================================
+   LOAD ADMIN COMMISSIONS
+   ========================================================== */
+
+async function loadAdminCommissions() {
+  if (
+    !commissionList ||
+    !commissionManagerStatus
+  ) {
+    return;
+  }
+
+
+  /* AUTHORIZATION */
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    adminCommissionRequests = [];
+
+    commissionList.replaceChildren();
+
+    commissionManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+
+    if (commissionRefreshButton) {
+      commissionRefreshButton.disabled =
+        true;
+    }
+
+    if (commissionSearch) {
+      commissionSearch.disabled =
+        true;
+    }
+
+    if (commissionTypeFilter) {
+      commissionTypeFilter.disabled =
+        true;
+    }
+
+    if (commissionStatusFilter) {
+      commissionStatusFilter.disabled =
+        true;
+    }
+
+    if (commissionPaymentFilter) {
+      commissionPaymentFilter.disabled =
+        true;
+    }
+
+    return;
+  }
+
+
+  /* LOADING */
+
+  commissionManagerStatus.textContent =
+    "Loading commission requests...";
+
+  commissionList.replaceChildren();
+
+
+  if (commissionRefreshButton) {
+    commissionRefreshButton.disabled =
+      true;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("commission_requests")
+      .select(`
+        id,
+        user_id,
+        commission_type,
+        request_title,
+        request_details,
+        submitter_name,
+        contact,
+        reference_details,
+        graveyard_entry_id,
+        graveyard_code,
+        graveyard_title,
+        private_use,
+        extra_images,
+        base_price_cad,
+        addon_price_cad,
+        total_price_cad,
+        status,
+        payment_status,
+        created_at,
+        updated_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    adminCommissionRequests =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin commissions received:",
+      adminCommissionRequests
+    );
+
+
+    /* ENABLE CONTROLS */
+
+    if (commissionSearch) {
+      commissionSearch.disabled =
+        false;
+    }
+
+    if (commissionTypeFilter) {
+      commissionTypeFilter.disabled =
+        false;
+    }
+
+    if (commissionStatusFilter) {
+      commissionStatusFilter.disabled =
+        false;
+    }
+
+    if (commissionPaymentFilter) {
+      commissionPaymentFilter.disabled =
+        false;
+    }
+
+
+    populateAdminCommissionStatusFilter();
+
+    renderAdminCommissions();
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin commissions:",
+      error
+    );
+
+
+    adminCommissionRequests = [];
+
+    commissionList.replaceChildren();
+
+    commissionManagerStatus.textContent =
+      "Unable to load commission requests.";
+
+
+    if (commissionSearch) {
+      commissionSearch.disabled =
+        true;
+    }
+
+    if (commissionTypeFilter) {
+      commissionTypeFilter.disabled =
+        true;
+    }
+
+    if (commissionStatusFilter) {
+      commissionStatusFilter.disabled =
+        true;
+    }
+
+    if (commissionPaymentFilter) {
+      commissionPaymentFilter.disabled =
+        true;
+    }
+
+
+  } finally {
+    if (commissionRefreshButton) {
+      commissionRefreshButton.disabled =
+        false;
+    }
+  }
+}
+  
+/* ==========================================================
    LOAD ADMIN GRAVEYARD
    ========================================================== */
 
@@ -5999,6 +6635,75 @@ if (announcementRefreshButton) {
       closeEditBot();
     });
   }
+
+  /* ==========================================================
+   COMMISSION MANAGER REFRESH
+   ========================================================== */
+
+if (commissionRefreshButton) {
+  commissionRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminCommissions();
+    }
+  );
+}
+
+
+/* ==========================================================
+   COMMISSION SEARCH
+   ========================================================== */
+
+if (commissionSearch) {
+  commissionSearch.addEventListener(
+    "input",
+    () => {
+      renderAdminCommissions();
+    }
+  );
+}
+
+
+/* ==========================================================
+   COMMISSION TYPE FILTER
+   ========================================================== */
+
+if (commissionTypeFilter) {
+  commissionTypeFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminCommissions();
+    }
+  );
+}
+
+
+/* ==========================================================
+   COMMISSION STATUS FILTER
+   ========================================================== */
+
+if (commissionStatusFilter) {
+  commissionStatusFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminCommissions();
+    }
+  );
+}
+
+
+/* ==========================================================
+   COMMISSION PAYMENT FILTER
+   ========================================================== */
+
+if (commissionPaymentFilter) {
+  commissionPaymentFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminCommissions();
+    }
+  );
+}
 
 /* ==========================================================
    GRAVEYARD MANAGER REFRESH

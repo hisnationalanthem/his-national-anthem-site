@@ -400,10 +400,10 @@
 
 
 <!-- =====================================
-     FUTURE FORM
+     COMMISSION REQUEST FORM
      ===================================== -->
 
-<section class="journal-panel commission-form-placeholder">
+<section class="journal-panel">
 
     <p class="panel-label">
         Request Form
@@ -412,13 +412,330 @@
     <h2>Submit a Commission</h2>
 
     <p>
-        The full commission request form will be built here
-        once the Supabase database is ready.
+        Fill out the form below with the details for your commission.
+        Payment will be handled separately after the request system
+        and checkout process are fully connected.
     </p>
 
-    <p class="small-note">
-        This section is intentionally inactive for now.
-    </p>
+
+    <form
+        class="admin-series-form"
+        data-commission-form
+    >
+
+        <!-- =====================================
+             COMMISSION TYPE
+             ===================================== -->
+
+        <div class="form-field">
+
+            <label for="commission-request-type">
+                Commission Type
+            </label>
+
+            <select
+                id="commission-request-type"
+                name="commission_type"
+                data-commission-type
+                required
+            >
+
+                <option value="">
+                    Choose a commission type...
+                </option>
+
+                <option value="new_bot">
+                    New Bot — $15 CAD
+                </option>
+
+                <option value="alt_bot">
+                    Alt Bot — $10 CAD
+                </option>
+
+                <option value="graveyard_resurrection">
+                    Graveyard Resurrection — $15 CAD
+                </option>
+
+                <option value="bot_remaster">
+                    Bot Remaster — $10 CAD
+                </option>
+
+                <option value="media_inspired">
+                    Media Inspired Bot — $20 CAD
+                </option>
+
+                <option value="oc_creation">
+                    Have Your OC Created — $15 CAD
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- =====================================
+             NAME / HANDLE
+             ===================================== -->
+
+        <div class="form-field">
+
+            <label for="commission-submitter-name">
+                Name / Handle
+            </label>
+
+            <input
+                type="text"
+                id="commission-submitter-name"
+                name="submitter_name"
+                autocomplete="nickname"
+                maxlength="100"
+                required
+            >
+
+        </div>
+
+
+        <!-- =====================================
+             CONTACT
+             ===================================== -->
+
+        <div class="form-field">
+
+            <label for="commission-contact">
+                Contact Information
+            </label>
+
+            <input
+                type="text"
+                id="commission-contact"
+                name="contact"
+                autocomplete="off"
+                maxlength="250"
+                placeholder="Discord, email, JanitorAI handle, etc."
+                required
+            >
+
+            <p class="small-note">
+                Use a contact method where I can reach you if clarification
+                or commission confirmation is needed.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================
+             REQUEST DETAILS
+             ===================================== -->
+
+        <div class="form-field">
+
+            <label for="commission-details">
+                Commission Details
+            </label>
+
+            <textarea
+                id="commission-details"
+                name="request_details"
+                rows="10"
+                maxlength="10000"
+                required
+            ></textarea>
+
+            <p class="small-note">
+                Include the character, POV, relationship, scenario,
+                tropes, personality, setting, source material, or any
+                other details important to the request.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================
+             REFERENCE / EXISTING BOT
+             ===================================== -->
+
+        <div class="form-field">
+
+            <label for="commission-reference">
+                Existing Bot / Media / Reference
+            </label>
+
+            <textarea
+                id="commission-reference"
+                name="reference_details"
+                rows="5"
+                maxlength="5000"
+            ></textarea>
+
+            <p class="small-note">
+                Optional for New Bot commissions. Use this for an existing
+                bot link, media source, OC information, or other reference
+                material when relevant.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================
+             GRAVEYARD SELECTION
+             ===================================== -->
+
+        <div
+            class="form-field"
+            data-commission-graveyard-field
+            hidden
+        >
+
+            <label for="commission-graveyard-selection">
+                Selected Graveyard Request
+            </label>
+
+            <input
+                type="text"
+                id="commission-graveyard-selection"
+                data-commission-graveyard-selection
+                readonly
+            >
+
+
+            <input
+                type="hidden"
+                name="graveyard_code"
+                data-commission-graveyard-code
+            >
+
+
+            <input
+                type="hidden"
+                name="graveyard_title"
+                data-commission-graveyard-title
+            >
+
+
+            <p class="small-note">
+                This Request Graveyard entry will be attached to your
+                Graveyard Resurrection commission.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================
+             PRIVATE USE
+             ===================================== -->
+
+        <div class="form-field admin-checkbox-field">
+
+            <label>
+
+                <input
+                    type="checkbox"
+                    name="private_use"
+                    data-commission-private-use
+                >
+
+                Private Use — $0
+
+            </label>
+
+            <p class="small-note">
+                Choose this if the completed bot should remain private
+                rather than being publicly posted.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================
+             EXTRA IMAGES
+             ===================================== -->
+
+        <div class="form-field">
+
+            <label for="commission-extra-images">
+                Extra Images
+            </label>
+
+            <select
+                id="commission-extra-images"
+                name="extra_images"
+                data-commission-extra-images
+            >
+
+                <option value="0">
+                    None — $0
+                </option>
+
+                <option value="1">
+                    1 extra image — $1
+                </option>
+
+                <option value="2">
+                    2 extra images — $2
+                </option>
+
+                <option value="3">
+                    3 extra images — $3
+                </option>
+
+                <option value="4">
+                    4 extra images — $4
+                </option>
+
+                <option value="5">
+                    5 extra images — $5
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- =====================================
+             PRICE SUMMARY
+             ===================================== -->
+
+        <div class="form-field">
+
+            <p class="panel-label">
+                Estimated Total
+            </p>
+
+            <p
+                class="commission-price"
+                data-commission-total
+            >
+                Select a commission type
+            </p>
+
+            <p class="small-note">
+                Prices are shown in CAD. Final payment will not be
+                collected from this form yet.
+            </p>
+
+        </div>
+
+
+        <!-- =====================================
+             SUBMIT
+             ===================================== -->
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-commission-submit
+        >
+            Submit Commission Request
+        </button>
+
+
+        <p
+            class="admin-form-status"
+            data-commission-status
+            aria-live="polite"
+        ></p>
+
+    </form>
 
 </section>
 

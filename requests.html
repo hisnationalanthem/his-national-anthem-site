@@ -99,8 +99,8 @@
         </p>
 
         <div class="request-status">
-            Form coming soon
-        </div>
+    Open — submit below
+</div>
 
     </article>
 
@@ -196,10 +196,10 @@
 
 
 <!-- =====================================
-     GRAVEYARD FORM PLACEHOLDER
+     GRAVEYARD REQUEST FORM
      ===================================== -->
 
-<section class="journal-panel request-form-placeholder">
+<section class="journal-panel">
 
     <p class="panel-label">
         Request Graveyard
@@ -208,14 +208,71 @@
     <h2>Submit a Graveyard Request</h2>
 
     <p>
-        The Graveyard request form will appear here
-        once the request database is connected.
+        Submit a bot idea for possible addition to the Request Graveyard.
+        This is a free suggestion form and is separate from the paid
+        Graveyard Resurrection commission option.
     </p>
 
-    <p class="small-note">
-        This is separate from the paid Graveyard Resurrection
-        commission option.
-    </p>
+
+    <form
+        data-free-request-form="graveyard"
+    >
+
+        <div class="form-field">
+            <label for="graveyard-request-name">
+                Name / Handle
+            </label>
+
+            <input
+                type="text"
+                id="graveyard-request-name"
+                name="submitter_name"
+                autocomplete="nickname"
+                maxlength="100"
+            >
+
+            <p class="small-note">
+                Optional. Leave blank if you would rather submit anonymously.
+            </p>
+        </div>
+
+
+        <div class="form-field">
+            <label for="graveyard-request-details">
+                Graveyard Request
+            </label>
+
+            <textarea
+                id="graveyard-request-details"
+                name="request_details"
+                rows="9"
+                maxlength="5000"
+                required
+            ></textarea>
+
+            <p class="small-note">
+                Include the bot concept, character, trope, source material,
+                POV, dynamic, or any other details that matter to the request.
+            </p>
+        </div>
+
+
+        <button
+            type="submit"
+            class="primary-button"
+            data-free-request-submit
+        >
+            Submit Graveyard Request
+        </button>
+
+
+        <p
+            class="admin-form-status"
+            data-free-request-status
+            aria-live="polite"
+        ></p>
+
+    </form>
 
 </section>
 

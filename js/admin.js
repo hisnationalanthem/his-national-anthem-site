@@ -6833,7 +6833,7 @@ if (!updatedCommission) {
 
         renderAdminCommissions();
 
-  await loadAdminGraveyardEntries();
+  void loadAdminGraveyardEntries();
 
 
         openReviewCommission(

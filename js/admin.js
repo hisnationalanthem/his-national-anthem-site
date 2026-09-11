@@ -85,6 +85,9 @@ const editSeriesCancelButton = document.querySelector(
 let adminFreeRequests = [];
 let editingFreeRequestId = null;
 let convertingGraveyardRequestId = null;
+
+let adminGraveyardEntries = [];
+let editingGraveyardId = null;
   
   /* ==========================================================
      REQUIRED ELEMENTS
@@ -289,6 +292,26 @@ function getAdminFreeRequestStatusLabel(value) {
 
   return labels[value] || value || "Unknown Status";
 }
+
+  /* ==========================================================
+   GRAVEYARD STATUS LABELS
+   ========================================================== */
+
+function getAdminGraveyardStatusLabel(value) {
+  const labels = {
+    available: "Available",
+    "message-first": "Message First",
+    claimed: "Claimed",
+    reserved: "Reserved",
+    resurrected: "Resurrected"
+  };
+
+  return (
+    labels[value] ||
+    value ||
+    "Unknown Status"
+  );
+}
   
   /* ==========================================================
      SLUG HELPERS
@@ -391,6 +414,7 @@ void loadAdminAssignments();
 void loadAdminUpcomingBots();
 void loadAdminAnnouncements();
 void loadAdminFreeRequests();
+void loadAdminGraveyardEntries();
 
       return true;
     } catch (error) {
@@ -456,6 +480,12 @@ void loadAdminFreeRequests();
       try {
         await window.supabaseClient.auth.signOut();
         adminAuthorized = false;
+        adminGraveyardEntries = [];
+editingGraveyardId = null;
+
+if (graveyardList) {
+  graveyardList.replaceChildren();
+}
         setUpcomingFormLoading(false);
         setAnnouncementFormLoading(false);
         seriesForm?.reset();
@@ -470,6 +500,7 @@ void loadAdminFreeRequests();
         showLogin();
         closeEditUpcoming();
         closeGraveyardConversion();
+        closeEditGraveyard();
         setAuthStatus("Signed out.");
       } catch (error) {
         console.error("Admin sign-out error:", error);
@@ -977,6 +1008,63 @@ const graveyardConvertCancelButton = document.querySelector(
 
 const graveyardConvertStatus = document.querySelector(
   "[data-admin-graveyard-convert-status]"
+);
+
+  /* ==========================================================
+   GRAVEYARD MANAGER ELEMENTS
+   ========================================================== */
+
+const graveyardRefreshButton = document.querySelector(
+  "[data-admin-graveyard-refresh]"
+);
+
+const graveyardSearch = document.querySelector(
+  "[data-admin-graveyard-search]"
+);
+
+const graveyardStatusFilter = document.querySelector(
+  "[data-admin-graveyard-status-filter]"
+);
+
+const graveyardManagerStatus = document.querySelector(
+  "[data-admin-graveyard-manager-status]"
+);
+
+const graveyardList = document.querySelector(
+  "[data-admin-graveyard-list]"
+);
+
+
+/* ==========================================================
+   EDIT GRAVEYARD ELEMENTS
+   ========================================================== */
+
+const editGraveyardPanel = document.querySelector(
+  "[data-admin-edit-graveyard-panel]"
+);
+
+const editGraveyardForm = document.querySelector(
+  "[data-admin-edit-graveyard-form]"
+);
+
+const editGraveyardHeading = document.querySelector(
+  "[data-admin-edit-graveyard-heading]"
+);
+
+const editGraveyardCode = document.querySelector(
+  "[data-admin-edit-graveyard-code]"
+);
+
+const editGraveyardSubmitButton = document.querySelector(
+  "[data-admin-edit-graveyard-submit]"
+);
+
+const editGraveyardCancelButton = document.querySelector(
+  "[data-admin-edit-graveyard-cancel]"
+);
+
+const editGraveyardStatusMessage = document.querySelector(
+  "[data-admin-edit-graveyard-status-message]"
 );
   
   /* ==========================================================
@@ -2493,6 +2581,404 @@ function openGraveyardConversion(request) {
 }
 
   /* ==========================================================
+   EDIT GRAVEYARD HELPERS
+   ========================================================== */
+
+function closeEditGraveyard() {
+  editingGraveyardId = null;
+
+  if (editGraveyardForm) {
+    editGraveyardForm.reset();
+  }
+
+  if (editGraveyardCode) {
+    editGraveyardCode.value = "";
+  }
+
+  if (editGraveyardStatusMessage) {
+    editGraveyardStatusMessage.textContent = "";
+  }
+
+  if (editGraveyardPanel) {
+    editGraveyardPanel.hidden = true;
+  }
+}
+
+  function openEditGraveyard(entry) {
+  if (
+    !editGraveyardPanel ||
+    !editGraveyardForm
+  ) {
+    console.error(
+      "Edit Graveyard form elements are unavailable."
+    );
+
+    return;
+  }
+
+
+  editingGraveyardId =
+    entry.id;
+
+
+  editGraveyardForm.reset();
+
+
+  /* REQUEST CODE */
+
+  if (editGraveyardCode) {
+    editGraveyardCode.value =
+      entry.request_code || "";
+  }
+
+
+  /* TITLE */
+
+  const titleField =
+    editGraveyardForm.elements.namedItem(
+      "title"
+    );
+
+  if (titleField) {
+    titleField.value =
+      entry.title || "";
+  }
+
+
+  /* GENDER */
+
+  const genderField =
+    editGraveyardForm.elements.namedItem(
+      "gender"
+    );
+
+  if (genderField) {
+    genderField.value =
+      entry.gender || "";
+  }
+
+
+  /* STATUS */
+
+  const statusField =
+    editGraveyardForm.elements.namedItem(
+      "status"
+    );
+
+  if (statusField) {
+    statusField.value =
+      entry.status ||
+      "available";
+  }
+
+
+  /* NOTE */
+
+  const noteField =
+    editGraveyardForm.elements.namedItem(
+      "note"
+    );
+
+  if (noteField) {
+    noteField.value =
+      entry.note || "";
+  }
+
+
+  /* HEADING */
+
+  if (editGraveyardHeading) {
+    editGraveyardHeading.textContent =
+      entry.request_code
+        ? `Editing ${entry.request_code} — ${entry.title || "Untitled Request"}.`
+        : "Editing Request Graveyard entry.";
+  }
+
+
+  /* STATUS MESSAGE */
+
+  if (editGraveyardStatusMessage) {
+    editGraveyardStatusMessage.textContent =
+      "";
+  }
+
+
+  /* SHOW */
+
+  editGraveyardPanel.hidden =
+    false;
+
+
+  editGraveyardPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+  /* ==========================================================
+   ADMIN GRAVEYARD CARD
+   ========================================================== */
+
+function createAdminGraveyardCard(entry) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-graveyard-card";
+
+
+  /* HEADER */
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const code =
+    document.createElement("h3");
+
+  code.className =
+    "admin-bot-manager-name";
+
+  code.textContent =
+    entry.request_code ||
+    "Unknown RG Number";
+
+
+  const status =
+    document.createElement("span");
+
+  status.className =
+    entry.status === "available"
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  status.textContent =
+    getAdminGraveyardStatusLabel(
+      entry.status
+    );
+
+
+  header.append(
+    code,
+    status
+  );
+
+
+  /* TITLE */
+
+  const title =
+    document.createElement("p");
+
+  title.className =
+    "admin-bot-manager-description";
+
+  title.textContent =
+    entry.title ||
+    "Untitled Graveyard Request";
+
+
+  /* META */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "admin-bot-manager-meta";
+
+
+  const gender =
+    document.createElement("span");
+
+  gender.textContent =
+    entry.gender ||
+    "Gender not specified";
+
+
+  meta.append(
+    gender
+  );
+
+
+  /* NOTE */
+
+  const note =
+    document.createElement("p");
+
+  note.className =
+    "admin-bot-manager-link-status";
+
+  note.textContent =
+    entry.note
+      ? `Note: ${entry.note}`
+      : "No special note";
+
+
+  /* ACTIONS */
+
+  const actions =
+    document.createElement("div");
+
+  actions.className =
+    "admin-bot-manager-actions";
+
+
+  const editButton =
+    document.createElement("button");
+
+  editButton.type =
+    "button";
+
+  editButton.className =
+    "secondary-button";
+
+  editButton.textContent =
+    "Edit";
+
+
+  editButton.addEventListener(
+    "click",
+    () => {
+      openEditGraveyard(
+        entry
+      );
+    }
+  );
+
+
+  actions.append(
+    editButton
+  );
+
+
+  article.append(
+    header,
+    title,
+    meta,
+    note,
+    actions
+  );
+
+
+  return article;
+}
+
+  /* ==========================================================
+   RENDER ADMIN GRAVEYARD
+   ========================================================== */
+
+function renderAdminGraveyardEntries() {
+  if (
+    !graveyardList ||
+    !graveyardManagerStatus
+  ) {
+    return;
+  }
+
+
+  const searchTerm =
+    String(
+      graveyardSearch?.value || ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const selectedStatus =
+    graveyardStatusFilter?.value ||
+    "all";
+
+
+  const filteredEntries =
+    adminGraveyardEntries.filter(
+      (entry) => {
+
+        const searchableText = [
+          entry.request_code,
+          entry.title,
+          entry.gender,
+          entry.note,
+          getAdminGraveyardStatusLabel(
+            entry.status
+          )
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        const matchesSearch =
+          !searchTerm ||
+          searchableText.includes(
+            searchTerm
+          );
+
+
+        const matchesStatus =
+          selectedStatus === "all" ||
+          entry.status ===
+            selectedStatus;
+
+
+        return (
+          matchesSearch &&
+          matchesStatus
+        );
+      }
+    );
+
+
+  graveyardList.replaceChildren();
+
+
+  if (
+    adminGraveyardEntries.length === 0
+  ) {
+    graveyardManagerStatus.textContent =
+      "There are no Request Graveyard entries.";
+
+    return;
+  }
+
+
+  if (filteredEntries.length === 0) {
+    graveyardManagerStatus.textContent =
+      "No Graveyard entries match those filters.";
+
+    return;
+  }
+
+
+  filteredEntries.forEach(
+    (entry) => {
+      graveyardList.append(
+        createAdminGraveyardCard(
+          entry
+        )
+      );
+    }
+  );
+
+
+  const filtersActive =
+    Boolean(searchTerm) ||
+    selectedStatus !== "all";
+
+
+  if (filtersActive) {
+    graveyardManagerStatus.textContent =
+      `${filteredEntries.length} of ${adminGraveyardEntries.length} Graveyard entries shown.`;
+  } else {
+    graveyardManagerStatus.textContent =
+      adminGraveyardEntries.length === 1
+        ? "1 Graveyard entry."
+        : `${adminGraveyardEntries.length} Graveyard entries.`;
+  }
+}
+
+  /* ==========================================================
    ADMIN FREE REQUEST CARD
    ========================================================== */
 
@@ -3699,6 +4185,157 @@ async function loadAdminAnnouncements() {
   }
 }
 
+/* ==========================================================
+   LOAD ADMIN GRAVEYARD
+   ========================================================== */
+
+async function loadAdminGraveyardEntries() {
+  if (
+    !graveyardList ||
+    !graveyardManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    adminGraveyardEntries = [];
+
+    graveyardList.replaceChildren();
+
+    graveyardManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+
+    if (graveyardRefreshButton) {
+      graveyardRefreshButton.disabled =
+        true;
+    }
+
+
+    if (graveyardSearch) {
+      graveyardSearch.disabled =
+        true;
+    }
+
+
+    if (graveyardStatusFilter) {
+      graveyardStatusFilter.disabled =
+        true;
+    }
+
+
+    return;
+  }
+
+
+  graveyardManagerStatus.textContent =
+    "Loading Request Graveyard...";
+
+  graveyardList.replaceChildren();
+
+
+  if (graveyardRefreshButton) {
+    graveyardRefreshButton.disabled =
+      true;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("graveyard_entries")
+      .select(`
+        id,
+        request_number,
+        request_code,
+        gender,
+        title,
+        status,
+        note,
+        created_at,
+        updated_at
+      `)
+      .order(
+        "request_number",
+        {
+          ascending: true
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    adminGraveyardEntries =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin Graveyard entries received:",
+      adminGraveyardEntries
+    );
+
+
+    if (graveyardSearch) {
+      graveyardSearch.disabled =
+        false;
+    }
+
+
+    if (graveyardStatusFilter) {
+      graveyardStatusFilter.disabled =
+        false;
+    }
+
+
+    renderAdminGraveyardEntries();
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin Graveyard entries:",
+      error
+    );
+
+
+    adminGraveyardEntries = [];
+
+    graveyardList.replaceChildren();
+
+    graveyardManagerStatus.textContent =
+      "Unable to load Request Graveyard entries.";
+
+
+    if (graveyardSearch) {
+      graveyardSearch.disabled =
+        true;
+    }
+
+
+    if (graveyardStatusFilter) {
+      graveyardStatusFilter.disabled =
+        true;
+    }
+
+
+  } finally {
+    if (graveyardRefreshButton) {
+      graveyardRefreshButton.disabled =
+        false;
+    }
+  }
+}
+  
   /* ==========================================================
    LOAD FREE REQUESTS
    ========================================================== */
@@ -4863,6 +5500,45 @@ if (announcementRefreshButton) {
     });
   }
 
+/* ==========================================================
+   GRAVEYARD MANAGER REFRESH
+   ========================================================== */
+
+if (graveyardRefreshButton) {
+  graveyardRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminGraveyardEntries();
+    }
+  );
+}
+
+  /* ==========================================================
+   GRAVEYARD SEARCH
+   ========================================================== */
+
+if (graveyardSearch) {
+  graveyardSearch.addEventListener(
+    "input",
+    () => {
+      renderAdminGraveyardEntries();
+    }
+  );
+}
+
+  /* ==========================================================
+   GRAVEYARD STATUS FILTER
+   ========================================================== */
+
+if (graveyardStatusFilter) {
+  graveyardStatusFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminGraveyardEntries();
+    }
+  );
+}
+  
   /* ==========================================================
    FREE REQUEST MANAGER REFRESH
    ========================================================== */
@@ -4895,6 +5571,19 @@ if (freeRequestStatusFilter) {
     "change",
     () => {
       renderAdminFreeRequests();
+    }
+  );
+}
+
+  /* ==========================================================
+   CANCEL EDIT GRAVEYARD
+   ========================================================== */
+
+if (editGraveyardCancelButton) {
+  editGraveyardCancelButton.addEventListener(
+    "click",
+    () => {
+      closeEditGraveyard();
     }
   );
 }

@@ -292,13 +292,14 @@ function getAdminCommissionTypeLabel(value) {
 
 function getAdminCommissionStatusLabel(value) {
   const labels = {
-    submitted: "Submitted",
-    reviewing: "Reviewing",
-    accepted: "Accepted",
-    declined: "Declined",
-    in_progress: "In Progress",
-    completed: "Completed"
-  };
+  submitted: "Submitted",
+  reviewing: "Reviewing",
+  accepted: "Accepted",
+  declined: "Declined",
+  in_progress: "In Progress",
+  completed: "Completed",
+  cancelled: "Cancelled"
+};
 
   if (labels[value]) {
     return labels[value];
@@ -1129,6 +1130,10 @@ const reviewCommissionCreated = document.querySelector(
   "[data-admin-review-commission-created]"
 );
 
+const reviewCommissionSaveButton = document.querySelector(
+  "[data-admin-review-commission-save]"
+);
+  
 const reviewCommissionCloseButton = document.querySelector(
   "[data-admin-review-commission-close]"
 );
@@ -3035,21 +3040,19 @@ function openReviewCommission(commission) {
   /* STATUS */
 
   if (reviewCommissionStatus) {
-    reviewCommissionStatus.value =
-      getAdminCommissionStatusLabel(
-        commission.status
-      );
-  }
+  reviewCommissionStatus.value =
+    commission.status ||
+    "submitted";
+}
 
 
   /* PAYMENT */
 
-  if (reviewCommissionPayment) {
-    reviewCommissionPayment.value =
-      getAdminCommissionPaymentLabel(
-        commission.payment_status
-      );
-  }
+ if (reviewCommissionPayment) {
+  reviewCommissionPayment.value =
+    commission.payment_status ||
+    "unpaid";
+}
 
 
   /* DATE */
@@ -6780,6 +6783,235 @@ if (freeRequestStatusFilter) {
   );
 }
 
+  /* ==========================================================
+   SAVE REVIEWED COMMISSION
+   ========================================================== */
+
+if (reviewCommissionSaveButton) {
+  reviewCommissionSaveButton.addEventListener(
+    "click",
+    async () => {
+
+      /* AUTHORIZATION */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* SELECTED COMMISSION */
+
+      if (!reviewingCommissionId) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "No commission request is currently selected.";
+        }
+
+        return;
+      }
+
+
+      /* VALUES */
+
+      const status =
+        String(
+          reviewCommissionStatus?.value ||
+          ""
+        ).trim();
+
+
+      const paymentStatus =
+        String(
+          reviewCommissionPayment?.value ||
+          ""
+        ).trim();
+
+
+      /* VALIDATE STATUS */
+
+      const allowedStatuses = [
+        "submitted",
+        "reviewing",
+        "accepted",
+        "declined",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ];
+
+
+      if (
+        !allowedStatuses.includes(
+          status
+        )
+      ) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "Choose a valid commission status.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE PAYMENT */
+
+      const allowedPaymentStatuses = [
+        "unpaid",
+        "pending",
+        "paid",
+        "refunded"
+      ];
+
+
+      if (
+        !allowedPaymentStatuses.includes(
+          paymentStatus
+        )
+      ) {
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "Choose a valid payment status.";
+        }
+
+        return;
+      }
+
+
+      /* LOADING */
+
+      setReviewCommissionLoading(
+        true
+      );
+
+
+      if (reviewCommissionStatusMessage) {
+        reviewCommissionStatusMessage.textContent =
+          "Saving commission changes...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("commission_requests")
+          .update({
+            status,
+            payment_status:
+              paymentStatus
+          })
+          .eq(
+            "id",
+            reviewingCommissionId
+          )
+          .select(`
+            id,
+            user_id,
+            commission_type,
+            request_title,
+            request_details,
+            submitter_name,
+            contact,
+            reference_details,
+            graveyard_entry_id,
+            graveyard_code,
+            graveyard_title,
+            private_use,
+            extra_images,
+            base_price_cad,
+            addon_price_cad,
+            total_price_cad,
+            status,
+            payment_status,
+            created_at,
+            updated_at
+          `)
+          .single();
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        if (!data) {
+          throw new Error(
+            "The updated commission could not be returned."
+          );
+        }
+
+
+        adminCommissionRequests =
+          adminCommissionRequests.map(
+            (commission) =>
+              commission.id === data.id
+                ? data
+                : commission
+          );
+
+
+        populateAdminCommissionStatusFilter();
+
+        renderAdminCommissions();
+
+
+        openReviewCommission(
+          data
+        );
+
+
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            "Commission updated successfully.";
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unable to update commission:",
+          error
+        );
+
+
+        if (reviewCommissionStatusMessage) {
+          reviewCommissionStatusMessage.textContent =
+            error?.message ||
+            "Unable to update the commission request.";
+        }
+
+
+      } finally {
+        setReviewCommissionLoading(
+          false
+        );
+      }
+    }
+  );
+}
+
+
+/* ==========================================================
+   CLOSE REVIEW COMMISSION
+   ========================================================== */
+
+if (reviewCommissionCloseButton) {
+  reviewCommissionCloseButton.addEventListener(
+    "click",
+    () => {
+      closeReviewCommission();
+    }
+  );
+}
 
   /* ==========================================================
    CLOSE REVIEW COMMISSION

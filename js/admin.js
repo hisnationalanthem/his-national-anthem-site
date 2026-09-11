@@ -88,6 +88,8 @@ let convertingGraveyardRequestId = null;
 
 let adminGraveyardEntries = [];
 let editingGraveyardId = null;
+let adminCommissionRequests = [];
+let reviewingCommissionId = null;
   
   /* ==========================================================
      REQUIRED ELEMENTS
@@ -382,11 +384,18 @@ function getAdminGraveyardStatusLabel(value) {
   }
 
   async function authorizeUser(user) {
-    adminAuthorized = false;
-    adminFreeRequests = [];
-editingFreeRequestId = null;
+  adminAuthorized = false;
 
-    try {
+  adminFreeRequests = [];
+  editingFreeRequestId = null;
+
+  adminGraveyardEntries = [];
+  editingGraveyardId = null;
+
+  adminCommissionRequests = [];
+  reviewingCommissionId = null;
+
+  try {
       const isAdmin = await userIsAdmin(user);
 
       if (!isAdmin) {
@@ -482,6 +491,12 @@ void loadAdminGraveyardEntries();
         adminAuthorized = false;
         adminGraveyardEntries = [];
 editingGraveyardId = null;
+        adminCommissionRequests = [];
+reviewingCommissionId = null;
+
+if (commissionList) {
+  commissionList.replaceChildren();
+}
 
 if (graveyardList) {
   graveyardList.replaceChildren();
@@ -912,6 +927,115 @@ const editAnnouncementCancelButton = document.querySelector(
 
 const editAnnouncementStatus = document.querySelector(
   "[data-admin-edit-announcement-status]"
+);
+
+  /* ==========================================================
+   COMMISSION MANAGER ELEMENTS
+   ========================================================== */
+
+const commissionRefreshButton = document.querySelector(
+  "[data-admin-commissions-refresh]"
+);
+
+const commissionSearch = document.querySelector(
+  "[data-admin-commission-search]"
+);
+
+const commissionTypeFilter = document.querySelector(
+  "[data-admin-commission-type-filter]"
+);
+
+const commissionStatusFilter = document.querySelector(
+  "[data-admin-commission-status-filter]"
+);
+
+const commissionPaymentFilter = document.querySelector(
+  "[data-admin-commission-payment-filter]"
+);
+
+const commissionManagerStatus = document.querySelector(
+  "[data-admin-commission-manager-status]"
+);
+
+const commissionList = document.querySelector(
+  "[data-admin-commission-list]"
+);
+
+
+/* ==========================================================
+   REVIEW COMMISSION ELEMENTS
+   ========================================================== */
+
+const reviewCommissionPanel = document.querySelector(
+  "[data-admin-review-commission-panel]"
+);
+
+const reviewCommissionHeading = document.querySelector(
+  "[data-admin-review-commission-heading]"
+);
+
+const reviewCommissionType = document.querySelector(
+  "[data-admin-review-commission-type]"
+);
+
+const reviewCommissionSubmitter = document.querySelector(
+  "[data-admin-review-commission-submitter]"
+);
+
+const reviewCommissionContact = document.querySelector(
+  "[data-admin-review-commission-contact]"
+);
+
+const reviewCommissionDetails = document.querySelector(
+  "[data-admin-review-commission-details]"
+);
+
+const reviewCommissionReference = document.querySelector(
+  "[data-admin-review-commission-reference]"
+);
+
+const reviewCommissionGraveyard = document.querySelector(
+  "[data-admin-review-commission-graveyard]"
+);
+
+const reviewCommissionPrivate = document.querySelector(
+  "[data-admin-review-commission-private]"
+);
+
+const reviewCommissionImages = document.querySelector(
+  "[data-admin-review-commission-images]"
+);
+
+const reviewCommissionBasePrice = document.querySelector(
+  "[data-admin-review-commission-base-price]"
+);
+
+const reviewCommissionAddonPrice = document.querySelector(
+  "[data-admin-review-commission-addon-price]"
+);
+
+const reviewCommissionTotal = document.querySelector(
+  "[data-admin-review-commission-total]"
+);
+
+const reviewCommissionStatus = document.querySelector(
+  "[data-admin-review-commission-status]"
+);
+
+const reviewCommissionPayment = document.querySelector(
+  "[data-admin-review-commission-payment]"
+);
+
+const reviewCommissionCreated = document.querySelector(
+  "[data-admin-review-commission-created]"
+);
+
+const reviewCommissionCloseButton = document.querySelector(
+  "[data-admin-review-commission-close]"
+);
+
+const reviewCommissionStatusMessage = document.querySelector(
+  "[data-admin-review-commission-status-message]"
 );
 
 /* ==========================================================

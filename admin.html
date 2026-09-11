@@ -2449,45 +2449,88 @@
     </div>
 
 
-    <!-- =====================================
-         CURRENT COMMISSION STATUS
-         ===================================== -->
+   <!-- =====================================
+     COMMISSION STATUS
+     ===================================== -->
 
-    <div class="form-field">
+<div class="form-field">
 
-        <label for="admin-review-commission-status">
-            Current Commission Status
-        </label>
+    <label for="admin-review-commission-status">
+        Commission Status
+    </label>
 
-        <input
-            type="text"
-            id="admin-review-commission-status"
-            data-admin-review-commission-status
-            readonly
-        >
+    <select
+        id="admin-review-commission-status"
+        data-admin-review-commission-status
+    >
 
-    </div>
+        <option value="submitted">
+            Submitted
+        </option>
+
+        <option value="reviewing">
+            Reviewing
+        </option>
+
+        <option value="accepted">
+            Accepted
+        </option>
+
+        <option value="declined">
+            Declined
+        </option>
+
+        <option value="in_progress">
+            In Progress
+        </option>
+
+        <option value="completed">
+            Completed
+        </option>
+
+        <option value="cancelled">
+            Cancelled
+        </option>
+
+    </select>
+
+</div>
 
 
-    <!-- =====================================
-         CURRENT PAYMENT STATUS
-         ===================================== -->
+   <!-- =====================================
+     PAYMENT STATUS
+     ===================================== -->
 
-    <div class="form-field">
+<div class="form-field">
 
-        <label for="admin-review-commission-payment">
-            Current Payment Status
-        </label>
+    <label for="admin-review-commission-payment">
+        Payment Status
+    </label>
 
-        <input
-            type="text"
-            id="admin-review-commission-payment"
-            data-admin-review-commission-payment
-            readonly
-        >
+    <select
+        id="admin-review-commission-payment"
+        data-admin-review-commission-payment
+    >
 
-    </div>
+        <option value="unpaid">
+            Unpaid
+        </option>
 
+        <option value="pending">
+            Pending
+        </option>
+
+        <option value="paid">
+            Paid
+        </option>
+
+        <option value="refunded">
+            Refunded
+        </option>
+
+    </select>
+
+</div>
 
     <!-- =====================================
          SUBMITTED
@@ -2513,15 +2556,23 @@
 
     <div class="admin-bot-manager-actions">
 
-        <button
-            type="button"
-            class="secondary-button"
-            data-admin-review-commission-close
-        >
-            Close
-        </button>
+    <button
+        type="button"
+        class="primary-button"
+        data-admin-review-commission-save
+    >
+        Save Changes
+    </button>
 
-    </div>
+    <button
+        type="button"
+        class="secondary-button"
+        data-admin-review-commission-close
+    >
+        Close
+    </button>
+
+</div>
 
 
     <p

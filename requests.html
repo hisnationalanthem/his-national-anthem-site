@@ -298,15 +298,80 @@
     </p>
 
     <p class="small-note">
-        Availability can change as requests are claimed,
-        reserved, or completed.
-    </p>
+    Availability can change as requests are claimed,
+    reserved, or completed.
+</p>
 
 
-    <div
-        class="request-grid"
-        data-graveyard-list
-    ></div>
+<!-- =====================================
+     GRAVEYARD FILTERS
+     ===================================== -->
+
+<div class="request-grid">
+
+    <div class="form-field">
+
+        <label for="graveyard-search">
+            Search Graveyard
+        </label>
+
+        <input
+            type="search"
+            id="graveyard-search"
+            data-graveyard-search
+            placeholder="Search RG number, title, gender..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <div class="form-field">
+
+        <label for="graveyard-status-filter">
+            Status
+        </label>
+
+        <select
+            id="graveyard-status-filter"
+            data-graveyard-status-filter
+        >
+
+            <option value="all">
+                All Statuses
+            </option>
+
+            <option value="available">
+                Available
+            </option>
+
+            <option value="message-first">
+                Message First
+            </option>
+
+            <option value="claimed">
+                Claimed
+            </option>
+
+            <option value="reserved">
+                Reserved
+            </option>
+
+            <option value="resurrected">
+                Resurrected
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+
+<div
+    class="request-grid"
+    data-graveyard-list
+></div>
 
 
     <p

@@ -2259,6 +2259,220 @@
      EDIT SERIES
      ===================================== -->
 
+<!-- =====================================
+     ADD ACCEPTED REQUEST TO GRAVEYARD
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-graveyard-convert-panel
+    hidden
+>
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+            <p class="panel-label">
+                Request Graveyard
+            </p>
+
+            <h2>
+                Add to Request Graveyard
+            </h2>
+        </div>
+
+    </div>
+
+
+    <p
+        class="small-note"
+        data-admin-graveyard-convert-heading
+    >
+        Prepare the accepted request for the public Request Graveyard.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-graveyard-convert-form
+    >
+
+        <!-- ORIGINAL SUBMITTER -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-source-submitter">
+                Submitted By
+            </label>
+
+            <input
+                type="text"
+                id="admin-graveyard-source-submitter"
+                data-admin-graveyard-source-submitter
+                readonly
+            >
+
+        </div>
+
+
+        <!-- ORIGINAL REQUEST -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-source-details">
+                Original Request
+            </label>
+
+            <textarea
+                id="admin-graveyard-source-details"
+                data-admin-graveyard-source-details
+                rows="7"
+                readonly
+            ></textarea>
+
+            <p class="small-note">
+                This preserves the original submission while you create
+                the cleaner Graveyard entry below.
+            </p>
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-title">
+                Graveyard Title
+            </label>
+
+            <input
+                type="text"
+                id="admin-graveyard-title"
+                name="title"
+                autocomplete="off"
+                required
+            >
+
+            <p class="small-note">
+                Use the clean title or trope that should appear
+                on the public Request Graveyard.
+            </p>
+
+        </div>
+
+
+        <!-- GENDER -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-gender">
+                Character Gender
+            </label>
+
+            <input
+                type="text"
+                id="admin-graveyard-gender"
+                name="gender"
+                autocomplete="off"
+                placeholder="Male, Female, Trans-Male, etc."
+                required
+            >
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-status">
+                Graveyard Status
+            </label>
+
+            <select
+                id="admin-graveyard-status"
+                name="status"
+                required
+            >
+
+                <option value="available" selected>
+                    Available
+                </option>
+
+                <option value="message-first">
+                    Message First
+                </option>
+
+                <option value="claimed">
+                    Claimed
+                </option>
+
+                <option value="reserved">
+                    Reserved
+                </option>
+
+                <option value="resurrected">
+                    Resurrected
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- NOTE -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-note">
+                Note
+            </label>
+
+            <textarea
+                id="admin-graveyard-note"
+                name="note"
+                rows="4"
+                placeholder="Optional special instructions."
+            ></textarea>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-graveyard-convert-submit
+            >
+                Add to Request Graveyard
+            </button>
+
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-graveyard-convert-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <p
+            class="admin-form-status"
+            data-admin-graveyard-convert-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
+            
 <section
     class="journal-panel admin-tool-panel"
     data-admin-edit-series-panel

@@ -5588,6 +5588,228 @@ if (editGraveyardCancelButton) {
   );
 }
 
+  /* ==========================================================
+   SAVE EDITED GRAVEYARD ENTRY
+   ========================================================== */
+
+if (editGraveyardForm) {
+  editGraveyardForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      /* AUTHORIZATION */
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (editGraveyardStatusMessage) {
+          editGraveyardStatusMessage.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      /* ENTRY SELECTED */
+
+      if (!editingGraveyardId) {
+        if (editGraveyardStatusMessage) {
+          editGraveyardStatusMessage.textContent =
+            "No Graveyard entry is currently selected.";
+        }
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(
+          editGraveyardForm
+        );
+
+
+      const title =
+        String(
+          formData.get("title") || ""
+        ).trim();
+
+
+      const gender =
+        String(
+          formData.get("gender") || ""
+        ).trim();
+
+
+      const status =
+        String(
+          formData.get("status") || ""
+        ).trim();
+
+
+      const note =
+        String(
+          formData.get("note") || ""
+        ).trim();
+
+
+      /* VALIDATE TITLE */
+
+      if (!title) {
+        if (editGraveyardStatusMessage) {
+          editGraveyardStatusMessage.textContent =
+            "Enter a Graveyard title.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE GENDER */
+
+      if (!gender) {
+        if (editGraveyardStatusMessage) {
+          editGraveyardStatusMessage.textContent =
+            "Enter the character gender.";
+        }
+
+        return;
+      }
+
+
+      /* VALIDATE STATUS */
+
+      const allowedStatuses = [
+        "available",
+        "message-first",
+        "claimed",
+        "reserved",
+        "resurrected"
+      ];
+
+
+      if (
+        !allowedStatuses.includes(
+          status
+        )
+      ) {
+        if (editGraveyardStatusMessage) {
+          editGraveyardStatusMessage.textContent =
+            "Choose a valid Graveyard status.";
+        }
+
+        return;
+      }
+
+
+      /* LOADING */
+
+      if (editGraveyardSubmitButton) {
+        editGraveyardSubmitButton.disabled =
+          true;
+
+        editGraveyardSubmitButton.textContent =
+          "Saving...";
+      }
+
+
+      if (editGraveyardStatusMessage) {
+        editGraveyardStatusMessage.textContent =
+          "Saving Graveyard entry...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("graveyard_entries")
+          .update({
+            title,
+            gender,
+            status,
+            note:
+              note || null
+          })
+          .eq(
+            "id",
+            editingGraveyardId
+          )
+          .select(`
+            id,
+            request_number,
+            request_code,
+            gender,
+            title,
+            status,
+            note,
+            created_at,
+            updated_at
+          `)
+          .single();
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        console.log(
+          "Graveyard entry updated:",
+          data
+        );
+
+
+        const requestCode =
+          data?.request_code ||
+          "Graveyard entry";
+
+
+        closeEditGraveyard();
+
+
+        await loadAdminGraveyardEntries();
+
+
+        if (graveyardManagerStatus) {
+          graveyardManagerStatus.textContent =
+            `${requestCode} was updated successfully.`;
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unable to update Graveyard entry:",
+          error
+        );
+
+
+        if (editGraveyardStatusMessage) {
+          editGraveyardStatusMessage.textContent =
+            error?.message ||
+            "The Graveyard entry could not be updated.";
+        }
+
+
+      } finally {
+        if (editGraveyardSubmitButton) {
+          editGraveyardSubmitButton.disabled =
+            false;
+
+          editGraveyardSubmitButton.textContent =
+            "Save Changes";
+        }
+      }
+    }
+  );
+}
+
 /* ==========================================================
    SAVE EDITED SERIES
    ========================================================== */

@@ -2456,14 +2456,14 @@ function createAdminFreeRequestCard(request) {
   }
 
 
-  /* ACTIONS */
-
-const actions =
+ const actions =
   document.createElement("div");
 
 actions.className =
   "admin-bot-manager-actions";
 
+
+/* REVIEW */
 
 const reviewButton =
   document.createElement("button");
@@ -2488,8 +2488,35 @@ reviewButton.addEventListener(
 );
 
 
+/* DELETE */
+
+const deleteButton =
+  document.createElement("button");
+
+deleteButton.type =
+  "button";
+
+deleteButton.className =
+  "secondary-button danger-button";
+
+deleteButton.textContent =
+  "Delete";
+
+
+deleteButton.addEventListener(
+  "click",
+  async () => {
+    await deleteFreeRequest(
+      request,
+      deleteButton
+    );
+  }
+);
+
+
 actions.append(
-  reviewButton
+  reviewButton,
+  deleteButton
 );
 
 
@@ -2503,6 +2530,125 @@ article.append(
 
 
 return article;
+}
+
+  /* ==========================================================
+   DELETE FREE REQUEST
+   ========================================================== */
+
+async function deleteFreeRequest(
+  request,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (freeRequestManagerStatus) {
+      freeRequestManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const requestLabel =
+    getAdminFreeRequestTypeLabel(
+      request.request_type
+    );
+
+
+  const submitterLabel =
+    request.submitter_name ||
+    "Anonymous";
+
+
+  const confirmed =
+    window.confirm(
+      `Permanently delete this ${requestLabel} from ${submitterLabel}?\n\nThis cannot be undone.`
+    );
+
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (button) {
+    button.disabled = true;
+
+    button.textContent =
+      "Deleting...";
+  }
+
+
+  if (freeRequestManagerStatus) {
+    freeRequestManagerStatus.textContent =
+      `Deleting ${requestLabel}...`;
+  }
+
+
+  try {
+    const {
+      error
+    } = await window.supabaseClient
+      .from("free_requests")
+      .delete()
+      .eq(
+        "id",
+        request.id
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    console.log(
+      "Free request deleted:",
+      request.id
+    );
+
+
+    if (
+      editingFreeRequestId ===
+      request.id
+    ) {
+      closeEditFreeRequest();
+    }
+
+
+    await loadAdminFreeRequests();
+
+
+    if (freeRequestManagerStatus) {
+      freeRequestManagerStatus.textContent =
+        `${requestLabel} from ${submitterLabel} was deleted permanently.`;
+    }
+
+
+  } catch (error) {
+    console.error(
+      "Unable to delete free request:",
+      error
+    );
+
+
+    if (freeRequestManagerStatus) {
+      freeRequestManagerStatus.textContent =
+        "The free request could not be deleted.";
+    }
+
+
+    if (button) {
+      button.disabled = false;
+
+      button.textContent =
+        "Delete";
+    }
+  }
 }
 
   /* ==========================================================

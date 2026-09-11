@@ -2472,6 +2472,330 @@
     </form>
 
 </section>
+
+    <!-- =====================================
+     MANAGE REQUEST GRAVEYARD
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+            <p class="panel-label">
+                Request Graveyard
+            </p>
+
+            <h2>
+                Manage Request Graveyard
+            </h2>
+        </div>
+
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-graveyard-refresh
+            disabled
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        View and edit the requests currently stored in the public
+        Request Graveyard.
+    </p>
+
+
+    <!-- =====================================
+         GRAVEYARD FILTERS
+         ===================================== -->
+
+    <div class="admin-series-form">
+
+
+        <!-- SEARCH -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-search">
+                Search Graveyard
+            </label>
+
+            <input
+                type="search"
+                id="admin-graveyard-search"
+                data-admin-graveyard-search
+                placeholder="Search RG number, title, gender..."
+                autocomplete="off"
+                disabled
+            >
+
+        </div>
+
+
+        <!-- STATUS FILTER -->
+
+        <div class="form-field">
+
+            <label for="admin-graveyard-status-filter">
+                Status
+            </label>
+
+            <select
+                id="admin-graveyard-status-filter"
+                data-admin-graveyard-status-filter
+                disabled
+            >
+
+                <option value="all">
+                    All Statuses
+                </option>
+
+                <option value="available">
+                    Available
+                </option>
+
+                <option value="message-first">
+                    Message First
+                </option>
+
+                <option value="claimed">
+                    Claimed
+                </option>
+
+                <option value="reserved">
+                    Reserved
+                </option>
+
+                <option value="resurrected">
+                    Resurrected
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- MANAGER STATUS -->
+
+    <p
+        class="admin-form-status"
+        data-admin-graveyard-manager-status
+        aria-live="polite"
+    >
+        Graveyard management is loading...
+    </p>
+
+
+    <!-- GRAVEYARD CARDS -->
+
+    <div
+        class="admin-management-grid"
+        data-admin-graveyard-list
+    ></div>
+
+</section>
+
+
+<!-- =====================================
+     EDIT GRAVEYARD ENTRY
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-edit-graveyard-panel
+    hidden
+>
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+
+            <p class="panel-label">
+                Request Graveyard
+            </p>
+
+            <h2>
+                Edit Graveyard Entry
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <p
+        class="small-note"
+        data-admin-edit-graveyard-heading
+    >
+        Update the selected Graveyard entry.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-edit-graveyard-form
+    >
+
+
+        <!-- REQUEST CODE -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-graveyard-code">
+                RG Number
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-graveyard-code"
+                data-admin-edit-graveyard-code
+                readonly
+            >
+
+            <p class="small-note">
+                Graveyard numbers are permanent and cannot be edited.
+            </p>
+
+        </div>
+
+
+        <!-- TITLE -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-graveyard-title">
+                Graveyard Title
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-graveyard-title"
+                name="title"
+                autocomplete="off"
+                required
+            >
+
+        </div>
+
+
+        <!-- GENDER -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-graveyard-gender">
+                Character Gender
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-graveyard-gender"
+                name="gender"
+                autocomplete="off"
+                required
+            >
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-graveyard-status">
+                Graveyard Status
+            </label>
+
+            <select
+                id="admin-edit-graveyard-status"
+                name="status"
+                required
+            >
+
+                <option value="available">
+                    Available
+                </option>
+
+                <option value="message-first">
+                    Message First
+                </option>
+
+                <option value="claimed">
+                    Claimed
+                </option>
+
+                <option value="reserved">
+                    Reserved
+                </option>
+
+                <option value="resurrected">
+                    Resurrected
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- NOTE -->
+
+        <div class="form-field">
+
+            <label for="admin-edit-graveyard-note">
+                Note
+            </label>
+
+            <textarea
+                id="admin-edit-graveyard-note"
+                name="note"
+                rows="4"
+                placeholder="Optional special instructions."
+            ></textarea>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-edit-graveyard-submit
+            >
+                Save Changes
+            </button>
+
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-edit-graveyard-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <!-- STATUS MESSAGE -->
+
+        <p
+            class="admin-form-status"
+            data-admin-edit-graveyard-status-message
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
             
 <section
     class="journal-panel admin-tool-panel"

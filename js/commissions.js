@@ -84,6 +84,11 @@ document.addEventListener(
         "[data-commission-status]"
       );
 
+     const commissionSubmitButton =
+  document.querySelector(
+    "[data-commission-submit]"
+  );
+
 
     /* ========================================
        URL PARAMETERS
@@ -404,23 +409,312 @@ document.addEventListener(
 
 
     /* ========================================
-       TEMPORARY SUBMIT HANDLER
-       ======================================== */
+   SUBMIT COMMISSION REQUEST
+   ======================================== */
 
-    if (commissionForm) {
-      commissionForm.addEventListener(
-        "submit",
-        (event) => {
-          event.preventDefault();
+if (commissionForm) {
+  commissionForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
 
 
-          if (commissionStatus) {
-            commissionStatus.textContent =
-              "Commission submission is not connected yet. Your request has not been sent.";
-          }
+      /* SUPABASE CHECK */
+
+      if (!window.supabaseClient) {
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            "The commission system is unavailable right now.";
         }
-      );
+
+        return;
+      }
+
+
+      /* READ FORM */
+
+      const formData =
+        new FormData(
+          commissionForm
+        );
+
+
+      const commissionType =
+        String(
+          formData.get(
+            "commission_type"
+          ) || ""
+        ).trim();
+
+
+      const submitterName =
+        String(
+          formData.get(
+            "submitter_name"
+          ) || ""
+        ).trim();
+
+
+      const contact =
+        String(
+          formData.get(
+            "contact"
+          ) || ""
+        ).trim();
+
+
+      const requestDetails =
+        String(
+          formData.get(
+            "request_details"
+          ) || ""
+        ).trim();
+
+
+      const referenceDetails =
+        String(
+          formData.get(
+            "reference_details"
+          ) || ""
+        ).trim();
+
+
+      const privateUse =
+        formData.get(
+          "private_use"
+        ) === "on";
+
+
+      const extraImagesRaw =
+        Number(
+          formData.get(
+            "extra_images"
+          ) || 0
+        );
+
+
+      const extraImages =
+        Number.isInteger(
+          extraImagesRaw
+        )
+          ? extraImagesRaw
+          : 0;
+
+
+      const selectedGraveyardCode =
+        String(
+          formData.get(
+            "graveyard_code"
+          ) || ""
+        ).trim();
+
+
+      /* VALIDATE COMMISSION TYPE */
+
+      const allowedCommissionTypes = [
+        "new_bot",
+        "alt_bot",
+        "graveyard_resurrection",
+        "bot_remaster",
+        "media_inspired",
+        "oc_creation"
+      ];
+
+
+      if (
+        !allowedCommissionTypes.includes(
+          commissionType
+        )
+      ) {
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            "Choose a valid commission type.";
+        }
+
+        return;
+      }
+
+
+      /* REQUIRED TEXT */
+
+      if (!submitterName) {
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            "Enter your name or handle.";
+        }
+
+        return;
+      }
+
+
+      if (!contact) {
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            "Enter contact information.";
+        }
+
+        return;
+      }
+
+
+      if (!requestDetails) {
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            "Enter your commission details.";
+        }
+
+        return;
+      }
+
+
+      /* EXTRA IMAGES */
+
+      if (
+        extraImages < 0 ||
+        extraImages > 5
+      ) {
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            "Extra images must be between 0 and 5.";
+        }
+
+        return;
+      }
+
+
+      /* GRAVEYARD VALIDATION */
+
+      if (
+        commissionType ===
+          "graveyard_resurrection" &&
+        !selectedGraveyardCode
+      ) {
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            "Choose a Request Graveyard entry before submitting.";
+        }
+
+        return;
+      }
+
+
+      /* LOADING */
+
+      if (commissionSubmitButton) {
+        commissionSubmitButton.disabled =
+          true;
+
+        commissionSubmitButton.textContent =
+          "Submitting...";
+      }
+
+
+      if (commissionStatus) {
+        commissionStatus.textContent =
+          "Submitting your commission request...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .rpc(
+            "submit_commission_request",
+            {
+              p_commission_type:
+                commissionType,
+
+              p_submitter_name:
+                submitterName,
+
+              p_contact:
+                contact,
+
+              p_request_details:
+                requestDetails,
+
+              p_reference_details:
+                referenceDetails ||
+                null,
+
+              p_private_use:
+                privateUse,
+
+              p_extra_images:
+                extraImages,
+
+              p_graveyard_code:
+                commissionType ===
+                  "graveyard_resurrection"
+                  ? selectedGraveyardCode
+                  : null
+            }
+          );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        const receipt =
+          Array.isArray(data)
+            ? data[0]
+            : data;
+
+
+        console.log(
+          "Commission request submitted:",
+          receipt
+        );
+
+
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            receipt?.total_price_cad != null
+              ? `Commission request submitted successfully. Estimated total: $${receipt.total_price_cad} CAD. Payment has not been collected yet.`
+              : "Commission request submitted successfully. Payment has not been collected yet.";
+        }
+
+
+        /*
+         * Leave the form populated for now.
+         * Payment checkout will use the newly
+         * created commission record in a later step.
+         */
+        if (commissionSubmitButton) {
+          commissionSubmitButton.textContent =
+            "Commission Submitted";
+        }
+
+
+      } catch (error) {
+        console.error(
+          "Unable to submit commission request:",
+          error
+        );
+
+
+        if (commissionStatus) {
+          commissionStatus.textContent =
+            error?.message ||
+            "Your commission request could not be submitted right now.";
+        }
+
+
+        if (commissionSubmitButton) {
+          commissionSubmitButton.disabled =
+            false;
+
+          commissionSubmitButton.textContent =
+            "Submit Commission Request";
+        }
+      }
     }
+  );
+}
 
 
     /* ========================================

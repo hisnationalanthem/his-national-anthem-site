@@ -268,6 +268,103 @@ function getAdminAnnouncementCategoryLabel(value) {
   return labels[value] || value || "General";
 }
 
+/* ==========================================================
+   COMMISSION LABELS
+   ========================================================== */
+
+function getAdminCommissionTypeLabel(value) {
+  const labels = {
+    new_bot: "New Bot",
+    alt_bot: "Alt Bot",
+    graveyard_resurrection: "Graveyard Resurrection",
+    bot_remaster: "Bot Remaster",
+    media_inspired: "Media Inspired Bot",
+    oc_creation: "Have Your OC Created"
+  };
+
+  return (
+    labels[value] ||
+    value ||
+    "Unknown Commission Type"
+  );
+}
+
+
+function getAdminCommissionStatusLabel(value) {
+  const labels = {
+    submitted: "Submitted",
+    reviewing: "Reviewing",
+    accepted: "Accepted",
+    declined: "Declined",
+    in_progress: "In Progress",
+    completed: "Completed"
+  };
+
+  if (labels[value]) {
+    return labels[value];
+  }
+
+  if (!value) {
+    return "Unknown Status";
+  }
+
+  return String(value)
+    .replaceAll("_", " ")
+    .replace(
+      /\b\w/g,
+      (character) =>
+        character.toUpperCase()
+    );
+}
+
+
+function getAdminCommissionPaymentLabel(value) {
+  const labels = {
+    unpaid: "Unpaid",
+    pending: "Pending",
+    paid: "Paid",
+    refunded: "Refunded"
+  };
+
+  return (
+    labels[value] ||
+    value ||
+    "Unknown Payment Status"
+  );
+}
+
+
+function formatAdminCommissionPrice(value) {
+  const amount =
+    Number(value);
+
+  if (!Number.isFinite(amount)) {
+    return "$0 CAD";
+  }
+
+  return `$${amount.toFixed(2)} CAD`;
+}
+
+
+function formatAdminCommissionDate(value) {
+  if (!value) {
+    return "Date unavailable";
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "Date unavailable";
+  }
+
+  return date.toLocaleString();
+}
+  
   /* ==========================================================
    FREE REQUEST LABELS
    ========================================================== */
@@ -516,6 +613,7 @@ if (graveyardList) {
         closeEditUpcoming();
         closeGraveyardConversion();
         closeEditGraveyard();
+        closeReviewCommission();
         setAuthStatus("Signed out.");
       } catch (error) {
         console.error("Admin sign-out error:", error);
@@ -2704,6 +2802,284 @@ function openGraveyardConversion(request) {
   });
 }
 
+/* ==========================================================
+   REVIEW COMMISSION HELPERS
+   ========================================================== */
+
+function closeReviewCommission() {
+  reviewingCommissionId = null;
+
+  if (reviewCommissionHeading) {
+    reviewCommissionHeading.textContent =
+      "Review the selected commission request.";
+  }
+
+  if (reviewCommissionType) {
+    reviewCommissionType.value =
+      "";
+  }
+
+  if (reviewCommissionSubmitter) {
+    reviewCommissionSubmitter.value =
+      "";
+  }
+
+  if (reviewCommissionContact) {
+    reviewCommissionContact.value =
+      "";
+  }
+
+  if (reviewCommissionDetails) {
+    reviewCommissionDetails.value =
+      "";
+  }
+
+  if (reviewCommissionReference) {
+    reviewCommissionReference.value =
+      "";
+  }
+
+  if (reviewCommissionGraveyard) {
+    reviewCommissionGraveyard.value =
+      "";
+  }
+
+  if (reviewCommissionPrivate) {
+    reviewCommissionPrivate.value =
+      "";
+  }
+
+  if (reviewCommissionImages) {
+    reviewCommissionImages.value =
+      "";
+  }
+
+  if (reviewCommissionBasePrice) {
+    reviewCommissionBasePrice.value =
+      "";
+  }
+
+  if (reviewCommissionAddonPrice) {
+    reviewCommissionAddonPrice.value =
+      "";
+  }
+
+  if (reviewCommissionTotal) {
+    reviewCommissionTotal.value =
+      "";
+  }
+
+  if (reviewCommissionStatus) {
+    reviewCommissionStatus.value =
+      "";
+  }
+
+  if (reviewCommissionPayment) {
+    reviewCommissionPayment.value =
+      "";
+  }
+
+  if (reviewCommissionCreated) {
+    reviewCommissionCreated.value =
+      "";
+  }
+
+  if (reviewCommissionStatusMessage) {
+    reviewCommissionStatusMessage.textContent =
+      "";
+  }
+
+  if (reviewCommissionPanel) {
+    reviewCommissionPanel.hidden =
+      true;
+  }
+}
+
+
+function openReviewCommission(commission) {
+  if (!reviewCommissionPanel) {
+    console.error(
+      "Review Commission panel is unavailable."
+    );
+
+    return;
+  }
+
+
+  reviewingCommissionId =
+    commission.id;
+
+
+  /* HEADING */
+
+  if (reviewCommissionHeading) {
+    reviewCommissionHeading.textContent =
+      commission.submitter_name
+        ? `Reviewing commission from ${commission.submitter_name}.`
+        : "Reviewing commission request.";
+  }
+
+
+  /* TYPE */
+
+  if (reviewCommissionType) {
+    reviewCommissionType.value =
+      getAdminCommissionTypeLabel(
+        commission.commission_type
+      );
+  }
+
+
+  /* SUBMITTER */
+
+  if (reviewCommissionSubmitter) {
+    reviewCommissionSubmitter.value =
+      commission.submitter_name ||
+      "Not provided";
+  }
+
+
+  /* CONTACT */
+
+  if (reviewCommissionContact) {
+    reviewCommissionContact.value =
+      commission.contact ||
+      "Not provided";
+  }
+
+
+  /* DETAILS */
+
+  if (reviewCommissionDetails) {
+    reviewCommissionDetails.value =
+      commission.request_details ||
+      "";
+  }
+
+
+  /* REFERENCE */
+
+  if (reviewCommissionReference) {
+    reviewCommissionReference.value =
+      commission.reference_details ||
+      "None provided";
+  }
+
+
+  /* GRAVEYARD */
+
+  if (reviewCommissionGraveyard) {
+    if (
+      commission.graveyard_code ||
+      commission.graveyard_title
+    ) {
+      reviewCommissionGraveyard.value =
+        [
+          commission.graveyard_code,
+          commission.graveyard_title
+        ]
+          .filter(Boolean)
+          .join(" — ");
+    } else {
+      reviewCommissionGraveyard.value =
+        "Not a Graveyard Resurrection";
+    }
+  }
+
+
+  /* PRIVATE USE */
+
+  if (reviewCommissionPrivate) {
+    reviewCommissionPrivate.value =
+      commission.private_use
+        ? "Yes"
+        : "No";
+  }
+
+
+  /* EXTRA IMAGES */
+
+  if (reviewCommissionImages) {
+    reviewCommissionImages.value =
+      String(
+        commission.extra_images ?? 0
+      );
+  }
+
+
+  /* PRICES */
+
+  if (reviewCommissionBasePrice) {
+    reviewCommissionBasePrice.value =
+      formatAdminCommissionPrice(
+        commission.base_price_cad
+      );
+  }
+
+  if (reviewCommissionAddonPrice) {
+    reviewCommissionAddonPrice.value =
+      formatAdminCommissionPrice(
+        commission.addon_price_cad
+      );
+  }
+
+  if (reviewCommissionTotal) {
+    reviewCommissionTotal.value =
+      formatAdminCommissionPrice(
+        commission.total_price_cad
+      );
+  }
+
+
+  /* STATUS */
+
+  if (reviewCommissionStatus) {
+    reviewCommissionStatus.value =
+      getAdminCommissionStatusLabel(
+        commission.status
+      );
+  }
+
+
+  /* PAYMENT */
+
+  if (reviewCommissionPayment) {
+    reviewCommissionPayment.value =
+      getAdminCommissionPaymentLabel(
+        commission.payment_status
+      );
+  }
+
+
+  /* DATE */
+
+  if (reviewCommissionCreated) {
+    reviewCommissionCreated.value =
+      formatAdminCommissionDate(
+        commission.created_at
+      );
+  }
+
+
+  /* STATUS MESSAGE */
+
+  if (reviewCommissionStatusMessage) {
+    reviewCommissionStatusMessage.textContent =
+      "";
+  }
+
+
+  /* SHOW */
+
+  reviewCommissionPanel.hidden =
+    false;
+
+  reviewCommissionPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+  
   /* ==========================================================
    EDIT GRAVEYARD HELPERS
    ========================================================== */
@@ -5695,6 +6071,20 @@ if (freeRequestStatusFilter) {
     "change",
     () => {
       renderAdminFreeRequests();
+    }
+  );
+}
+
+
+  /* ==========================================================
+   CLOSE REVIEW COMMISSION
+   ========================================================== */
+
+if (reviewCommissionCloseButton) {
+  reviewCommissionCloseButton.addEventListener(
+    "click",
+    () => {
+      closeReviewCommission();
     }
   );
 }

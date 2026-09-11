@@ -130,8 +130,11 @@
         </article>
 
 
-        <!-- Graveyard Resurrection -->
-        <article class="commission-card">
+       <!-- Graveyard Resurrection -->
+<article
+    class="commission-card"
+    data-commission-option="graveyard_resurrection"
+>
 
             <div class="commission-card-top">
 
@@ -234,7 +237,79 @@
 
 </section>
 
+<!-- =====================================
+     SELECTED GRAVEYARD REQUEST
+     ===================================== -->
 
+<section
+    class="journal-panel"
+    data-selected-graveyard-panel
+    hidden
+>
+
+    <p class="panel-label">
+        Graveyard Resurrection
+    </p>
+
+    <h2>
+        Selected Graveyard Request
+    </h2>
+
+    <p>
+        This commission was opened from the Request Graveyard.
+        The selected request will be attached to the commission
+        form when the submission system is completed.
+    </p>
+
+
+    <div class="form-field">
+
+        <label for="selected-graveyard-code">
+            Graveyard Number
+        </label>
+
+        <input
+            type="text"
+            id="selected-graveyard-code"
+            data-selected-graveyard-code
+            readonly
+        >
+
+    </div>
+
+
+    <div class="form-field">
+
+        <label for="selected-graveyard-title">
+            Graveyard Request
+        </label>
+
+        <input
+            type="text"
+            id="selected-graveyard-title"
+            data-selected-graveyard-title
+            readonly
+        >
+
+    </div>
+
+
+    <p
+        class="admin-form-status"
+        data-selected-graveyard-status
+        aria-live="polite"
+    ></p>
+
+
+    <a
+        href="requests.html"
+        class="secondary-button"
+    >
+        Choose a Different Graveyard Request
+    </a>
+
+</section>
+        
 <hr class="section-divider">
 
 

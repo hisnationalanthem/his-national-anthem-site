@@ -16,6 +16,20 @@ document.addEventListener("DOMContentLoaded", () => {
     "[data-graveyard-status]"
   );
 
+   const graveyardSearch =
+  document.querySelector(
+    "[data-graveyard-search]"
+  );
+
+
+const graveyardStatusFilter =
+  document.querySelector(
+    "[data-graveyard-status-filter]"
+  );
+
+
+let allGraveyardEntries = [];
+
 
   /* ========================================
      PAGE CHECK
@@ -239,96 +253,221 @@ document.addEventListener("DOMContentLoaded", () => {
     return article;
   }
 
+   /* ========================================
+   RENDER GRAVEYARD ENTRIES
+   ======================================== */
 
-  /* ========================================
-     LOAD PUBLIC REQUEST GRAVEYARD
-     ======================================== */
-
-  async function loadGraveyardEntries() {
-    if (
-      !graveyardList ||
-      !graveyardStatus
-    ) {
-      return;
-    }
-
-    graveyardStatus.textContent =
-      "Loading Request Graveyard...";
-
-    try {
-      const {
-        data,
-        error
-      } = await window.supabaseClient
-        .from("graveyard_entries")
-        .select(`
-          id,
-          request_number,
-          request_code,
-          gender,
-          title,
-          status,
-          note
-        `)
-        .order(
-          "request_number",
-          {
-            ascending: true
-          }
-        );
-
-      if (error) {
-        throw error;
-      }
-
-      const entries =
-        Array.isArray(data)
-          ? data
-          : [];
-
-      graveyardList.replaceChildren();
-
-      if (entries.length === 0) {
-        graveyardStatus.textContent =
-          "There are no Request Graveyard entries right now.";
-
-        return;
-      }
-
-      entries.forEach((entry) => {
-        graveyardList.append(
-          createGraveyardCard(
-            entry
-          )
-        );
-      });
-
-      graveyardStatus.textContent =
-        `${entries.length} Graveyard ${
-          entries.length === 1
-            ? "request"
-            : "requests"
-        } loaded.`;
-
-      console.log(
-        "Public Graveyard entries received:",
-        entries
-      );
-
-    } catch (error) {
-      console.error(
-        "Unable to load Request Graveyard:",
-        error
-      );
-
-      graveyardList.replaceChildren();
-
-      graveyardStatus.textContent =
-        "The Request Graveyard could not be loaded right now.";
-    }
+function renderGraveyardEntries() {
+  if (
+    !graveyardList ||
+    !graveyardStatus
+  ) {
+    return;
   }
 
 
+  const searchTerm =
+    String(
+      graveyardSearch?.value || ""
+    )
+      .trim()
+      .toLowerCase();
+
+
+  const selectedStatus =
+    graveyardStatusFilter?.value ||
+    "all";
+
+
+  const filteredEntries =
+    allGraveyardEntries.filter(
+      (entry) => {
+
+        const searchableText = [
+          entry.request_code,
+          entry.title,
+          entry.gender,
+          entry.note,
+          getGraveyardStatusLabel(
+            entry.status
+          )
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+
+
+        const matchesSearch =
+          !searchTerm ||
+          searchableText.includes(
+            searchTerm
+          );
+
+
+        const matchesStatus =
+          selectedStatus === "all" ||
+          entry.status ===
+            selectedStatus;
+
+
+        return (
+          matchesSearch &&
+          matchesStatus
+        );
+      }
+    );
+
+
+  graveyardList.replaceChildren();
+
+
+  if (
+    allGraveyardEntries.length === 0
+  ) {
+    graveyardStatus.textContent =
+      "There are no Request Graveyard entries right now.";
+
+    return;
+  }
+
+
+  if (filteredEntries.length === 0) {
+    graveyardStatus.textContent =
+      "No Graveyard requests match those filters.";
+
+    return;
+  }
+
+
+  filteredEntries.forEach(
+    (entry) => {
+      graveyardList.append(
+        createGraveyardCard(
+          entry
+        )
+      );
+    }
+  );
+
+
+  const filtersActive =
+    Boolean(searchTerm) ||
+    selectedStatus !== "all";
+
+
+  if (filtersActive) {
+    graveyardStatus.textContent =
+      `${filteredEntries.length} of ${allGraveyardEntries.length} Graveyard requests shown.`;
+  } else {
+    graveyardStatus.textContent =
+      `${allGraveyardEntries.length} Graveyard ${
+        allGraveyardEntries.length === 1
+          ? "request"
+          : "requests"
+      } loaded.`;
+  }
+}
+
+  /* ========================================
+   LOAD PUBLIC REQUEST GRAVEYARD
+   ======================================== */
+
+async function loadGraveyardEntries() {
+  if (
+    !graveyardList ||
+    !graveyardStatus
+  ) {
+    return;
+  }
+
+
+  graveyardStatus.textContent =
+    "Loading Request Graveyard...";
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("graveyard_entries")
+      .select(`
+        id,
+        request_number,
+        request_code,
+        gender,
+        title,
+        status,
+        note
+      `)
+      .order(
+        "request_number",
+        {
+          ascending: true
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    allGraveyardEntries =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Public Graveyard entries received:",
+      allGraveyardEntries
+    );
+
+
+    renderGraveyardEntries();
+
+
+  } catch (error) {
+    console.error(
+      "Unable to load Request Graveyard:",
+      error
+    );
+
+
+    allGraveyardEntries = [];
+
+    graveyardList.replaceChildren();
+
+
+    graveyardStatus.textContent =
+      "The Request Graveyard could not be loaded right now.";
+  }
+}
+
+/* ========================================
+   GRAVEYARD FILTER EVENTS
+   ======================================== */
+
+if (graveyardSearch) {
+  graveyardSearch.addEventListener(
+    "input",
+    () => {
+      renderGraveyardEntries();
+    }
+  );
+}
+
+
+if (graveyardStatusFilter) {
+  graveyardStatusFilter.addEventListener(
+    "change",
+    () => {
+      renderGraveyardEntries();
+    }
+  );
+}
+   
   /* ========================================
      CONNECT EACH REQUEST FORM
      ======================================== */

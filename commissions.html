@@ -739,6 +739,76 @@
 
 </section>
 
+        <!-- =====================================
+     COMMISSION PAYMENT
+     ===================================== -->
+
+<section
+    class="journal-panel commission-payment-panel"
+    data-commission-payment-panel
+    hidden
+>
+
+    <p class="panel-label">
+        Payment
+    </p>
+
+
+    <h2>
+        Your commission has been submitted.
+    </h2>
+
+
+    <p>
+        Your request is safely in the system.
+        You can now continue to secure Stripe checkout
+        to pay the confirmed commission total.
+    </p>
+
+
+    <div class="commission-payment-summary">
+
+        <p>
+            <strong>Commission ID:</strong>
+            <span data-commission-payment-id>
+                —
+            </span>
+        </p>
+
+
+        <p>
+            <strong>Total:</strong>
+            <span data-commission-payment-total>
+                —
+            </span>
+        </p>
+
+    </div>
+
+
+    <div class="commission-payment-actions">
+
+        <button
+            type="button"
+            class="primary-button"
+            data-commission-pay-stripe
+        >
+            Pay with Stripe
+        </button>
+
+    </div>
+
+
+    <p
+        class="small-note"
+        data-commission-payment-status
+        aria-live="polite"
+    >
+        Payment has not been started.
+    </p>
+
+</section>
+
     </main>
 
 

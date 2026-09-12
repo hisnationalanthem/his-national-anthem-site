@@ -114,6 +114,11 @@ const commissionStripeButton =
     "[data-commission-pay-stripe]"
   );
 
+     const commissionPayPalButton =
+  document.querySelector(
+    "[data-commission-pay-paypal]"
+  );
+
      const stripePaymentReturn =
   document.querySelector(
     "[data-stripe-payment-return]"
@@ -456,6 +461,14 @@ function showCommissionPaymentPanel(
     commissionStripeButton.textContent =
       "Pay with Stripe";
   }
+
+   if (commissionPayPalButton) {
+  commissionPayPalButton.disabled =
+    false;
+
+  commissionPayPalButton.textContent =
+    "Pay with PayPal";
+}
 
   commissionPaymentPanel.hidden =
     false;
@@ -924,6 +937,128 @@ if (commissionStripeButton) {
 
         commissionStripeButton.textContent =
           "Pay with Stripe";
+      }
+    }
+  );
+}
+
+     /* ==========================================================
+   PAYPAL CHECKOUT
+   ========================================================== */
+
+if (commissionPayPalButton) {
+  commissionPayPalButton.addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !window.supabaseClient ||
+        !submittedCommissionId
+      ) {
+        if (commissionPaymentStatus) {
+          commissionPaymentStatus.textContent =
+            "Unable to start payment. Please submit the commission first.";
+        }
+
+        return;
+      }
+
+
+      /* Temporarily lock both payment buttons. */
+
+      commissionPayPalButton.disabled =
+        true;
+
+      commissionPayPalButton.textContent =
+        "Opening PayPal...";
+
+
+      if (commissionStripeButton) {
+        commissionStripeButton.disabled =
+          true;
+      }
+
+
+      if (commissionPaymentStatus) {
+        commissionPaymentStatus.textContent =
+          "Creating secure PayPal checkout...";
+      }
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await window.supabaseClient
+            .functions
+            .invoke(
+              "create-paypal-order",
+              {
+                body: {
+                  commission_id:
+                    submittedCommissionId
+                }
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        const approvalUrl =
+          String(
+            data?.approval_url ||
+            ""
+          ).trim();
+
+
+        if (!approvalUrl) {
+          throw new Error(
+            "PayPal did not return an approval URL."
+          );
+        }
+
+
+        if (commissionPaymentStatus) {
+          commissionPaymentStatus.textContent =
+            "Redirecting to secure PayPal checkout...";
+        }
+
+
+        window.location.assign(
+          approvalUrl
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "PayPal checkout error:",
+          error
+        );
+
+
+        if (commissionPaymentStatus) {
+          commissionPaymentStatus.textContent =
+            "Unable to open PayPal checkout. Your commission was still submitted and has not been charged.";
+        }
+
+
+        commissionPayPalButton.disabled =
+          false;
+
+        commissionPayPalButton.textContent =
+          "Pay with PayPal";
+
+
+        if (commissionStripeButton) {
+          commissionStripeButton.disabled =
+            false;
+        }
       }
     }
   );

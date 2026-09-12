@@ -930,12 +930,10 @@ if (commissionStripeButton) {
 }
 
      /* ==========================================================
-   STRIPE RETURN MESSAGE
+   PAYMENT RETURN MESSAGE
    ========================================================== */
 
-showStripePaymentReturn();
-
-     function showStripePaymentReturn() {
+async function handlePaymentReturn() {
   if (!stripePaymentReturn) {
     return;
   }
@@ -954,15 +952,30 @@ showStripePaymentReturn();
     ).trim();
 
 
+  const supportedResults = [
+    "stripe-success",
+    "stripe-cancelled",
+    "paypal-approved",
+    "paypal-cancelled"
+  ];
+
+
   if (
-    paymentResult !==
-      "stripe-success" &&
-    paymentResult !==
-      "stripe-cancelled"
+    !supportedResults.includes(
+      paymentResult
+    )
   ) {
     return;
   }
 
+
+  stripePaymentReturn.hidden =
+    false;
+
+
+  /* =====================================
+     STRIPE SUCCESS
+     ===================================== */
 
   if (
     paymentResult ===
@@ -991,8 +1004,17 @@ showStripePaymentReturn();
       stripePaymentReturnNote.textContent =
         "Stripe is confirming the payment with the website. You do not need to submit your commission again.";
     }
+  }
 
-  } else {
+
+  /* =====================================
+     STRIPE CANCELLED
+     ===================================== */
+
+  else if (
+    paymentResult ===
+    "stripe-cancelled"
+  ) {
 
     if (stripePaymentReturnLabel) {
       stripePaymentReturnLabel.textContent =
@@ -1019,20 +1041,227 @@ showStripePaymentReturn();
   }
 
 
-  stripePaymentReturn.hidden =
-    false;
+  /* =====================================
+     PAYPAL CANCELLED
+     ===================================== */
+
+  else if (
+    paymentResult ===
+    "paypal-cancelled"
+  ) {
+
+    if (stripePaymentReturnLabel) {
+      stripePaymentReturnLabel.textContent =
+        "Payment";
+    }
+
+
+    if (stripePaymentReturnHeading) {
+      stripePaymentReturnHeading.textContent =
+        "PayPal Checkout Cancelled";
+    }
+
+
+    if (stripePaymentReturnMessage) {
+      stripePaymentReturnMessage.textContent =
+        "You left PayPal before completing payment.";
+    }
+
+
+    if (stripePaymentReturnNote) {
+      stripePaymentReturnNote.textContent =
+        "Your commission request is still saved. You have not been charged through this cancelled checkout.";
+    }
+  }
+
+
+  /* =====================================
+     PAYPAL APPROVED
+     ===================================== */
+
+  else if (
+    paymentResult ===
+    "paypal-approved"
+  ) {
+
+    const paypalOrderId =
+      String(
+        params.get("token") ||
+        ""
+      ).trim();
+
+
+    if (stripePaymentReturnLabel) {
+      stripePaymentReturnLabel.textContent =
+        "Payment";
+    }
+
+
+    if (stripePaymentReturnHeading) {
+      stripePaymentReturnHeading.textContent =
+        "Finalizing PayPal Payment";
+    }
+
+
+    if (stripePaymentReturnMessage) {
+      stripePaymentReturnMessage.textContent =
+        "Your PayPal payment was approved. The website is securely finalizing the payment now.";
+    }
+
+
+    if (stripePaymentReturnNote) {
+      stripePaymentReturnNote.textContent =
+        "Please keep this page open for a moment.";
+    }
+
+
+    if (
+      !paypalOrderId ||
+      !window.supabaseClient
+    ) {
+
+      if (stripePaymentReturnHeading) {
+        stripePaymentReturnHeading.textContent =
+          "Unable to Finalize PayPal Payment";
+      }
+
+
+      if (stripePaymentReturnMessage) {
+        stripePaymentReturnMessage.textContent =
+          "The PayPal order information was missing from the return URL.";
+      }
+
+
+      if (stripePaymentReturnNote) {
+        stripePaymentReturnNote.textContent =
+          "Your commission request is still saved. Do not submit another commission.";
+      }
+
+
+      return;
+    }
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await window.supabaseClient
+          .functions
+          .invoke(
+            "capture-paypal-order",
+            {
+              body: {
+                order_id:
+                  paypalOrderId
+              }
+            }
+          );
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      if (
+        data?.payment_status ===
+        "paid"
+      ) {
+
+        if (stripePaymentReturnHeading) {
+          stripePaymentReturnHeading.textContent =
+            "PayPal Payment Received";
+        }
+
+
+        if (stripePaymentReturnMessage) {
+          stripePaymentReturnMessage.textContent =
+            "Your PayPal payment was completed successfully.";
+        }
+
+
+        if (stripePaymentReturnNote) {
+          stripePaymentReturnNote.textContent =
+            "Your commission is saved and marked as paid. You do not need to submit it again.";
+        }
+
+      } else if (
+        data?.payment_status ===
+        "pending"
+      ) {
+
+        if (stripePaymentReturnHeading) {
+          stripePaymentReturnHeading.textContent =
+            "PayPal Payment Processing";
+        }
+
+
+        if (stripePaymentReturnMessage) {
+          stripePaymentReturnMessage.textContent =
+            "PayPal accepted the payment, but it is still processing.";
+        }
+
+
+        if (stripePaymentReturnNote) {
+          stripePaymentReturnNote.textContent =
+            "Your commission is saved. You do not need to submit it again.";
+        }
+
+      } else {
+        throw new Error(
+          "Unexpected PayPal capture response."
+        );
+      }
+
+
+    } catch (error) {
+
+      console.error(
+        "PayPal capture error:",
+        error
+      );
+
+
+      if (stripePaymentReturnHeading) {
+        stripePaymentReturnHeading.textContent =
+          "PayPal Payment Needs Attention";
+      }
+
+
+      if (stripePaymentReturnMessage) {
+        stripePaymentReturnMessage.textContent =
+          "PayPal returned you to the website, but the payment could not be finalized automatically.";
+      }
+
+
+      if (stripePaymentReturnNote) {
+        stripePaymentReturnNote.textContent =
+          "Your commission request is still saved. Do not submit another commission or attempt another payment yet.";
+      }
+    }
+  }
 
 
   stripePaymentReturn.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  behavior: "smooth",
+  block: "start"
+});
 }
 
 
-    /* ========================================
-       DEBUG
-       ======================================== */
+/* =========================================
+   PAYMENT RETURN
+   ========================================= */
+
+void handlePaymentReturn();
+
+
+/* =========================================
+   DEBUG
+   ========================================= */
 
     if (openedFromGraveyard) {
       console.log(

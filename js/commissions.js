@@ -114,6 +114,31 @@ const commissionStripeButton =
     "[data-commission-pay-stripe]"
   );
 
+     const stripePaymentReturn =
+  document.querySelector(
+    "[data-stripe-payment-return]"
+  );
+
+const stripePaymentReturnLabel =
+  document.querySelector(
+    "[data-stripe-payment-return-label]"
+  );
+
+const stripePaymentReturnHeading =
+  document.querySelector(
+    "[data-stripe-payment-return-heading]"
+  );
+
+const stripePaymentReturnMessage =
+  document.querySelector(
+    "[data-stripe-payment-return-message]"
+  );
+
+const stripePaymentReturnNote =
+  document.querySelector(
+    "[data-stripe-payment-return-note]"
+  );
+
      let submittedCommissionId = null;
 
 
@@ -902,6 +927,106 @@ if (commissionStripeButton) {
       }
     }
   );
+}
+
+     /* ==========================================================
+   STRIPE RETURN MESSAGE
+   ========================================================== */
+
+showStripePaymentReturn();
+
+     function showStripePaymentReturn() {
+  if (!stripePaymentReturn) {
+    return;
+  }
+
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const paymentResult =
+    String(
+      params.get("payment") ||
+      ""
+    ).trim();
+
+
+  if (
+    paymentResult !==
+      "stripe-success" &&
+    paymentResult !==
+      "stripe-cancelled"
+  ) {
+    return;
+  }
+
+
+  if (
+    paymentResult ===
+    "stripe-success"
+  ) {
+
+    if (stripePaymentReturnLabel) {
+      stripePaymentReturnLabel.textContent =
+        "Payment";
+    }
+
+
+    if (stripePaymentReturnHeading) {
+      stripePaymentReturnHeading.textContent =
+        "Stripe Checkout Completed";
+    }
+
+
+    if (stripePaymentReturnMessage) {
+      stripePaymentReturnMessage.textContent =
+        "Your Stripe checkout was completed successfully.";
+    }
+
+
+    if (stripePaymentReturnNote) {
+      stripePaymentReturnNote.textContent =
+        "Stripe is confirming the payment with the website. You do not need to submit your commission again.";
+    }
+
+  } else {
+
+    if (stripePaymentReturnLabel) {
+      stripePaymentReturnLabel.textContent =
+        "Payment";
+    }
+
+
+    if (stripePaymentReturnHeading) {
+      stripePaymentReturnHeading.textContent =
+        "Stripe Checkout Cancelled";
+    }
+
+
+    if (stripePaymentReturnMessage) {
+      stripePaymentReturnMessage.textContent =
+        "You left Stripe checkout before completing payment.";
+    }
+
+
+    if (stripePaymentReturnNote) {
+      stripePaymentReturnNote.textContent =
+        "Your commission request is still saved. You have not been charged through this cancelled checkout.";
+    }
+  }
+
+
+  stripePaymentReturn.hidden =
+    false;
+
+
+  stripePaymentReturn.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
 }
 
 

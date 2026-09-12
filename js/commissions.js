@@ -89,6 +89,33 @@ document.addEventListener(
     "[data-commission-submit]"
   );
 
+     const commissionPaymentPanel =
+  document.querySelector(
+    "[data-commission-payment-panel]"
+  );
+
+const commissionPaymentId =
+  document.querySelector(
+    "[data-commission-payment-id]"
+  );
+
+const commissionPaymentTotal =
+  document.querySelector(
+    "[data-commission-payment-total]"
+  );
+
+const commissionPaymentStatus =
+  document.querySelector(
+    "[data-commission-payment-status]"
+  );
+
+const commissionStripeButton =
+  document.querySelector(
+    "[data-commission-pay-stripe]"
+  );
+
+     let submittedCommissionId = null;
+
 
     /* ========================================
        URL PARAMETERS
@@ -361,6 +388,58 @@ document.addEventListener(
         `$${total} CAD`;
     }
 
+     
+function showCommissionPaymentPanel(
+  receipt
+) {
+  if (
+    !commissionPaymentPanel ||
+    !receipt?.commission_id
+  ) {
+    return;
+  }
+
+  submittedCommissionId =
+    receipt.commission_id;
+
+  if (commissionPaymentId) {
+    commissionPaymentId.textContent =
+      receipt.commission_id;
+  }
+
+  if (commissionPaymentTotal) {
+    const total =
+      Number(
+        receipt.total_price_cad
+      );
+
+    commissionPaymentTotal.textContent =
+      Number.isFinite(total)
+        ? `$${total.toFixed(2)} CAD`
+        : "CAD total unavailable";
+  }
+
+  if (commissionPaymentStatus) {
+    commissionPaymentStatus.textContent =
+      "Payment has not been started.";
+  }
+
+  if (commissionStripeButton) {
+    commissionStripeButton.disabled =
+      false;
+
+    commissionStripeButton.textContent =
+      "Pay with Stripe";
+  }
+
+  commissionPaymentPanel.hidden =
+    false;
+
+  commissionPaymentPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
 
     /* ========================================
        PREFILL GRAVEYARD COMMISSION
@@ -664,6 +743,9 @@ if (commissionForm) {
             ? data[0]
             : data;
 
+         showCommissionPaymentPanel(
+  receipt
+);
 
         console.log(
           "Commission request submitted:",
@@ -711,6 +793,112 @@ if (commissionForm) {
           commissionSubmitButton.textContent =
             "Submit Commission Request";
         }
+      }
+    }
+  );
+}
+
+     /* ==========================================================
+   STRIPE CHECKOUT
+   ========================================================== */
+
+if (commissionStripeButton) {
+  commissionStripeButton.addEventListener(
+    "click",
+    async () => {
+
+      if (
+        !window.supabaseClient ||
+        !submittedCommissionId
+      ) {
+        if (commissionPaymentStatus) {
+          commissionPaymentStatus.textContent =
+            "Unable to start payment. Please submit the commission first.";
+        }
+
+        return;
+      }
+
+
+      commissionStripeButton.disabled =
+        true;
+
+      commissionStripeButton.textContent =
+        "Opening Stripe...";
+
+
+      if (commissionPaymentStatus) {
+        commissionPaymentStatus.textContent =
+          "Creating secure Stripe checkout...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } =
+          await window.supabaseClient
+            .functions
+            .invoke(
+              "create-stripe-checkout",
+              {
+                body: {
+                  commission_id:
+                    submittedCommissionId
+                }
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        const checkoutUrl =
+          String(
+            data?.checkout_url ||
+            ""
+          ).trim();
+
+
+        if (!checkoutUrl) {
+          throw new Error(
+            "Stripe did not return a checkout URL."
+          );
+        }
+
+
+        if (commissionPaymentStatus) {
+          commissionPaymentStatus.textContent =
+            "Redirecting to secure Stripe checkout...";
+        }
+
+
+        window.location.assign(
+          checkoutUrl
+        );
+
+
+      } catch (error) {
+        console.error(
+          "Stripe checkout error:",
+          error
+        );
+
+
+        if (commissionPaymentStatus) {
+          commissionPaymentStatus.textContent =
+            "Unable to open Stripe checkout. Your commission was still submitted and has not been charged.";
+        }
+
+
+        commissionStripeButton.disabled =
+          false;
+
+        commissionStripeButton.textContent =
+          "Pay with Stripe";
       }
     }
   );

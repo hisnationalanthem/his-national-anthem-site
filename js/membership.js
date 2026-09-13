@@ -116,6 +116,26 @@ document.addEventListener(
         "[data-membership-checkout-status]"
       );
 
+     const donationForm =
+  document.querySelector(
+    "[data-member-donation-form]"
+  );
+
+const donationAmountInput =
+  document.querySelector(
+    "[data-member-donation-amount]"
+  );
+
+const donationSubmitButton =
+  document.querySelector(
+    "[data-member-donation-submit]"
+  );
+
+const donationStatus =
+  document.querySelector(
+    "[data-member-donation-status]"
+  );
+
 
     /* ========================================
        STATE
@@ -126,6 +146,9 @@ document.addEventListener(
 
     let currentMembership =
       null;
+
+     let currentCreditBalance =
+  0;
 
 
     /* ========================================
@@ -237,6 +260,84 @@ document.addEventListener(
       );
     }
 
+function updateDonationControls() {
+
+  const signedIn =
+    Boolean(
+      currentSession?.user
+    );
+
+  const hasCredits =
+    currentCreditBalance > 0;
+
+
+  if (donationAmountInput) {
+
+    donationAmountInput.disabled =
+      !signedIn ||
+      !hasCredits;
+
+    donationAmountInput.max =
+      String(
+        Math.max(
+          currentCreditBalance,
+          1
+        )
+      );
+
+
+    const currentValue =
+      Number(
+        donationAmountInput.value
+      );
+
+
+    if (
+      currentValue >
+      currentCreditBalance
+    ) {
+      donationAmountInput.value =
+        "";
+    }
+  }
+
+
+  if (donationSubmitButton) {
+
+    donationSubmitButton.disabled =
+      !signedIn ||
+      !hasCredits;
+  }
+
+
+  if (!signedIn) {
+
+    setText(
+      donationStatus,
+      "Sign in to donate membership credits."
+    );
+
+    return;
+  }
+
+
+  if (!hasCredits) {
+
+    setText(
+      donationStatus,
+      "You do not currently have any credits available to donate."
+    );
+
+    return;
+  }
+
+
+  setText(
+    donationStatus,
+    `You can donate between 1 and ${currentCreditBalance} credit${currentCreditBalance === 1 ? "" : "s"}.`
+  );
+}
+     
 
     async function getFunctionErrorMessage(
       error,
@@ -294,10 +395,13 @@ document.addEventListener(
     function renderSignedOut() {
 
       currentSession =
-        null;
+  null;
 
-      currentMembership =
-        null;
+currentMembership =
+  null;
+
+currentCreditBalance =
+  0;
 
 
       if (signedOutView) {
@@ -365,10 +469,13 @@ document.addEventListener(
 
 
       setText(
-        checkoutStatus,
-        "Sign in before starting a membership."
-      );
-    }
+  checkoutStatus,
+  "Sign in before starting a membership."
+);
+
+
+updateDonationControls();
+}
 
 
     /* ========================================
@@ -986,6 +1093,9 @@ document.addEventListener(
             "fulfilled"
         ) {
 
+           currentCreditBalance =
+  balanceResult.value;
+
           setText(
             creditBalance,
             String(
@@ -999,12 +1109,17 @@ document.addEventListener(
             `${balanceResult.value} of 20 credits currently available`
           );
 
+           updateDonationControls();
+
         } else {
 
           console.error(
             "Credit balance load failed:",
             balanceResult.reason
           );
+
+           currentCreditBalance =
+  0;
 
 
           setText(
@@ -1018,6 +1133,13 @@ document.addEventListener(
             "Your credit balance could not be loaded."
           );
         }
+
+         updateDonationControls();
+
+setText(
+  donationStatus,
+  "Credit donation is unavailable because your balance could not be loaded."
+);
 
 
         setText(
@@ -1344,6 +1466,183 @@ document.addEventListener(
       );
     }
 
+/* ========================================
+   DONATE MEMBER CREDITS
+   ======================================== */
+
+if (donationForm) {
+
+  donationForm.addEventListener(
+    "submit",
+    async (
+      event
+    ) => {
+
+      event.preventDefault();
+
+
+      if (
+        !currentSession?.user
+      ) {
+
+        setText(
+          donationStatus,
+          "Sign in before donating credits."
+        );
+
+        return;
+      }
+
+
+      const formData =
+        new FormData(
+          donationForm
+        );
+
+
+      const amount =
+        Number(
+          formData.get(
+            "amount"
+          )
+        );
+
+
+      if (
+        !Number.isInteger(
+          amount
+        ) ||
+        amount < 1
+      ) {
+
+        setText(
+          donationStatus,
+          "Enter a whole number of at least 1 credit."
+        );
+
+        return;
+      }
+
+
+      if (
+        amount >
+        currentCreditBalance
+      ) {
+
+        setText(
+          donationStatus,
+          "You cannot donate more credits than you currently have."
+        );
+
+        return;
+      }
+
+
+      if (donationSubmitButton) {
+
+        donationSubmitButton.disabled =
+          true;
+
+        donationSubmitButton.textContent =
+          "Donating...";
+      }
+
+
+      setText(
+        donationStatus,
+        "Adding your credits to the Donation Bank..."
+      );
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await window
+            .supabaseClient
+            .rpc(
+              "donate_my_member_credits",
+              {
+                p_amount:
+                  amount
+              }
+            );
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        const receipt =
+          Array.isArray(
+            data
+          )
+            ? data[0]
+            : data;
+
+
+        donationForm.reset();
+
+
+        await refreshMemberState();
+
+
+        const donated =
+          Number(
+            receipt
+              ?.donated_credits ??
+            amount
+          );
+
+
+        const newBalance =
+          Number(
+            receipt
+              ?.new_balance ??
+            currentCreditBalance
+          );
+
+
+        setText(
+          donationStatus,
+          `Successfully donated ${donated} credit${donated === 1 ? "" : "s"} to the Donation Bank. Your new balance is ${newBalance}.`
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Member credit donation error:",
+          error
+        );
+
+
+        setText(
+          donationStatus,
+          error?.message ||
+          "Your credits could not be donated."
+        );
+
+      } finally {
+
+        if (
+          donationSubmitButton
+        ) {
+
+          donationSubmitButton.textContent =
+            "Donate Credits";
+        }
+
+
+        updateDonationControls();
+      }
+    }
+  );
+}
+     
 
     /* ========================================
        STRIPE MEMBERSHIP CHECKOUT

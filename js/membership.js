@@ -1113,33 +1113,35 @@ updateDonationControls();
 
         } else {
 
-          console.error(
-            "Credit balance load failed:",
-            balanceResult.reason
-          );
+  console.error(
+    "Credit balance load failed:",
+    balanceResult.reason
+  );
 
-           currentCreditBalance =
-  0;
-
-
-          setText(
-            creditBalance,
-            "—"
-          );
+  currentCreditBalance =
+    0;
 
 
-          setText(
-            creditNote,
-            "Your credit balance could not be loaded."
-          );
-        }
+  setText(
+    creditBalance,
+    "—"
+  );
 
-         updateDonationControls();
 
-setText(
-  donationStatus,
-  "Credit donation is unavailable because your balance could not be loaded."
-);
+  setText(
+    creditNote,
+    "Your credit balance could not be loaded."
+  );
+
+
+  updateDonationControls();
+
+
+  setText(
+    donationStatus,
+    "Credit donation is unavailable because your balance could not be loaded."
+  );
+}
 
 
         setText(

@@ -1660,7 +1660,11 @@ if (donationForm) {
       );
   }
 }
-     
+
+      }
+    );
+  }
+
 
     /* ========================================
        STRIPE MEMBERSHIP CHECKOUT

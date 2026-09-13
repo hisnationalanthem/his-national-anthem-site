@@ -1630,19 +1630,35 @@ if (donationForm) {
 
       } finally {
 
-        if (
-          donationSubmitButton
-        ) {
+  if (
+    donationSubmitButton
+  ) {
 
-          donationSubmitButton.textContent =
-            "Donate Credits";
-        }
+    donationSubmitButton.textContent =
+      "Donate Credits";
+
+    donationSubmitButton.disabled =
+      !currentSession?.user ||
+      currentCreditBalance <= 0;
+  }
 
 
-        updateDonationControls();
-      }
-    }
-  );
+  if (
+    donationAmountInput
+  ) {
+
+    donationAmountInput.disabled =
+      !currentSession?.user ||
+      currentCreditBalance <= 0;
+
+    donationAmountInput.max =
+      String(
+        Math.max(
+          currentCreditBalance,
+          1
+        )
+      );
+  }
 }
      
 

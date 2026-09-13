@@ -432,7 +432,80 @@
             Sign in to view your balance
         </p>
 
-    </div>
+        </div>
+
+</section>
+
+
+<hr class="section-divider">
+
+
+<!-- =====================================
+     CREDIT DONATION
+     ===================================== -->
+
+<section class="journal-panel">
+
+    <p class="panel-label">
+        Credit Donation
+    </p>
+
+    <h2>
+        Donate Commission Credits
+    </h2>
+
+    <p>
+        Unused membership commission credits can be formally
+        donated to the community Donation Bank.
+    </p>
+
+    <p>
+        Donated credits are permanently removed from your
+        personal balance and added to the Donation Bank.
+    </p>
+
+
+    <form data-member-donation-form>
+
+        <label>
+            Credits to Donate
+
+            <input
+                type="number"
+                name="amount"
+                min="1"
+                max="20"
+                step="1"
+                inputmode="numeric"
+                required
+                data-member-donation-amount
+            >
+        </label>
+
+
+        <div class="button-row">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-member-donation-submit
+                disabled
+            >
+                Donate Credits
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <p
+        class="small-note"
+        data-member-donation-status
+        aria-live="polite"
+    >
+        Sign in to donate membership credits.
+    </p>
 
 </section>
 
@@ -443,12 +516,6 @@
 <!-- =====================================
      MEMBERSHIP STATUS
      ===================================== -->
-
-<section class="journal-panel">
-
-    <p class="panel-label">
-        Membership Status
-    </p>
 
     <h2>
         Your Mama's Baby Membership

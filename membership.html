@@ -185,6 +185,204 @@
 
 </section>
 
+<hr class="section-divider">
+
+
+<!-- =====================================
+     MEMBER ACCOUNT
+     ===================================== -->
+
+<section class="journal-panel">
+
+    <p class="panel-label">
+        Member Account
+    </p>
+
+    <h2>
+        Sign In or Create an Account
+    </h2>
+
+    <p>
+        A free website account is required before starting
+        or managing a Mama's Baby membership.
+    </p>
+
+
+    <!-- SIGNED OUT VIEW -->
+
+    <div data-member-signed-out>
+
+        <div class="membership-benefits">
+
+            <!-- CREATE ACCOUNT -->
+
+            <div class="membership-benefit">
+
+                <div>
+
+                    <h3>
+                        Create Account
+                    </h3>
+
+                    <form data-member-signup-form>
+
+                        <label>
+                            Display Name
+
+                            <input
+                                type="text"
+                                name="display_name"
+                                autocomplete="nickname"
+                                maxlength="100"
+                                required
+                            >
+                        </label>
+
+
+                        <label>
+                            Email
+
+                            <input
+                                type="email"
+                                name="email"
+                                autocomplete="email"
+                                required
+                            >
+                        </label>
+
+
+                        <label>
+                            Password
+
+                            <input
+                                type="password"
+                                name="password"
+                                autocomplete="new-password"
+                                minlength="8"
+                                required
+                            >
+                        </label>
+
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            data-member-signup-submit
+                        >
+                            Create Account
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- SIGN IN -->
+
+            <div class="membership-benefit">
+
+                <div>
+
+                    <h3>
+                        Sign In
+                    </h3>
+
+                    <form data-member-login-form>
+
+                        <label>
+                            Email
+
+                            <input
+                                type="email"
+                                name="email"
+                                autocomplete="email"
+                                required
+                            >
+                        </label>
+
+
+                        <label>
+                            Password
+
+                            <input
+                                type="password"
+                                name="password"
+                                autocomplete="current-password"
+                                required
+                            >
+                        </label>
+
+
+                        <button
+                            type="submit"
+                            class="primary-button"
+                            data-member-login-submit
+                        >
+                            Sign In
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <p
+            class="small-note"
+            data-member-auth-status
+            aria-live="polite"
+        ></p>
+
+    </div>
+
+
+    <!-- SIGNED IN VIEW -->
+
+    <div
+        data-member-signed-in
+        hidden
+    >
+
+        <p>
+            Signed in as
+            <strong data-member-email>—</strong>
+        </p>
+
+
+        <p>
+            Member name:
+            <strong data-member-display-name>—</strong>
+        </p>
+
+
+        <div class="button-row">
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-member-logout
+            >
+                Sign Out
+            </button>
+
+        </div>
+
+
+        <p
+            class="small-note"
+            data-member-account-status
+            aria-live="polite"
+        ></p>
+
+    </div>
+
+</section>
+
 
 <hr class="section-divider">
 
@@ -199,11 +397,14 @@
         Member Dashboard
     </p>
 
-    <h2>Monthly Commission Counter</h2>
+    <h2>
+        Monthly Commission Counter
+    </h2>
 
     <p>
-        Members will be able to see their current commission
-        balance here after logging into their account.
+        Your available commission credits include this month's
+        allowance plus any unused rollover, up to a maximum
+        balance of twenty.
     </p>
 
 
@@ -215,17 +416,78 @@
                 Available Commission Credits
             </p>
 
-            <p class="credit-counter-number">
+            <p
+                class="credit-counter-number"
+                data-member-credit-balance
+            >
                 —
             </p>
 
         </div>
 
-        <p class="credit-counter-note">
-            Member login required
+        <p
+            class="credit-counter-note"
+            data-member-credit-note
+        >
+            Sign in to view your balance
         </p>
 
     </div>
+
+</section>
+
+
+<hr class="section-divider">
+
+
+<!-- =====================================
+     MEMBERSHIP STATUS
+     ===================================== -->
+
+<section class="journal-panel">
+
+    <p class="panel-label">
+        Membership Status
+    </p>
+
+    <h2>
+        Your Mama's Baby Membership
+    </h2>
+
+
+    <div data-membership-status-panel>
+
+        <p>
+            Status:
+            <strong data-membership-status>
+                Sign in required
+            </strong>
+        </p>
+
+
+        <p data-membership-period-wrap hidden>
+            Current membership period:
+            <strong data-membership-period>
+                —
+            </strong>
+        </p>
+
+
+        <p data-membership-renewal-wrap hidden>
+            Renewal:
+            <strong data-membership-renewal>
+                —
+            </strong>
+        </p>
+
+    </div>
+
+
+    <p
+        class="small-note"
+        data-membership-status-message
+        aria-live="polite"
+    ></p>
 
 </section>
 
@@ -243,16 +505,20 @@
         Members Only
     </p>
 
-    <h2>Submit a Member Commission</h2>
+    <h2>
+        Submit a Member Commission
+    </h2>
 
     <p>
-        Members will use a separate commission request form
-        connected to their available membership credits.
+        Active members will use a separate commission request
+        form connected directly to their available membership
+        credits.
     </p>
 
     <p class="small-note">
-        The member request form will be activated after
-        accounts and Supabase are connected.
+        The member commission form will be activated after
+        the membership checkout and credit dashboard are
+        fully tested.
     </p>
 
 </section>
@@ -271,15 +537,37 @@
         Subscription
     </p>
 
-    <h2>Join Mama's Baby</h2>
+    <h2>
+        Join Mama's Baby
+    </h2>
 
     <p>
-        Subscription checkout will be added after the
-        membership database and account system are ready.
+        Mama's Baby is $10 CAD per month and includes five
+        commission credits each billing month. Unused credits
+        roll over up to a maximum balance of twenty.
     </p>
 
-    <p class="small-note">
-        Membership signup is intentionally inactive for now.
+
+    <div class="button-row">
+
+        <button
+            type="button"
+            class="primary-button"
+            data-membership-stripe-subscribe
+            disabled
+        >
+            Subscribe with Stripe
+        </button>
+
+    </div>
+
+
+    <p
+        class="small-note"
+        data-membership-checkout-status
+        aria-live="polite"
+    >
+        Sign in before starting a membership.
     </p>
 
 </section>
@@ -294,6 +582,7 @@
 <script src="js/config.js"></script>
 <script src="js/supabase.js"></script>
 <script src="js/site.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/membership.js"></script>
 
 </body>

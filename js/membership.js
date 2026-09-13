@@ -667,13 +667,14 @@ document.addEventListener(
       */
 
       const canSubscribe =
-        [
-          "inactive",
-          "cancelled",
-          "expired"
-        ].includes(
-          status
-        );
+  [
+    "inactive",
+    "pending",
+    "cancelled",
+    "expired"
+  ].includes(
+    status
+  );
 
 
       if (stripeSubscribeButton) {
@@ -682,25 +683,36 @@ document.addEventListener(
       }
 
 
+       if (stripeSubscribeButton) {
+  stripeSubscribeButton.textContent =
+    "Subscribe with Stripe";
+}
+
       /*
         MESSAGES
       */
+
 
       switch (status) {
 
         case "pending":
 
-          setText(
-            membershipStatusMessage,
-            "Your membership checkout has been started but has not been activated yet."
-          );
+  setText(
+    membershipStatusMessage,
+    "Your Stripe membership checkout has been started but has not been completed yet."
+  );
 
-          setText(
-            checkoutStatus,
-            "A Stripe membership checkout is already in progress."
-          );
+  setText(
+    checkoutStatus,
+    "Your existing Stripe checkout can be resumed."
+  );
 
-          break;
+  if (stripeSubscribeButton) {
+    stripeSubscribeButton.textContent =
+      "Resume Stripe Checkout";
+  }
+
+  break;
 
 
         case "active":

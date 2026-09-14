@@ -121,6 +121,11 @@ document.addEventListener(
         "[data-membership-stripe-subscribe]"
       );
 
+    const paypalSubscribeButton =
+      document.querySelector(
+        "[data-membership-paypal-subscribe]"
+      );
+
     const checkoutStatus =
       document.querySelector(
         "[data-membership-checkout-status]"
@@ -598,6 +603,12 @@ currentCreditBalance =
       }
 
 
+      if (paypalSubscribeButton) {
+        paypalSubscribeButton.disabled =
+          true;
+      }
+
+
       setText(
   checkoutStatus,
   "Sign in before starting a membership."
@@ -804,12 +815,24 @@ updateMemberGraveyardField();
         if (stripeSubscribeButton) {
           stripeSubscribeButton.disabled =
             false;
+
+          stripeSubscribeButton.textContent =
+            "Subscribe with Stripe";
+        }
+
+
+        if (paypalSubscribeButton) {
+          paypalSubscribeButton.disabled =
+            false;
+
+          paypalSubscribeButton.textContent =
+            "Subscribe with PayPal";
         }
 
 
         setText(
           checkoutStatus,
-          "You can start a $10 CAD monthly membership through Stripe."
+          "You can start a $10 CAD monthly membership through Stripe or PayPal."
         );
 
 
@@ -821,7 +844,7 @@ updateMemberGraveyardField();
 
         setText(
           manageMembershipStatus,
-          "An active Stripe membership is required."
+          "Stripe memberships can be managed here after activation. PayPal memberships are managed through PayPal."
         );
 
 
@@ -927,27 +950,62 @@ updateMemberGraveyardField();
         SUBSCRIBE BUTTON RULES
       */
 
-      const canSubscribe =
-  [
-    "inactive",
-    "pending",
-    "cancelled",
-    "expired"
-  ].includes(
-    status
-  );
+      const canStartFreshMembership =
+        [
+          "inactive",
+          "cancelled",
+          "expired"
+        ].includes(
+          status
+        );
+
+
+      const canUseStripeButton =
+        canStartFreshMembership ||
+        (
+          status ===
+            "pending" &&
+          membership.provider ===
+            "stripe"
+        );
+
+
+      const canUsePayPalButton =
+        canStartFreshMembership ||
+        (
+          status ===
+            "pending" &&
+          membership.provider ===
+            "paypal"
+        );
 
 
       if (stripeSubscribeButton) {
         stripeSubscribeButton.disabled =
-          !canSubscribe;
+          !canUseStripeButton;
+
+        stripeSubscribeButton.textContent =
+          status ===
+            "pending" &&
+          membership.provider ===
+            "stripe"
+            ? "Resume Stripe Checkout"
+            : "Subscribe with Stripe";
       }
 
 
-       if (stripeSubscribeButton) {
-  stripeSubscribeButton.textContent =
-    "Subscribe with Stripe";
-}
+      if (paypalSubscribeButton) {
+        paypalSubscribeButton.disabled =
+          !canUsePayPalButton;
+
+        paypalSubscribeButton.textContent =
+          status ===
+            "pending" &&
+          membership.provider ===
+            "paypal"
+            ? "Resume PayPal Approval"
+            : "Subscribe with PayPal";
+      }
 
 
       /*
@@ -998,7 +1056,17 @@ updateMemberGraveyardField();
 
         setText(
           manageMembershipStatus,
-          "An active Stripe membership is required."
+          membership.provider ===
+            "paypal" &&
+          [
+            "active",
+            "past_due",
+            "suspended"
+          ].includes(
+            status
+          )
+            ? "This membership is billed through PayPal. Manage the subscription from your PayPal account."
+            : "An active Stripe membership is required for Stripe billing management."
         );
       }
 
@@ -1011,22 +1079,35 @@ updateMemberGraveyardField();
 
         case "pending":
 
-  setText(
-    membershipStatusMessage,
-    "Your Stripe membership checkout has been started but has not been completed yet."
-  );
+          if (
+            membership.provider ===
+              "paypal"
+          ) {
 
-  setText(
-    checkoutStatus,
-    "Your existing Stripe checkout can be resumed."
-  );
+            setText(
+              membershipStatusMessage,
+              "Your PayPal membership approval has been started but has not been completed yet."
+            );
 
-  if (stripeSubscribeButton) {
-    stripeSubscribeButton.textContent =
-      "Resume Stripe Checkout";
-  }
+            setText(
+              checkoutStatus,
+              "Your existing PayPal approval can be resumed."
+            );
 
-  break;
+          } else {
+
+            setText(
+              membershipStatusMessage,
+              "Your Stripe membership checkout has been started but has not been completed yet."
+            );
+
+            setText(
+              checkoutStatus,
+              "Your existing Stripe checkout can be resumed."
+            );
+          }
+
+          break;
 
 
         case "active":
@@ -1061,7 +1142,7 @@ updateMemberGraveyardField();
 
           setText(
             membershipStatusMessage,
-            "Stripe reported that your membership payment is past due."
+            `${membership.provider === "paypal" ? "PayPal" : "Stripe"} reported that your membership payment is past due.`
           );
 
           setText(
@@ -1207,6 +1288,12 @@ updateMemberGraveyardField();
 
         if (stripeSubscribeButton) {
           stripeSubscribeButton.disabled =
+            true;
+        }
+
+
+        if (paypalSubscribeButton) {
+          paypalSubscribeButton.disabled =
             true;
         }
 
@@ -2475,7 +2562,157 @@ if (donationForm) {
 
 
     /* ========================================
-       STRIPE RETURN MESSAGE
+       PAYPAL MEMBERSHIP APPROVAL
+       ======================================== */
+
+    if (
+      paypalSubscribeButton
+    ) {
+
+      paypalSubscribeButton.addEventListener(
+        "click",
+        async () => {
+
+          if (
+            !currentSession?.user
+          ) {
+
+            setText(
+              checkoutStatus,
+              "Sign in before starting a membership."
+            );
+
+            return;
+          }
+
+
+          setButtonLoading(
+            paypalSubscribeButton,
+            true,
+            "Subscribe with PayPal",
+            "Opening PayPal..."
+          );
+
+
+          setText(
+            checkoutStatus,
+            "Creating your secure PayPal membership subscription..."
+          );
+
+
+          try {
+
+            const {
+              data,
+              error
+            } =
+              await window
+                .supabaseClient
+                .functions
+                .invoke(
+                  "create-paypal-membership-subscription",
+                  {
+                    body: {}
+                  }
+                );
+
+
+            if (error) {
+
+              const message =
+                await getFunctionErrorMessage(
+                  error,
+                  "Unable to create PayPal membership approval."
+                );
+
+
+              throw new Error(
+                message
+              );
+            }
+
+
+            const approvalUrl =
+              String(
+                data
+                  ?.approval_url ||
+                ""
+              ).trim();
+
+
+            if (!approvalUrl) {
+              throw new Error(
+                "PayPal did not return an approval URL."
+              );
+            }
+
+
+            setText(
+              checkoutStatus,
+              data?.reused
+                ? "Reopening your existing PayPal approval..."
+                : "Opening secure PayPal approval..."
+            );
+
+
+            window.location.assign(
+              approvalUrl
+            );
+
+
+          } catch (error) {
+
+            console.error(
+              "PayPal membership approval error:",
+              error
+            );
+
+
+            setText(
+              checkoutStatus,
+              error?.message ||
+              "Unable to start PayPal membership approval."
+            );
+
+
+            /*
+              Reload state because the server
+              may have created or changed a
+              pending membership row.
+            */
+
+            await refreshMemberState();
+
+
+          } finally {
+
+            if (
+              !currentMembership ||
+              [
+                "inactive",
+                "cancelled",
+                "expired"
+              ].includes(
+                currentMembership
+                  ?.status
+              )
+            ) {
+
+              setButtonLoading(
+                paypalSubscribeButton,
+                false,
+                "Subscribe with PayPal",
+                "Opening PayPal..."
+              );
+            }
+          }
+        }
+      );
+    }
+
+
+    /* ========================================
+       PAYMENT RETURN MESSAGE
        ======================================== */
 
     function showMembershipReturnMessage() {
@@ -2513,6 +2750,30 @@ if (donationForm) {
         setText(
           checkoutStatus,
           "Stripe checkout was cancelled. You were not subscribed from this cancelled checkout."
+        );
+      }
+
+
+      else if (
+        result ===
+          "paypal-approved"
+      ) {
+
+        setText(
+          checkoutStatus,
+          "PayPal approval completed. Confirming your membership..."
+        );
+      }
+
+
+      else if (
+        result ===
+          "paypal-cancelled"
+      ) {
+
+        setText(
+          checkoutStatus,
+          "PayPal approval was cancelled. You were not subscribed from this cancelled approval."
         );
       }
     }
@@ -2600,6 +2861,14 @@ if (donationForm) {
 
 
         if (
+          paypalSubscribeButton
+        ) {
+          paypalSubscribeButton.disabled =
+            true;
+        }
+
+
+        if (
           manageMembershipButton
         ) {
           manageMembershipButton.disabled =
@@ -2627,8 +2896,8 @@ if (donationForm) {
 
 
       /*
-        Stripe's webhook may finish a moment
-        after the browser returns from Checkout.
+        A payment-provider webhook may finish
+        a moment after the browser returns.
 
         Refresh a few times on successful return.
         This NEVER activates the membership
@@ -2642,10 +2911,14 @@ if (donationForm) {
 
 
       if (
-        params.get(
-          "membership"
-        ) ===
-          "stripe-success"
+        [
+          "stripe-success",
+          "paypal-approved"
+        ].includes(
+          params.get(
+            "membership"
+          )
+        )
       ) {
 
         window.setTimeout(

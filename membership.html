@@ -566,7 +566,7 @@
      MEMBER REQUESTS
      ===================================== -->
 
-<section class="journal-panel member-request-placeholder">
+<section class="journal-panel">
 
     <p class="panel-label">
         Members Only
@@ -577,16 +577,202 @@
     </h2>
 
     <p>
-        Active members will use a separate commission request
-        form connected directly to their available membership
-        credits.
+        Each submitted member commission uses one available
+        membership credit.
     </p>
 
     <p class="small-note">
-        The member commission form will be activated after
-        the membership checkout and credit dashboard are
-        fully tested.
+        Membership credits cover the base commission.
+        Paid extra-image add-ons will be added separately later.
     </p>
+
+
+    <form data-member-commission-form>
+
+        <!-- COMMISSION TYPE -->
+
+        <label>
+            Commission Type
+
+            <select
+                name="commission_type"
+                required
+                data-member-commission-type
+            >
+                <option value="">
+                    Select a commission type
+                </option>
+
+                <option value="new_bot">
+                    New Bot
+                </option>
+
+                <option value="alt_bot">
+                    Alt Bot
+                </option>
+
+                <option value="graveyard_resurrection">
+                    Graveyard Resurrection
+                </option>
+
+                <option value="bot_remaster">
+                    Bot Remaster
+                </option>
+
+                <option value="media_inspired">
+                    Media-Inspired Bot
+                </option>
+
+                <option value="oc_creation">
+                    Have Your OC Created
+                </option>
+            </select>
+        </label>
+
+
+        <!-- GRAVEYARD CODE -->
+
+        <div
+            data-member-graveyard-field
+            hidden
+        >
+
+            <label>
+                Graveyard Request Code
+
+                <input
+                    type="text"
+                    name="graveyard_code"
+                    placeholder="RG-001"
+                    maxlength="6"
+                    pattern="RG-[0-9]{3}"
+                    autocomplete="off"
+                    data-member-graveyard-code
+                >
+            </label>
+
+            <p class="small-note">
+                Enter the permanent RG number for the
+                Request Graveyard entry you want to resurrect.
+            </p>
+
+        </div>
+
+
+        <!-- REQUEST TITLE -->
+
+        <label>
+            Request Title
+            <span class="small-note">
+                Optional
+            </span>
+
+            <input
+                type="text"
+                name="request_title"
+                maxlength="250"
+                placeholder="Short name for your request"
+            >
+        </label>
+
+
+        <!-- REQUEST DETAILS -->
+
+        <label>
+            Commission Details
+
+            <textarea
+                name="request_details"
+                rows="10"
+                maxlength="10000"
+                required
+                placeholder="Describe the character, scenario, POV, tropes, relationship, tone, appearance, or anything else needed for the commission."
+            ></textarea>
+        </label>
+
+
+        <!-- REFERENCES -->
+
+        <label>
+            References / Additional Information
+            <span class="small-note">
+                Optional
+            </span>
+
+            <textarea
+                name="reference_details"
+                rows="6"
+                maxlength="5000"
+                placeholder="Reference links, character information, media details, existing bot links, OC information, or other useful notes."
+            ></textarea>
+        </label>
+
+
+        <!-- PRIVATE USE -->
+
+        <label>
+            <input
+                type="checkbox"
+                name="private_use"
+                value="true"
+            >
+
+            Private Use
+        </label>
+
+        <p class="small-note">
+            Private use has no additional charge.
+        </p>
+
+
+        <!-- CREDIT COST -->
+
+        <div class="credit-counter-placeholder">
+
+            <div>
+
+                <p class="credit-counter-label">
+                    Credit Cost
+                </p>
+
+                <p class="credit-counter-number">
+                    1
+                </p>
+
+            </div>
+
+            <p class="credit-counter-note">
+                One membership credit per submitted request
+            </p>
+
+        </div>
+
+
+        <!-- SUBMIT -->
+
+        <div class="button-row">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-member-commission-submit
+                disabled
+            >
+                Submit Member Commission
+            </button>
+
+        </div>
+
+
+        <p
+            class="small-note"
+            data-member-commission-status
+            aria-live="polite"
+        >
+            Sign in with an available membership credit to submit.
+        </p>
+
+    </form>
 
 </section>
 

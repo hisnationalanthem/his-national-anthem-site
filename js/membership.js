@@ -106,6 +106,16 @@ document.addEventListener(
         "[data-membership-status-message]"
       );
 
+    const manageMembershipButton =
+      document.querySelector(
+        "[data-membership-manage]"
+      );
+
+    const manageMembershipStatus =
+      document.querySelector(
+        "[data-membership-manage-status]"
+      );
+
     const stripeSubscribeButton =
       document.querySelector(
         "[data-membership-stripe-subscribe]"
@@ -570,6 +580,18 @@ currentCreditBalance =
       );
 
 
+      if (manageMembershipButton) {
+        manageMembershipButton.disabled =
+          true;
+      }
+
+
+      setText(
+        manageMembershipStatus,
+        "An active Stripe membership is required."
+      );
+
+
       if (stripeSubscribeButton) {
         stripeSubscribeButton.disabled =
           true;
@@ -789,6 +811,18 @@ updateMemberGraveyardField();
         );
 
 
+        if (manageMembershipButton) {
+          manageMembershipButton.disabled =
+            true;
+        }
+
+
+        setText(
+          manageMembershipStatus,
+          "An active Stripe membership is required."
+        );
+
+
         return;
       }
 
@@ -904,6 +938,50 @@ updateMemberGraveyardField();
   stripeSubscribeButton.textContent =
     "Subscribe with Stripe";
 }
+
+
+      /*
+        CUSTOMER PORTAL RULES
+      */
+
+      const canManageMembership =
+        membership.provider ===
+          "stripe" &&
+        Boolean(
+          membership
+            .provider_subscription_id
+        ) &&
+        [
+          "active",
+          "past_due",
+          "suspended"
+        ].includes(
+          status
+        );
+
+
+      if (manageMembershipButton) {
+        manageMembershipButton.disabled =
+          !canManageMembership;
+      }
+
+
+      if (canManageMembership) {
+
+        setText(
+          manageMembershipStatus,
+          membership.cancel_at_period_end
+            ? "Your Stripe membership is set to cancel at the end of the current billing period."
+            : "Open Stripe to manage billing, payment methods, or cancellation."
+        );
+
+      } else {
+
+        setText(
+          manageMembershipStatus,
+          "An active Stripe membership is required."
+        );
+      }
 
       /*
         MESSAGES
@@ -2063,6 +2141,151 @@ if (donationForm) {
 
 
     /* ========================================
+       STRIPE CUSTOMER PORTAL
+       ======================================== */
+
+    if (
+      manageMembershipButton
+    ) {
+
+      manageMembershipButton.addEventListener(
+        "click",
+        async () => {
+
+          if (
+            !currentSession?.user
+          ) {
+
+            setText(
+              manageMembershipStatus,
+              "Sign in before managing your membership."
+            );
+
+            return;
+          }
+
+
+          if (
+            !currentMembership ||
+            currentMembership.provider !==
+              "stripe" ||
+            !currentMembership
+              .provider_subscription_id
+          ) {
+
+            setText(
+              manageMembershipStatus,
+              "No Stripe membership is available to manage."
+            );
+
+            return;
+          }
+
+
+          setButtonLoading(
+            manageMembershipButton,
+            true,
+            "Manage Membership",
+            "Opening Stripe..."
+          );
+
+
+          setText(
+            manageMembershipStatus,
+            "Opening secure Stripe membership management..."
+          );
+
+
+          try {
+
+            const {
+              data,
+              error
+            } =
+              await window
+                .supabaseClient
+                .functions
+                .invoke(
+                  "create-stripe-customer-portal",
+                  {
+                    body: {}
+                  }
+                );
+
+
+            if (error) {
+
+              const message =
+                await getFunctionErrorMessage(
+                  error,
+                  "Unable to open membership management."
+                );
+
+
+              throw new Error(
+                message
+              );
+            }
+
+
+            const portalUrl =
+              String(
+                data
+                  ?.portal_url ||
+                ""
+              ).trim();
+
+
+            if (!portalUrl) {
+              throw new Error(
+                "Stripe did not return a Customer Portal URL."
+              );
+            }
+
+
+            setText(
+              manageMembershipStatus,
+              "Opening Stripe..."
+            );
+
+
+            window.location.assign(
+              portalUrl
+            );
+
+
+          } catch (error) {
+
+            console.error(
+              "Stripe Customer Portal error:",
+              error
+            );
+
+
+            setText(
+              manageMembershipStatus,
+              error?.message ||
+              "Unable to open membership management."
+            );
+
+
+            if (
+              manageMembershipButton
+            ) {
+
+              manageMembershipButton.disabled =
+                false;
+
+              manageMembershipButton.textContent =
+                "Manage Membership";
+            }
+          }
+        }
+      );
+    }
+
+
+    /* ========================================
        STRIPE MEMBERSHIP CHECKOUT
        ======================================== */
 
@@ -2342,6 +2565,20 @@ if (donationForm) {
           stripeSubscribeButton.disabled =
             true;
         }
+
+
+        if (
+          manageMembershipButton
+        ) {
+          manageMembershipButton.disabled =
+            true;
+        }
+
+
+        setText(
+          manageMembershipStatus,
+          "Membership management is unavailable right now."
+        );
 
 
         return;

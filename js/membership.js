@@ -683,6 +683,8 @@ updateMemberGraveyardField();
             current_period_start,
             current_period_end,
             cancel_at_period_end,
+            cancel_at,
+            canceled_at,
             created_at,
             updated_at
           `)
@@ -896,11 +898,19 @@ updateMemberGraveyardField();
         }
 
 
+        const scheduledCancelAt =
+          membership.cancel_at ||
+          (membership.cancel_at_period_end
+            ? membership.current_period_end
+            : null);
+
+
         setText(
           membershipRenewal,
-          membership
-            .cancel_at_period_end
-            ? "Cancels at the end of the current billing period"
+          scheduledCancelAt
+            ? `Cancels ${formatDate(
+                scheduledCancelAt
+              )}`
             : "Monthly"
         );
 
@@ -968,10 +978,19 @@ updateMemberGraveyardField();
 
       if (canManageMembership) {
 
+        const scheduledCancelAt =
+          membership.cancel_at ||
+          (membership.cancel_at_period_end
+            ? membership.current_period_end
+            : null);
+
+
         setText(
           manageMembershipStatus,
-          membership.cancel_at_period_end
-            ? "Your Stripe membership is set to cancel at the end of the current billing period."
+          scheduledCancelAt
+            ? `Your Stripe membership is scheduled to cancel on ${formatDate(
+                scheduledCancelAt
+              )}. You can open Stripe to manage or resume it.`
             : "Open Stripe to manage billing, payment methods, or cancellation."
         );
 
@@ -1012,10 +1031,23 @@ updateMemberGraveyardField();
 
         case "active":
 
-          setText(
-            membershipStatusMessage,
-            "Your Mama's Baby membership is active."
-          );
+          {
+            const scheduledCancelAt =
+              membership.cancel_at ||
+              (membership.cancel_at_period_end
+                ? membership.current_period_end
+                : null);
+
+
+            setText(
+              membershipStatusMessage,
+              scheduledCancelAt
+                ? `Your Mama's Baby membership is active until ${formatDate(
+                    scheduledCancelAt
+                  )}.`
+                : "Your Mama's Baby membership is active."
+            );
+          }
 
           setText(
             checkoutStatus,

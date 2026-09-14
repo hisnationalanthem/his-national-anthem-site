@@ -136,6 +136,36 @@ const donationStatus =
     "[data-member-donation-status]"
   );
 
+const memberCommissionForm =
+  document.querySelector(
+    "[data-member-commission-form]"
+  );
+
+const memberCommissionType =
+  document.querySelector(
+    "[data-member-commission-type]"
+  );
+
+const memberGraveyardField =
+  document.querySelector(
+    "[data-member-graveyard-field]"
+  );
+
+const memberGraveyardCode =
+  document.querySelector(
+    "[data-member-graveyard-code]"
+  );
+
+const memberCommissionSubmit =
+  document.querySelector(
+    "[data-member-commission-submit]"
+  );
+
+const memberCommissionStatus =
+  document.querySelector(
+    "[data-member-commission-status]"
+  );
+
 
     /* ========================================
        STATE
@@ -337,6 +367,84 @@ function updateDonationControls() {
     `You can donate between 1 and ${currentCreditBalance} credit${currentCreditBalance === 1 ? "" : "s"}.`
   );
 }
+
+
+function updateMemberCommissionControls(
+  options = {}
+) {
+
+  const preserveMessage =
+    options.preserveMessage === true;
+
+  const signedIn =
+    Boolean(
+      currentSession?.user
+    );
+
+  const hasCredits =
+    currentCreditBalance > 0;
+
+
+  if (memberCommissionSubmit) {
+    memberCommissionSubmit.disabled =
+      !signedIn ||
+      !hasCredits;
+  }
+
+
+  if (!preserveMessage) {
+
+    if (!signedIn) {
+      setText(
+        memberCommissionStatus,
+        "Sign in with an available membership credit to submit."
+      );
+
+      return;
+    }
+
+
+    if (!hasCredits) {
+      setText(
+        memberCommissionStatus,
+        "You do not currently have an available membership credit."
+      );
+
+      return;
+    }
+
+
+    setText(
+      memberCommissionStatus,
+      `You have ${currentCreditBalance} credit${currentCreditBalance === 1 ? "" : "s"} available. Submitting this request will use 1 credit.`
+    );
+  }
+}
+
+
+function updateMemberGraveyardField() {
+
+  const isGraveyard =
+    memberCommissionType?.value ===
+      "graveyard_resurrection";
+
+
+  if (memberGraveyardField) {
+    memberGraveyardField.hidden =
+      !isGraveyard;
+  }
+
+
+  if (memberGraveyardCode) {
+    memberGraveyardCode.required =
+      isGraveyard;
+
+    if (!isGraveyard) {
+      memberGraveyardCode.value =
+        "";
+    }
+  }
+}
      
 
     async function getFunctionErrorMessage(
@@ -475,6 +583,8 @@ currentCreditBalance =
 
 
 updateDonationControls();
+updateMemberCommissionControls();
+updateMemberGraveyardField();
 }
 
 
@@ -1110,6 +1220,7 @@ updateDonationControls();
           );
 
            updateDonationControls();
+           updateMemberCommissionControls();
 
         } else {
 
@@ -1135,11 +1246,18 @@ updateDonationControls();
 
 
   updateDonationControls();
+  updateMemberCommissionControls();
 
 
   setText(
     donationStatus,
     "Credit donation is unavailable because your balance could not be loaded."
+  );
+
+
+  setText(
+    memberCommissionStatus,
+    "Member commission submission is unavailable because your credit balance could not be loaded."
   );
 }
 
@@ -1667,6 +1785,284 @@ if (donationForm) {
 
 
     /* ========================================
+       MEMBER COMMISSION REQUEST
+       ======================================== */
+
+    if (memberCommissionType) {
+
+      memberCommissionType.addEventListener(
+        "change",
+        () => {
+          updateMemberGraveyardField();
+        }
+      );
+    }
+
+
+    if (memberCommissionForm) {
+
+      memberCommissionForm.addEventListener(
+        "submit",
+        async (
+          event
+        ) => {
+
+          event.preventDefault();
+
+
+          if (
+            !currentSession?.user
+          ) {
+
+            setText(
+              memberCommissionStatus,
+              "Sign in before submitting a member commission."
+            );
+
+            return;
+          }
+
+
+          if (
+            currentCreditBalance < 1
+          ) {
+
+            setText(
+              memberCommissionStatus,
+              "You do not have an available membership credit."
+            );
+
+            return;
+          }
+
+
+          const formData =
+            new FormData(
+              memberCommissionForm
+            );
+
+
+          const commissionType =
+            String(
+              formData.get(
+                "commission_type"
+              ) || ""
+            ).trim();
+
+
+          const requestTitle =
+            String(
+              formData.get(
+                "request_title"
+              ) || ""
+            ).trim();
+
+
+          const requestDetails =
+            String(
+              formData.get(
+                "request_details"
+              ) || ""
+            ).trim();
+
+
+          const referenceDetails =
+            String(
+              formData.get(
+                "reference_details"
+              ) || ""
+            ).trim();
+
+
+          const privateUse =
+            formData.get(
+              "private_use"
+            ) === "true";
+
+
+          const graveyardCode =
+            String(
+              formData.get(
+                "graveyard_code"
+              ) || ""
+            )
+              .trim()
+              .toUpperCase();
+
+
+          if (!commissionType) {
+
+            setText(
+              memberCommissionStatus,
+              "Select a commission type."
+            );
+
+            return;
+          }
+
+
+          if (!requestDetails) {
+
+            setText(
+              memberCommissionStatus,
+              "Commission details are required."
+            );
+
+            return;
+          }
+
+
+          if (
+            commissionType ===
+              "graveyard_resurrection" &&
+            !/^RG-[0-9]{3}$/.test(
+              graveyardCode
+            )
+          ) {
+
+            setText(
+              memberCommissionStatus,
+              "Enter a valid Graveyard request code such as RG-001."
+            );
+
+            return;
+          }
+
+
+          if (memberCommissionSubmit) {
+
+            memberCommissionSubmit.disabled =
+              true;
+
+            memberCommissionSubmit.textContent =
+              "Submitting...";
+          }
+
+
+          setText(
+            memberCommissionStatus,
+            "Submitting your member commission and applying 1 credit..."
+          );
+
+
+          try {
+
+            const {
+              data,
+              error
+            } =
+              await window
+                .supabaseClient
+                .rpc(
+                  "submit_member_commission_request",
+                  {
+                    p_commission_type:
+                      commissionType,
+
+                    p_request_title:
+                      requestTitle ||
+                      null,
+
+                    p_request_details:
+                      requestDetails,
+
+                    p_reference_details:
+                      referenceDetails ||
+                      null,
+
+                    p_private_use:
+                      privateUse,
+
+                    p_graveyard_code:
+                      commissionType ===
+                        "graveyard_resurrection"
+                        ? graveyardCode
+                        : null
+                  }
+                );
+
+
+            if (error) {
+              throw error;
+            }
+
+
+            const receipt =
+              Array.isArray(
+                data
+              )
+                ? data[0]
+                : data;
+
+
+            const commissionId =
+              String(
+                receipt
+                  ?.commission_id ||
+                ""
+              );
+
+
+            const newBalance =
+              Number(
+                receipt
+                  ?.new_balance ??
+                Math.max(
+                  currentCreditBalance - 1,
+                  0
+                )
+              );
+
+
+            memberCommissionForm.reset();
+
+            updateMemberGraveyardField();
+
+            await refreshMemberState();
+
+
+            setText(
+              memberCommissionStatus,
+              commissionId
+                ? `Member commission submitted successfully. 1 credit was used. Your new balance is ${newBalance}. Request ID: ${commissionId}`
+                : `Member commission submitted successfully. 1 credit was used. Your new balance is ${newBalance}.`
+            );
+
+
+          } catch (error) {
+
+            console.error(
+              "Member commission submission error:",
+              error
+            );
+
+
+            setText(
+              memberCommissionStatus,
+              error?.message ||
+              "Your member commission could not be submitted."
+            );
+
+          } finally {
+
+            if (memberCommissionSubmit) {
+
+              memberCommissionSubmit.textContent =
+                "Submit Member Commission";
+            }
+
+
+            updateMemberCommissionControls({
+              preserveMessage:
+                true
+            });
+          }
+        }
+      );
+    }
+
+
+    /* ========================================
        STRIPE MEMBERSHIP CHECKOUT
        ======================================== */
 
@@ -1953,6 +2349,8 @@ if (donationForm) {
 
 
       showMembershipReturnMessage();
+
+      updateMemberGraveyardField();
 
       startAuthListener();
 

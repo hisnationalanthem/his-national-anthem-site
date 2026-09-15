@@ -433,6 +433,50 @@
     line-height: 1.8;
 }
 
+/* ========================================
+   HOMEPAGE INTRO
+   ======================================== */
+
+.home-main {
+    padding-top: 38px;
+}
+
+
+.home-intro {
+    max-width: 900px;
+
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+}
+
+
+.home-intro .page-kicker {
+    margin-bottom: 6px;
+}
+
+
+.home-intro .page-title {
+    max-width: 100%;
+
+    margin-bottom: 16px;
+
+    font-size:
+        clamp(3rem, 6.2vw, 5.2rem);
+
+    line-height: 1.02;
+
+    letter-spacing: 0.01em;
+}
+
+
+.home-intro .page-lede {
+    max-width: 52ch;
+
+    font-size: 1.08rem;
+
+    line-height: 1.72;
+}
+
 
 /* ========================================
    JOURNAL PANELS
@@ -551,14 +595,14 @@
     grid-template-columns:
         repeat(2, minmax(0, 1fr));
 
-    gap: 24px;
+    gap: 22px;
 
-    margin-bottom: 64px;
+    margin-bottom: 52px;
 }
 
 
 .home-grid .journal-panel {
-    min-height: 250px;
+    min-height: 230px;
 
     display: flex;
 

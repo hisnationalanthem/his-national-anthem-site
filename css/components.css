@@ -3241,6 +3241,34 @@ a.creator-link-card:hover {
         italic;
 }
 
+.follower-placeholder-label {
+    margin: 0;
+
+    color:
+        var(--color-accent-light);
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    font-size:
+        clamp(1.5rem, 3vw, 2.2rem);
+
+    line-height:
+        1.15;
+}
+
+
+.follower-panel-placeholder {
+    margin-bottom: 0;
+}
+
+
+.follower-panel-placeholder .follower-panel-content {
+    align-items: center;
+}
+
 
 /* ========================================
    FOLLOWER PROGRESS
@@ -3415,14 +3443,22 @@ a.creator-link-card:hover {
    ============================================================ */
 
 .home-updates-section {
-  margin-top: 2rem;
+    margin-top: 0;
+    margin-bottom: 48px;
 }
 
 .home-section-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1.5rem;
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 1.5rem;
+
+    padding-bottom: 18px;
+
+    border-bottom:
+        1px solid var(--color-border-soft);
 }
 
 .home-section-heading h2 {
@@ -3451,19 +3487,30 @@ a.creator-link-card:hover {
 }
 
 .home-updates-list {
-  display: grid;
-  gap: 1rem;
-  margin-top: 1.25rem;
+    display: grid;
+
+    gap: 0;
+
+    margin-top: 20px;
 }
 
 .home-update-card {
-  padding-top: 1rem;
-  border-top: 1px solid var(--color-border-soft);
+    padding: 18px 0;
+
+    border-top:
+        1px solid var(--color-border-soft);
 }
 
+
 .home-update-card:first-child {
-  padding-top: 0;
-  border-top: 0;
+    padding-top: 0;
+
+    border-top: 0;
+}
+
+
+.home-update-card:last-child {
+    padding-bottom: 0;
 }
 
 .home-update-meta {

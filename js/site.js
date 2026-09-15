@@ -144,18 +144,95 @@ function setupMobileMenu() {
     }
 
 
+    function closeMenu() {
+        navigation.classList.remove("menu-open");
+
+        menuButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+        menuButton.setAttribute(
+            "aria-label",
+            "Open navigation menu"
+        );
+
+        menuButton.textContent =
+            "Menu";
+    }
+
+
     menuButton.addEventListener("click", () => {
         const menuIsOpen =
-            navigation.classList.toggle("menu-open");
+            !navigation.classList.contains(
+                "menu-open"
+            );
+
+
+        navigation.classList.toggle(
+            "menu-open",
+            menuIsOpen
+        );
+
 
         menuButton.setAttribute(
             "aria-expanded",
             menuIsOpen.toString()
         );
 
+
+        menuButton.setAttribute(
+            "aria-label",
+            menuIsOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+        );
+
+
         menuButton.textContent =
-            menuIsOpen ? "Close" : "Menu";
+            menuIsOpen
+                ? "Close"
+                : "Menu";
     });
+
+
+    navigation
+        .querySelectorAll("a")
+        .forEach((link) => {
+            link.addEventListener(
+                "click",
+                closeMenu
+            );
+        });
+
+
+    document.addEventListener(
+        "keydown",
+        (event) => {
+            if (
+                event.key === "Escape" &&
+                navigation.classList.contains(
+                    "menu-open"
+                )
+            ) {
+                closeMenu();
+
+                menuButton.focus();
+            }
+        }
+    );
+
+
+    window.addEventListener(
+        "resize",
+        () => {
+            if (
+                window.innerWidth > 1120
+            ) {
+                closeMenu();
+            }
+        }
+    );
 }
 
 

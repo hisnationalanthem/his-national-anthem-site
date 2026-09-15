@@ -799,11 +799,7 @@ if (commissionForm) {
         }
 
 
-        /*
-         * Leave the form populated for now.
-         * Payment checkout will use the newly
-         * created commission record in a later step.
-         */
+        
         if (commissionSubmitButton) {
           commissionSubmitButton.textContent =
             "Commission Submitted";
@@ -863,6 +859,11 @@ if (commissionStripeButton) {
 
       commissionStripeButton.textContent =
         "Opening Stripe...";
+
+       if (commissionPayPalButton) {
+  commissionPayPalButton.disabled =
+    true;
+}
 
 
       if (commissionPaymentStatus) {
@@ -937,6 +938,12 @@ if (commissionStripeButton) {
 
         commissionStripeButton.textContent =
           "Pay with Stripe";
+
+if (commissionPayPalButton) {
+  commissionPayPalButton.disabled =
+    false;
+}
+         
       }
     }
   );

@@ -629,7 +629,7 @@ currentCreditBalance =
 
       setText(
         manageMembershipStatus,
-        "An active Stripe membership is required."
+        "Sign in to manage your membership."
       );
 
 
@@ -880,7 +880,7 @@ updateMemberGraveyardField();
 
         setText(
           manageMembershipStatus,
-          "Stripe memberships can be managed here after activation. PayPal memberships are managed through PayPal."
+          "Membership management becomes available after a subscription is activated."
         );
 
 
@@ -1055,16 +1055,33 @@ updateMemberGraveyardField();
 
 
       /*
-        CUSTOMER PORTAL RULES
+        MEMBERSHIP MANAGEMENT RULES
       */
 
-      const canManageMembership =
-        membership.provider ===
-          "stripe" &&
+      const hasProviderSubscription =
         Boolean(
           membership
             .provider_subscription_id
-        ) &&
+        );
+
+
+      const canManageStripeMembership =
+        membership.provider ===
+          "stripe" &&
+        hasProviderSubscription &&
+        [
+          "active",
+          "past_due",
+          "suspended"
+        ].includes(
+          status
+        );
+
+
+      const canCancelPayPalMembership =
+        membership.provider ===
+          "paypal" &&
+        hasProviderSubscription &&
         [
           "active",
           "past_due",
@@ -1075,12 +1092,22 @@ updateMemberGraveyardField();
 
 
       if (manageMembershipButton) {
+
         manageMembershipButton.disabled =
-          !canManageMembership;
+          !(
+            canManageStripeMembership ||
+            canCancelPayPalMembership
+          );
+
+
+        manageMembershipButton.textContent =
+          canCancelPayPalMembership
+            ? "Cancel PayPal Membership"
+            : "Manage Membership";
       }
 
 
-      if (canManageMembership) {
+      if (canManageStripeMembership) {
 
         const scheduledCancelAt =
           membership.cancel_at ||
@@ -1098,21 +1125,52 @@ updateMemberGraveyardField();
             : "Open Stripe to manage billing, payment methods, or cancellation."
         );
 
+      } else if (
+        canCancelPayPalMembership
+      ) {
+
+        setText(
+          manageMembershipStatus,
+          membership.current_period_end
+            ? `Cancel future PayPal billing from this site. Your existing credits stay available, and your current paid period runs through ${formatDate(
+                membership.current_period_end
+              )}.`
+            : "Cancel future PayPal billing from this site. Your existing membership credits will remain available."
+        );
+
+      } else if (
+        membership.provider ===
+          "paypal" &&
+        status ===
+          "cancelled"
+      ) {
+
+        setText(
+          manageMembershipStatus,
+          paidPeriodStillActive
+            ? `Your PayPal membership is cancelled. Your paid period continues through ${formatDate(
+                membership.current_period_end
+              )}.`
+            : "Your PayPal membership is cancelled."
+        );
+
+      } else if (
+        membership.provider ===
+          "paypal" &&
+        status ===
+          "pending"
+      ) {
+
+        setText(
+          manageMembershipStatus,
+          "Complete PayPal approval before membership management becomes available."
+        );
+
       } else {
 
         setText(
           manageMembershipStatus,
-          membership.provider ===
-            "paypal" &&
-          [
-            "active",
-            "past_due",
-            "suspended"
-          ].includes(
-            status
-          )
-            ? "This membership is billed through PayPal. Manage the subscription from your PayPal account."
-            : "An active Stripe membership is required for Stripe billing management."
+          "Membership management is not available for the current membership state."
         );
       }
 
@@ -2325,7 +2383,7 @@ if (donationForm) {
 
 
     /* ========================================
-       STRIPE CUSTOMER PORTAL
+       MEMBERSHIP MANAGEMENT
        ======================================== */
 
     if (
@@ -2351,111 +2409,114 @@ if (donationForm) {
 
           if (
             !currentMembership ||
-            currentMembership.provider !==
-              "stripe" ||
             !currentMembership
               .provider_subscription_id
           ) {
 
             setText(
               manageMembershipStatus,
-              "No Stripe membership is available to manage."
+              "No active membership is available to manage."
             );
 
             return;
           }
 
 
-          setButtonLoading(
-            manageMembershipButton,
-            true,
-            "Manage Membership",
-            "Opening Stripe..."
-          );
+          /* =================================
+             STRIPE CUSTOMER PORTAL
+             ================================= */
 
+          if (
+            currentMembership.provider ===
+              "stripe"
+          ) {
 
-          setText(
-            manageMembershipStatus,
-            "Opening secure Stripe membership management..."
-          );
-
-
-          try {
-
-            const {
-              data,
-              error
-            } =
-              await window
-                .supabaseClient
-                .functions
-                .invoke(
-                  "create-stripe-customer-portal",
-                  {
-                    body: {}
-                  }
-                );
-
-
-            if (error) {
-
-              const message =
-                await getFunctionErrorMessage(
-                  error,
-                  "Unable to open membership management."
-                );
-
-
-              throw new Error(
-                message
-              );
-            }
-
-
-            const portalUrl =
-              String(
-                data
-                  ?.portal_url ||
-                ""
-              ).trim();
-
-
-            if (!portalUrl) {
-              throw new Error(
-                "Stripe did not return a Customer Portal URL."
-              );
-            }
-
-
-            setText(
-              manageMembershipStatus,
+            setButtonLoading(
+              manageMembershipButton,
+              true,
+              "Manage Membership",
               "Opening Stripe..."
             );
 
 
-            window.location.assign(
-              portalUrl
-            );
-
-
-          } catch (error) {
-
-            console.error(
-              "Stripe Customer Portal error:",
-              error
-            );
-
-
             setText(
               manageMembershipStatus,
-              error?.message ||
-              "Unable to open membership management."
+              "Opening secure Stripe membership management..."
             );
 
 
-            if (
-              manageMembershipButton
-            ) {
+            try {
+
+              const {
+                data,
+                error
+              } =
+                await window
+                  .supabaseClient
+                  .functions
+                  .invoke(
+                    "create-stripe-customer-portal",
+                    {
+                      body: {}
+                    }
+                  );
+
+
+              if (error) {
+
+                const message =
+                  await getFunctionErrorMessage(
+                    error,
+                    "Unable to open membership management."
+                  );
+
+
+                throw new Error(
+                  message
+                );
+              }
+
+
+              const portalUrl =
+                String(
+                  data
+                    ?.portal_url ||
+                  ""
+                ).trim();
+
+
+              if (!portalUrl) {
+                throw new Error(
+                  "Stripe did not return a Customer Portal URL."
+                );
+              }
+
+
+              setText(
+                manageMembershipStatus,
+                "Opening Stripe..."
+              );
+
+
+              window.location.assign(
+                portalUrl
+              );
+
+
+            } catch (error) {
+
+              console.error(
+                "Stripe Customer Portal error:",
+                error
+              );
+
+
+              setText(
+                manageMembershipStatus,
+                error?.message ||
+                "Unable to open membership management."
+              );
+
 
               manageMembershipButton.disabled =
                 false;
@@ -2463,7 +2524,153 @@ if (donationForm) {
               manageMembershipButton.textContent =
                 "Manage Membership";
             }
+
+
+            return;
           }
+
+
+          /* =================================
+             PAYPAL CANCELLATION
+             ================================= */
+
+          if (
+            currentMembership.provider ===
+              "paypal"
+          ) {
+
+            if (
+              ![
+                "active",
+                "past_due",
+                "suspended"
+              ].includes(
+                currentMembership.status
+              )
+            ) {
+
+              setText(
+                manageMembershipStatus,
+                "This PayPal membership cannot be cancelled from its current state."
+              );
+
+              return;
+            }
+
+
+            const confirmed =
+              window.confirm(
+                "Cancel your PayPal membership? Future PayPal billing will stop. Your existing credits will remain, and you cannot start a new membership until the current paid period ends."
+              );
+
+
+            if (!confirmed) {
+
+              setText(
+                manageMembershipStatus,
+                "Your PayPal membership was not changed."
+              );
+
+              return;
+            }
+
+
+            setButtonLoading(
+              manageMembershipButton,
+              true,
+              "Cancel PayPal Membership",
+              "Cancelling PayPal..."
+            );
+
+
+            setText(
+              manageMembershipStatus,
+              "Cancelling future PayPal billing..."
+            );
+
+
+            try {
+
+              const {
+                data,
+                error
+              } =
+                await window
+                  .supabaseClient
+                  .functions
+                  .invoke(
+                    "cancel-paypal-membership",
+                    {
+                      body: {}
+                    }
+                  );
+
+
+              if (error) {
+
+                const message =
+                  await getFunctionErrorMessage(
+                    error,
+                    "Unable to cancel PayPal membership."
+                  );
+
+
+                throw new Error(
+                  message
+                );
+              }
+
+
+              await refreshMemberState();
+
+
+              const paidThrough =
+                data?.paid_through
+                  ? formatDate(
+                      data.paid_through
+                    )
+                  : null;
+
+
+              setText(
+                manageMembershipStatus,
+                paidThrough
+                  ? `PayPal billing is cancelled. Your paid period continues through ${paidThrough}, and your existing credits remain available.`
+                  : "PayPal billing is cancelled. Your existing credits remain available."
+              );
+
+
+            } catch (error) {
+
+              console.error(
+                "PayPal membership cancellation error:",
+                error
+              );
+
+
+              setText(
+                manageMembershipStatus,
+                error?.message ||
+                "Unable to cancel PayPal membership."
+              );
+
+
+              manageMembershipButton.disabled =
+                false;
+
+              manageMembershipButton.textContent =
+                "Cancel PayPal Membership";
+            }
+
+
+            return;
+          }
+
+
+          setText(
+            manageMembershipStatus,
+            "This membership provider cannot be managed here."
+          );
         }
       );
     }

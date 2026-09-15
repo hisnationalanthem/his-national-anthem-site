@@ -271,6 +271,42 @@ const memberCommissionStatus =
     }
 
 
+    function hasFuturePaidPeriod(
+      membership
+    ) {
+
+      if (
+        !membership ||
+        membership.status !==
+          "cancelled" ||
+        !membership.current_period_end
+      ) {
+        return false;
+      }
+
+
+      const periodEnd =
+        new Date(
+          membership.current_period_end
+        );
+
+
+      if (
+        Number.isNaN(
+          periodEnd.getTime()
+        )
+      ) {
+        return false;
+      }
+
+
+      return (
+        periodEnd.getTime() >
+        Date.now()
+      );
+    }
+
+
     function membershipStatusLabel(
       value
     ) {
@@ -950,13 +986,23 @@ updateMemberGraveyardField();
         SUBSCRIBE BUTTON RULES
       */
 
+      const paidPeriodStillActive =
+        hasFuturePaidPeriod(
+          membership
+        );
+
+
       const canStartFreshMembership =
         [
           "inactive",
-          "cancelled",
           "expired"
         ].includes(
           status
+        ) ||
+        (
+          status ===
+            "cancelled" &&
+          !paidPeriodStillActive
         );
 
 
@@ -1170,15 +1216,34 @@ updateMemberGraveyardField();
 
         case "cancelled":
 
-          setText(
-            membershipStatusMessage,
-            "Your previous membership has been cancelled."
-          );
+          if (paidPeriodStillActive) {
 
-          setText(
-            checkoutStatus,
-            "You may start a new membership."
-          );
+            setText(
+              membershipStatusMessage,
+              `Your membership is cancelled, but your paid period continues through ${formatDate(
+                membership.current_period_end
+              )}.`
+            );
+
+            setText(
+              checkoutStatus,
+              `You can start a new membership after ${formatDate(
+                membership.current_period_end
+              )}.`
+            );
+
+          } else {
+
+            setText(
+              membershipStatusMessage,
+              "Your previous membership has been cancelled."
+            );
+
+            setText(
+              checkoutStatus,
+              "You may start a new membership through Stripe or PayPal."
+            );
+          }
 
           break;
 
@@ -1192,7 +1257,7 @@ updateMemberGraveyardField();
 
           setText(
             checkoutStatus,
-            "You may start a new Stripe checkout."
+            "You may start a new membership through Stripe or PayPal."
           );
 
           break;
@@ -1207,7 +1272,7 @@ updateMemberGraveyardField();
 
           setText(
             checkoutStatus,
-            "You may start a $10 CAD monthly membership through Stripe."
+            "You may start a $10 CAD monthly membership through Stripe or PayPal."
           );
       }
     }

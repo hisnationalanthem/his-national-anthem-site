@@ -632,6 +632,15 @@
             left;
     }
 
+.follower-panel-placeholder .follower-panel-content {
+    align-items: flex-start;
+}
+
+
+.follower-placeholder-label {
+    font-size: 1.5rem;
+}
+
 }
 @media (max-width: 600px) {
   .upcoming-live-card-top {

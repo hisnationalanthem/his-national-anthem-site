@@ -256,13 +256,73 @@ function createSiteFooter() {
     footerContainer.innerHTML = `
         <footer class="site-footer">
 
-            <p class="site-footer-name">
-                his_national_anthem
-            </p>
+            <div class="site-footer-main">
 
-            <p class="site-footer-copyright">
-                &copy; ${currentYear} his_national_anthem
-            </p>
+                <div class="site-footer-brand">
+
+                    <a
+                        href="index.html"
+                        class="site-footer-logo"
+                    >
+                        his_national_anthem
+                    </a>
+
+                    <p class="site-footer-description">
+                        Bot commissions, requests,
+                        memberships, releases,
+                        and creator updates.
+                    </p>
+
+                </div>
+
+
+                <nav
+                    class="site-footer-links"
+                    aria-label="Footer navigation"
+                >
+
+                    <a href="commissions.html">
+                        Commissions
+                    </a>
+
+                    <a href="membership.html">
+                        Membership
+                    </a>
+
+                    <a href="requests.html">
+                        Free Requests
+                    </a>
+
+                    <a href="faq.html">
+                        FAQ
+                    </a>
+
+                    <a href="terms.html">
+                        Terms
+                    </a>
+
+                    <a href="about.html">
+                        About
+                    </a>
+
+                </nav>
+
+            </div>
+
+
+            <div class="site-footer-bottom">
+
+                <p class="site-footer-copyright">
+                    &copy; ${currentYear}
+                    his_national_anthem
+                </p>
+
+                <p class="site-footer-note">
+                    Please do not repost or redistribute
+                    site content without permission.
+                </p>
+
+            </div>
 
         </footer>
     `;

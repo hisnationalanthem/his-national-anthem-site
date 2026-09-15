@@ -235,6 +235,21 @@
     .commission-card {
         min-height:
             auto;
+
+        padding:
+            24px;
+    }
+
+
+    .commission-card-top {
+        margin-bottom:
+            20px;
+    }
+
+
+    .commission-inclusions {
+        margin-bottom:
+            0;
     }
 
 
@@ -250,6 +265,31 @@
     .addon-price {
         font-size:
             1rem;
+    }
+
+
+    .commission-request-form {
+        max-width:
+            none;
+    }
+
+
+    .commission-request-form > .primary-button {
+        width:
+            100%;
+    }
+
+
+    .commission-payment-actions {
+        flex-direction:
+            column;
+    }
+
+
+    .commission-payment-actions .primary-button,
+    .commission-payment-actions .secondary-button {
+        width:
+            100%;
     }
 
 }

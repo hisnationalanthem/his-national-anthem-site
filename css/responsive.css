@@ -136,6 +136,48 @@
         padding-bottom: 28px;
     }
 
+   .home-main {
+    padding-top: 30px;
+}
+
+
+.home-intro {
+    margin-bottom: 32px;
+
+    padding-bottom: 24px;
+}
+
+
+.home-intro .page-kicker {
+    margin-bottom: 5px;
+}
+
+
+.home-intro .page-title {
+    margin-bottom: 14px;
+
+    font-size:
+        clamp(2.45rem, 12vw, 3.6rem);
+
+    line-height: 1.04;
+
+    overflow-wrap: anywhere;
+}
+
+
+.home-intro .page-lede {
+    max-width: 100%;
+
+    font-size: 1rem;
+
+    line-height: 1.65;
+}
+
+
+.home-grid .journal-panel {
+    min-height: auto;
+}
+
 }
 /* ========================================
    COMMISSION PAGE

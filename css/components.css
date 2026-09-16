@@ -5127,3 +5127,101 @@ h5,
 h6 {
     overflow-wrap: anywhere;
 }
+
+/* ==========================================================
+   FLEX AND GRID SHRINK GUARD
+   ========================================================== */
+
+.home-grid > *,
+.commission-grid > *,
+.membership-benefits > *,
+.request-grid > *,
+.graveyard-status-guide > *,
+.schedule-grid > *,
+.bot-grid > *,
+.series-grid > *,
+.masterlist-live-grid > *,
+.admin-management-grid > * {
+    min-width: 0;
+}
+
+
+.site-footer-main > *,
+.site-footer-bottom > *,
+.commission-card-top > *,
+.addon-item > *,
+.membership-card-header > *,
+.credit-counter-placeholder > *,
+.upcoming-placeholder-header > *,
+.upcoming-live-card-top > *,
+.home-section-heading > *,
+.policy-fact > *,
+.admin-dashboard-heading > *,
+.admin-bot-manager-header > * {
+    min-width: 0;
+}
+
+/* ==========================================================
+   SITE-WIDE RESPONSIVE CONTENT
+   ========================================================== */
+
+@media (max-width: 900px) {
+
+    .commission-grid,
+    .bot-grid,
+    .masterlist-live-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .schedule-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .policy-section,
+    .about-layout,
+    .currency-layout {
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .home-grid,
+    .commission-grid,
+    .membership-benefits,
+    .request-grid,
+    .graveyard-status-guide,
+    .schedule-grid,
+    .bot-grid,
+    .series-grid,
+    .creator-links,
+    .masterlist-live-grid,
+    .admin-management-grid {
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+
+
+    .currency-selector-row {
+        grid-template-columns:
+            minmax(0, 1fr);
+    }
+
+
+    .currency-swap-button {
+        justify-self: center;
+    }
+
+
+    .masterlist-series-filter {
+        width: 100%;
+        min-width: 0;
+        margin-left: 0;
+    }
+}

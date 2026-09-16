@@ -404,6 +404,14 @@
             24px;
     }
 
+   .graveyard-status-guide {
+    grid-template-columns:
+        1fr;
+
+    padding:
+        18px;
+}
+
 }
 /* ========================================
    UPCOMING BOTS PAGE

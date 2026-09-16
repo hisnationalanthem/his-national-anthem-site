@@ -203,7 +203,7 @@
      UPCOMING QUEUE
      ===================================== -->
 
-<section>
+<section class="upcoming-queue-section">
 
     <div class="section-heading">
 
@@ -211,68 +211,36 @@
             Current Queue
         </p>
 
-        <h2>Upcoming Bot List</h2>
+        <h2 id="upcoming-live-title">
+            Upcoming Bots
+        </h2>
 
         <p>
-            The upcoming bot queue will eventually load
-            automatically from the site database.
+            Planned releases and bots currently
+            in progress.
         </p>
 
     </div>
 
 
-    <div class="journal-panel upcoming-placeholder">
+    <div
+        class="journal-panel upcoming-live-section"
+        aria-labelledby="upcoming-live-title"
+    >
 
-        <div class="upcoming-placeholder-header">
-
-            <div>
-
-               <section class="journal-panel upcoming-live-section" aria-labelledby="upcoming-live-title">
-  <p class="panel-label">Current Queue</p>
-
-  <h2 id="upcoming-live-title">Upcoming Bots</h2>
-
-  <p class="small-note">
-    Planned releases and bots currently in progress.
-  </p>
-
-  <p class="upcoming-load-status" data-upcoming-status aria-live="polite">
-    Loading upcoming bots...
-  </p>
-
-  <div class="upcoming-live-list" data-upcoming-list></div>
-</section>
-
-            </div>
+        <p
+            class="upcoming-load-status"
+            data-upcoming-status
+            aria-live="polite"
+        >
+            Loading upcoming bots...
+        </p>
 
 
-            <span class="request-status">
-                Database coming soon
-            </span>
-
-        </div>
-
-
-        <div class="upcoming-table-placeholder">
-
-            <div class="upcoming-row upcoming-row-heading">
-
-                <span>Bot</span>
-                <span>Type</span>
-                <span>Expected Date</span>
-                <span>Status</span>
-
-            </div>
-
-
-            <div class="upcoming-empty">
-
-                Upcoming bot information will appear here
-                once the database is connected.
-
-            </div>
-
-        </div>
+        <div
+            class="upcoming-live-list"
+            data-upcoming-list
+        ></div>
 
     </div>
 

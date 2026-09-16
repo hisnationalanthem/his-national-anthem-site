@@ -2708,6 +2708,11 @@ if (donationForm) {
             "Opening Stripe..."
           );
 
+           if (paypalSubscribeButton) {
+  paypalSubscribeButton.disabled =
+    true;
+}
+
 
           setText(
             checkoutStatus,
@@ -2864,6 +2869,11 @@ if (donationForm) {
             "Subscribe with PayPal",
             "Opening PayPal..."
           );
+
+           if (stripeSubscribeButton) {
+  stripeSubscribeButton.disabled =
+    true;
+}
 
 
           setText(

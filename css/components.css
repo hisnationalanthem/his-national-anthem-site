@@ -2713,8 +2713,26 @@
     max-width:
         68ch;
 
+    margin:
+        0;
+
     color:
         var(--color-text-soft);
+}
+
+
+.faq-answer p + p {
+    margin-top:
+        12px;
+}
+
+
+.faq-answer strong {
+    color:
+        var(--color-text);
+
+    font-weight:
+        700;
 }
 
 

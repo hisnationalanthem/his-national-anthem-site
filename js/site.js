@@ -205,6 +205,39 @@ function setupMobileMenu() {
             );
         });
 
+   document.addEventListener(
+    "click",
+    (event) => {
+        if (
+            !navigation.classList.contains(
+                "menu-open"
+            )
+        ) {
+            return;
+        }
+
+
+        const target =
+            event.target;
+
+
+        if (!(target instanceof Node)) {
+            return;
+        }
+
+
+        if (
+            navigation.contains(target) ||
+            menuButton.contains(target)
+        ) {
+            return;
+        }
+
+
+        closeMenu();
+    }
+);
+
 
     document.addEventListener(
         "keydown",

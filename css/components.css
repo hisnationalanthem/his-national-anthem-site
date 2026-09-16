@@ -2883,6 +2883,44 @@
         16px;
 }
 
+.policy-content h3 {
+    margin:
+        30px 0 12px;
+
+    color:
+        var(--color-text);
+
+    font-size:
+        1.05rem;
+
+    line-height:
+        1.4;
+}
+
+
+.policy-content h3:first-child {
+    margin-top:
+        0;
+}
+
+
+.policy-content h3 + p {
+    margin-top:
+        0;
+}
+
+
+.policy-rules {
+    margin-top:
+        24px;
+}
+
+
+.policy-rules p + p {
+    margin-top:
+        16px;
+}
+
 
 /* ========================================
    POLICY FACTS

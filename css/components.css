@@ -1407,6 +1407,141 @@
     font-style: italic;
 }
 
+/* ========================================
+   MEMBERSHIP FORMS
+   ======================================== */
+
+.membership-account-form,
+.membership-donation-form,
+.membership-request-form {
+    display: grid;
+
+    gap: 1.1rem;
+
+    margin-top: 1.25rem;
+}
+
+
+.membership-account-form label,
+.membership-donation-form label,
+.membership-request-form > label,
+.membership-request-form
+    [data-member-graveyard-field]
+    label {
+    display: grid;
+
+    gap: 0.45rem;
+
+    color:
+        var(--color-text-soft);
+
+    font-size:
+        0.9rem;
+}
+
+
+.membership-account-form input,
+.membership-donation-form input,
+.membership-request-form input:not([type="checkbox"]),
+.membership-request-form select,
+.membership-request-form textarea {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding:
+        0.8rem 0.9rem;
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-small);
+
+    background:
+        var(--color-background-soft);
+
+    color:
+        var(--color-text);
+
+    font: inherit;
+}
+
+
+.membership-request-form textarea {
+    min-height: 8rem;
+
+    resize: vertical;
+}
+
+
+.membership-account-form input:focus,
+.membership-donation-form input:focus,
+.membership-request-form input:not([type="checkbox"]):focus,
+.membership-request-form select:focus,
+.membership-request-form textarea:focus {
+    outline:
+        1px solid var(--color-accent-light);
+
+    border-color:
+        var(--color-accent-light);
+}
+
+
+/* ========================================
+   MEMBERSHIP CHECKBOX
+   ======================================== */
+
+.membership-request-form
+    > label:has(input[type="checkbox"]) {
+    display: flex;
+
+    align-items: center;
+
+    gap: 0.6rem;
+}
+
+
+.membership-request-form
+    input[type="checkbox"] {
+    width: auto;
+
+    flex-shrink: 0;
+}
+
+
+/* ========================================
+   BUTTON ROWS
+   ======================================== */
+
+.button-row {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 18px;
+}
+
+.membership-request-form {
+    max-width:
+        52rem;
+}
+
+
+.membership-donation-form {
+    max-width:
+        24rem;
+}
+
+
+.membership-account-form {
+    width:
+        100%;
+}
 
 /* ========================================
    MEMBER REQUEST PLACEHOLDER

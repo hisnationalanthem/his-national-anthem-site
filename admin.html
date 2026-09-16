@@ -2850,6 +2850,308 @@
      EDIT SERIES
      ===================================== -->
 
+
+<!-- =====================================
+     MANAGE AMA QUESTIONS
+     ===================================== -->
+
+<section class="journal-panel admin-tool-panel">
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+            <p class="panel-label">Ask Me Anything</p>
+            <h2>Manage AMA Questions</h2>
+        </div>
+
+        <button
+            type="button"
+            class="secondary-button"
+            data-admin-ama-refresh
+            disabled
+        >
+            Refresh
+        </button>
+
+    </div>
+
+
+    <p>
+        Review questions submitted through the About page,
+        write answers, and choose which answered questions
+        are published publicly.
+    </p>
+
+
+    <div class="admin-series-form">
+
+        <div class="form-field">
+
+            <label for="admin-ama-status-filter">
+                Status
+            </label>
+
+            <select
+                id="admin-ama-status-filter"
+                data-admin-ama-status-filter
+                disabled
+            >
+                <option value="all">
+                    All Statuses
+                </option>
+
+                <option value="submitted">
+                    Submitted
+                </option>
+
+                <option value="reviewing">
+                    Reviewing
+                </option>
+
+                <option value="answered">
+                    Answered
+                </option>
+
+                <option value="archived">
+                    Archived
+                </option>
+
+                <option value="hidden">
+                    Hidden
+                </option>
+            </select>
+
+        </div>
+
+
+        <div class="form-field">
+
+            <label for="admin-ama-publication-filter">
+                Publication
+            </label>
+
+            <select
+                id="admin-ama-publication-filter"
+                data-admin-ama-publication-filter
+                disabled
+            >
+                <option value="all">
+                    All Questions
+                </option>
+
+                <option value="published">
+                    Published
+                </option>
+
+                <option value="unpublished">
+                    Not Published
+                </option>
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <p
+        class="admin-form-status"
+        data-admin-ama-manager-status
+        aria-live="polite"
+    >
+        AMA management is loading...
+    </p>
+
+
+    <div
+        class="admin-management-grid"
+        data-admin-ama-list
+    ></div>
+
+</section>
+
+
+<!-- =====================================
+     REVIEW AMA QUESTION
+     ===================================== -->
+
+<section
+    class="journal-panel admin-tool-panel"
+    data-admin-edit-ama-panel
+    hidden
+>
+
+    <div class="admin-dashboard-heading">
+
+        <div>
+            <p class="panel-label">Ask Me Anything</p>
+            <h2>Review AMA Question</h2>
+        </div>
+
+    </div>
+
+
+    <p
+        class="small-note"
+        data-admin-edit-ama-heading
+    >
+        Review the selected question.
+    </p>
+
+
+    <form
+        class="admin-series-form"
+        data-admin-edit-ama-form
+    >
+
+        <div class="form-field">
+
+            <label for="admin-edit-ama-submitter">
+                Submitted By
+            </label>
+
+            <input
+                type="text"
+                id="admin-edit-ama-submitter"
+                data-admin-edit-ama-submitter
+                readonly
+            >
+
+        </div>
+
+
+        <div class="form-field">
+
+            <label for="admin-edit-ama-question">
+                Question
+            </label>
+
+            <textarea
+                id="admin-edit-ama-question"
+                data-admin-edit-ama-question
+                rows="7"
+                readonly
+            ></textarea>
+
+            <p class="small-note">
+                The original question is read-only.
+            </p>
+
+        </div>
+
+
+        <div class="form-field">
+
+            <label for="admin-edit-ama-status">
+                Status
+            </label>
+
+            <select
+                id="admin-edit-ama-status"
+                name="status"
+                data-admin-edit-ama-status
+                required
+            >
+                <option value="submitted">
+                    Submitted
+                </option>
+
+                <option value="reviewing">
+                    Reviewing
+                </option>
+
+                <option value="answered">
+                    Answered
+                </option>
+
+                <option value="archived">
+                    Archived
+                </option>
+
+                <option value="hidden">
+                    Hidden
+                </option>
+            </select>
+
+        </div>
+
+
+        <div class="form-field">
+
+            <label for="admin-edit-ama-answer">
+                Answer
+            </label>
+
+            <textarea
+                id="admin-edit-ama-answer"
+                name="answer"
+                data-admin-edit-ama-answer
+                rows="9"
+                placeholder="Write the answer here."
+            ></textarea>
+
+            <p class="small-note">
+                An answer is required before the question can
+                be marked Answered or published.
+            </p>
+
+        </div>
+
+
+        <div class="form-field admin-checkbox-field">
+
+            <label for="admin-edit-ama-published">
+
+                <input
+                    type="checkbox"
+                    id="admin-edit-ama-published"
+                    name="published"
+                    data-admin-edit-ama-published
+                >
+
+                Publish this answered question
+
+            </label>
+
+            <p class="small-note">
+                Published questions appear on the public About
+                page. Questions that are not marked Answered
+                remain private.
+            </p>
+
+        </div>
+
+
+        <div class="admin-bot-manager-actions">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-admin-edit-ama-submit
+            >
+                Save Changes
+            </button>
+
+            <button
+                type="button"
+                class="secondary-button"
+                data-admin-edit-ama-cancel
+            >
+                Cancel
+            </button>
+
+        </div>
+
+
+        <p
+            class="admin-form-status"
+            data-admin-edit-ama-status-message
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</section>
+
 <!-- =====================================
      ADD ACCEPTED REQUEST TO GRAVEYARD
      ===================================== -->

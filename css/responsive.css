@@ -647,26 +647,20 @@
             1fr;
     }
 
+   .ama-form {
+    max-width:
+        none;
 }
 
 
-@media (max-width: 500px) {
-
-    .ama-field-preview {
-        flex-direction:
-            column;
-
-        gap:
-            5px;
-    }
-
-
-    .ama-field-value {
-        text-align:
-            left;
-    }
+.ama-form .primary-button {
+    width:
+        100%;
+}
 
 }
+
+
 /* ========================================
    UPDATES & ANNOUNCEMENTS PAGE
    ======================================== */

@@ -2068,6 +2068,137 @@
     border-top:
         1px solid var(--color-border-soft);
 }
+
+/* ========================================
+   UPCOMING LIVE QUEUE
+   ======================================== */
+
+.upcoming-queue-section {
+    margin-bottom:
+        0;
+}
+
+
+.upcoming-live-section {
+    margin-top:
+        24px;
+}
+
+
+.upcoming-load-status {
+    margin-bottom:
+        20px;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.9rem;
+}
+
+.upcoming-live-list {
+    display:
+        grid;
+
+    gap:
+        16px;
+}
+
+
+.upcoming-live-card {
+    padding:
+        22px;
+
+    background:
+        rgba(23, 21, 18, 0.42);
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-medium);
+}
+
+
+.upcoming-live-card-top {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        flex-start;
+
+    gap:
+        16px;
+}
+
+
+.upcoming-live-name {
+    margin:
+        0;
+
+    font-size:
+        1.25rem;
+}
+
+
+.upcoming-live-date {
+    margin:
+        12px 0 0;
+
+    color:
+        var(--color-text-soft);
+}
+
+
+.upcoming-live-meta {
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        8px 18px;
+
+    margin-top:
+        14px;
+
+    color:
+        var(--color-text-muted);
+
+    font-size:
+        0.86rem;
+}
+
+
+.upcoming-status-badge {
+    flex-shrink:
+        0;
+
+    padding:
+        6px 10px;
+
+    border:
+        1px solid var(--color-border-soft);
+
+    border-radius:
+        var(--radius-small);
+
+    color:
+        var(--color-accent-light);
+
+    font-size:
+        0.75rem;
+
+    letter-spacing:
+        0.06em;
+
+    text-transform:
+        uppercase;
+}
 /* ========================================
    BOT MASTERLIST PAGE
    ======================================== */

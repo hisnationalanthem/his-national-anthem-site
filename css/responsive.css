@@ -658,6 +658,26 @@
         100%;
 }
 
+   .ama-answer-card {
+    padding:
+        22px;
+}
+
+
+.ama-answer-card-header {
+    flex-direction:
+        column;
+
+    gap:
+        5px;
+}
+
+
+.ama-answer-date {
+    text-align:
+        left;
+}
+
 }
 
 

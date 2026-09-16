@@ -751,6 +751,11 @@
             22px;
     }
 
+   .currency-converter .button-row .primary-button {
+    width:
+        100%;
+}
+
 }
 /* ========================================
    FOLLOWER MILESTONE

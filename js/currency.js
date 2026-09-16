@@ -63,6 +63,18 @@
         "[data-currency-swap]"
       );
 
+      const sourceLabel = converter.querySelector(
+  "[data-currency-source-label]"
+);
+
+function updateSourceLabel() {
+  if (sourceLabel) {
+    sourceLabel.textContent = from.value;
+  }
+}
+
+      updateSourceLabel();
+
       async function convertCurrency() {
         const numericAmount = Number(amount.value);
 
@@ -162,14 +174,19 @@
         }
       });
 
+      from.addEventListener("change", () => {
+  updateSourceLabel();
+});
+      
       swapButton.addEventListener("click", () => {
-        const previousFrom = from.value;
+  const previousFrom = from.value;
 
-        from.value = to.value;
-        to.value = previousFrom;
+  from.value = to.value;
+  to.value = previousFrom;
 
-        convertCurrency();
-      });
+  updateSourceLabel();
+  convertCurrency();
+});
 
       convertCurrency();
     });

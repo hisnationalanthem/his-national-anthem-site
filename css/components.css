@@ -1562,6 +1562,43 @@
 }
 
 /* ========================================
+   REQUEST FORM STATUS
+   ======================================== */
+
+.request-form-status {
+    margin-top:
+        18px;
+
+    color:
+        var(--color-text-soft);
+
+    font-size:
+        0.9rem;
+
+    line-height:
+        1.6;
+}
+
+
+/* ========================================
+   GRAVEYARD CARD ACTIONS
+   ======================================== */
+
+.graveyard-card-actions {
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        10px;
+
+    margin-top:
+        22px;
+}
+
+/* ========================================
    GRAVEYARD STATUS GUIDE
    ======================================== */
 

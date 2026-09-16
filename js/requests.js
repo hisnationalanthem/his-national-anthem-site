@@ -200,7 +200,7 @@ let allGraveyardEntries = [];
     const actions = document.createElement("div");
 
     actions.className =
-      "admin-bot-manager-actions";
+  "graveyard-card-actions";
 
 
     if (entry.status === "available") {

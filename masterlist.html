@@ -69,8 +69,8 @@
     <h2>Find a Bot</h2>
 
    <p>
-    Search the live bot archive by name.
-    Additional filters are coming next.
+    Search the live bot archive by name, bot type,
+    or series.
 </p>
 
 
@@ -154,7 +154,7 @@
      ALL BOTS
      ===================================== -->
 
-<section>
+<section class="masterlist-bots-section">
 
     <div class="section-heading">
 
@@ -165,8 +165,8 @@
         <h2>All Bots</h2>
 
         <p>
-            Bot cards will automatically appear here
-            once the masterlist is connected to Supabase.
+            Browse the public bot archive using the search
+            and filters above.
         </p>
 
     </div>
@@ -174,80 +174,19 @@
 
     <div class="masterlist-live-area">
 
-    <p
-        class="masterlist-load-status"
-        data-masterlist-status
-        aria-live="polite"
-    >
-        Loading bot masterlist...
-    </p>
-
-    <div
-        class="masterlist-live-grid"
-        data-masterlist-grid
-    ></div>
-
-</div>
+        <p
+            class="masterlist-load-status"
+            data-masterlist-status
+            aria-live="polite"
+        >
+            Loading bot masterlist...
+        </p>
 
 
-        <article class="bot-card bot-card-placeholder">
-
-            <div class="bot-image-placeholder">
-                Image
-            </div>
-
-            <div class="bot-card-content">
-
-                <p class="bot-card-category">
-                    Category
-                </p>
-
-                <h3>Bot Name</h3>
-
-                <p>
-                    Bot information will appear here.
-                </p>
-
-                <div class="bot-card-meta">
-
-                    <span>POV</span>
-                    <span>Type</span>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-        <article class="bot-card bot-card-placeholder">
-
-            <div class="bot-image-placeholder">
-                Image
-            </div>
-
-            <div class="bot-card-content">
-
-                <p class="bot-card-category">
-                    Category
-                </p>
-
-                <h3>Bot Name</h3>
-
-                <p>
-                    Bot information will appear here.
-                </p>
-
-                <div class="bot-card-meta">
-
-                    <span>POV</span>
-                    <span>Type</span>
-
-                </div>
-
-            </div>
-
-        </article>
+        <div
+            class="masterlist-live-grid"
+            data-masterlist-grid
+        ></div>
 
     </div>
 
@@ -261,43 +200,39 @@
      SERIES ORGANIZER
      ===================================== -->
 
-<section>
+<section class="masterlist-series-section">
 
-   <div class="masterlist-series-live-area">
+    <div class="section-heading">
 
-    <p
-        class="masterlist-series-status"
-        data-masterlist-series-status
-        aria-live="polite"
-    >
-        Loading series...
-    </p>
+        <p class="panel-label">
+            Collections
+        </p>
 
-    <div
-        class="series-grid"
-        data-masterlist-series-grid
-    ></div>
+        <h2>Bot Series</h2>
 
-</div>
+        <p>
+            Browse public bot collections and recurring
+            series from the archive.
+        </p>
+
+    </div>
 
 
-        <article class="series-card">
+    <div class="masterlist-series-live-area">
 
-            <p class="panel-label">
-                Collection
-            </p>
+        <p
+            class="masterlist-series-status"
+            data-masterlist-series-status
+            aria-live="polite"
+        >
+            Loading series...
+        </p>
 
-            <h3>Collection Name</h3>
 
-            <p>
-                Collection information will appear here.
-            </p>
-
-            <span class="request-status">
-                Coming soon
-            </span>
-
-        </article>
+        <div
+            class="series-grid"
+            data-masterlist-series-grid
+        ></div>
 
     </div>
 

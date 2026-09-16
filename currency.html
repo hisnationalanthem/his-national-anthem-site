@@ -62,142 +62,178 @@
 
 <section class="currency-layout">
 
-    <div class="currency-converter">
+    <div
+    class="currency-converter"
+    data-currency-converter
+>
 
-        <div class="currency-converter-header">
+    <div class="currency-converter-header">
 
-            <div>
+        <div>
 
-                <p class="panel-label">
-                    Converter
-                </p>
+            <p class="panel-label">
+                Converter
+            </p>
 
-                <h2>Convert a Price</h2>
+            <h2>Convert a Price</h2>
 
-            </div>
+        </div>
 
 
-            <span class="request-status">
-                Live rates coming soon
+        <span class="request-status">
+            Live exchange rates
+        </span>
+
+    </div>
+
+
+    <!-- Amount -->
+    <div class="currency-field">
+
+        <label for="currency-amount">
+            Amount
+        </label>
+
+        <div class="currency-input-wrapper">
+
+            <span class="currency-symbol">
+                $
             </span>
 
+            <input
+                type="number"
+                id="currency-amount"
+                value="15"
+                min="0.01"
+                step="0.01"
+                inputmode="decimal"
+                data-currency-amount
+            >
+
         </div>
 
+    </div>
 
-        <!-- Amount -->
+
+    <!-- Currency selectors -->
+    <div class="currency-selector-row">
+
         <div class="currency-field">
 
-            <label for="currency-amount">
-                Amount
+            <label for="currency-from">
+                From
             </label>
 
-            <div class="currency-input-wrapper">
-
-                <span class="currency-symbol">
-                    $
-                </span>
-
-                <input
-                    type="number"
-                    id="currency-amount"
-                    value="15"
-                    min="0"
-                    step="0.01"
-                    disabled
-                >
-
-            </div>
-
-        </div>
-
-
-        <!-- Currency selectors -->
-        <div class="currency-selector-row">
-
-            <div class="currency-field">
-
-                <label for="currency-from">
-                    From
-                </label>
-
-                <select
-                    id="currency-from"
-                    disabled
-                >
-                    <option selected>
-                        CAD — Canadian Dollar
-                    </option>
-                </select>
-
-            </div>
-
-
-            <button
-                type="button"
-                class="currency-swap-button"
-                aria-label="Swap currencies"
-                disabled
+            <select
+                id="currency-from"
+                data-currency-from
             >
-                ⇄
-            </button>
-
-
-            <div class="currency-field">
-
-                <label for="currency-to">
-                    To
-                </label>
-
-                <select
-                    id="currency-to"
-                    disabled
-                >
-                    <option selected>
-                        USD — US Dollar
-                    </option>
-
-                    <option>
-                        GBP — British Pound
-                    </option>
-
-                    <option>
-                        EUR — Euro
-                    </option>
-
-                    <option>
-                        AUD — Australian Dollar
-                    </option>
-                </select>
-
-            </div>
+                <option value="CAD" selected>CAD — Canadian Dollar</option>
+                <option value="USD">USD — US Dollar</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="GBP">GBP — British Pound</option>
+                <option value="AUD">AUD — Australian Dollar</option>
+                <option value="NZD">NZD — New Zealand Dollar</option>
+                <option value="JPY">JPY — Japanese Yen</option>
+                <option value="CHF">CHF — Swiss Franc</option>
+                <option value="SEK">SEK — Swedish Krona</option>
+                <option value="NOK">NOK — Norwegian Krone</option>
+                <option value="DKK">DKK — Danish Krone</option>
+                <option value="PHP">PHP — Philippine Peso</option>
+                <option value="BRL">BRL — Brazilian Real</option>
+                <option value="MXN">MXN — Mexican Peso</option>
+            </select>
 
         </div>
 
 
-        <!-- Result -->
-        <div class="currency-result">
+        <button
+            type="button"
+            class="currency-swap-button"
+            aria-label="Swap currencies"
+            data-currency-swap
+        >
+            ⇄
+        </button>
 
-            <p class="currency-result-label">
-                Estimated Conversion
-            </p>
 
-            <p class="currency-result-amount">
-                —
-            </p>
+        <div class="currency-field">
 
-            <p class="currency-result-rate">
-                Live exchange rate unavailable
-            </p>
+            <label for="currency-to">
+                To
+            </label>
+
+            <select
+                id="currency-to"
+                data-currency-to
+            >
+                <option value="CAD">CAD — Canadian Dollar</option>
+                <option value="USD" selected>USD — US Dollar</option>
+                <option value="EUR">EUR — Euro</option>
+                <option value="GBP">GBP — British Pound</option>
+                <option value="AUD">AUD — Australian Dollar</option>
+                <option value="NZD">NZD — New Zealand Dollar</option>
+                <option value="JPY">JPY — Japanese Yen</option>
+                <option value="CHF">CHF — Swiss Franc</option>
+                <option value="SEK">SEK — Swedish Krona</option>
+                <option value="NOK">NOK — Norwegian Krone</option>
+                <option value="DKK">DKK — Danish Krone</option>
+                <option value="PHP">PHP — Philippine Peso</option>
+                <option value="BRL">BRL — Brazilian Real</option>
+                <option value="MXN">MXN — Mexican Peso</option>
+            </select>
 
         </div>
 
+    </div>
 
-        <p class="small-note">
-            The converter is intentionally inactive until
-            live exchange-rate data is connected.
+
+    <div class="button-row">
+
+        <button
+            type="button"
+            class="primary-button"
+            data-currency-convert
+        >
+            Convert
+        </button>
+
+    </div>
+
+
+    <!-- Result -->
+    <div class="currency-result">
+
+        <p class="currency-result-label">
+            Estimated Conversion
+        </p>
+
+        <p
+            class="currency-result-amount"
+            data-currency-result
+        >
+            —
+        </p>
+
+        <p
+            class="currency-result-rate"
+            data-currency-meta
+        >
+            Loading current exchange rate...
         </p>
 
     </div>
+
+
+    <p
+        class="small-note"
+        data-currency-status
+        aria-live="polite"
+    >
+        Checking the latest available exchange rate...
+    </p>
+
+</div>
 
 
     <!-- =================================

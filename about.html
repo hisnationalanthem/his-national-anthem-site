@@ -188,62 +188,93 @@
     </div>
 
 
-    <div class="journal-panel ama-placeholder">
+    <div class="journal-panel">
 
-        <div class="ama-preview">
+    <form
+        class="ama-form"
+        data-ama-form
+    >
 
-            <div class="ama-field-preview">
+        <div class="ama-form-field">
 
-                <span class="ama-field-label">
-                    Name / Alias
-                </span>
+            <label for="ama-name">
+                Name / Alias
+            </label>
 
-                <span class="ama-field-value">
-                    Optional
-                </span>
-
-            </div>
-
-
-            <div class="ama-field-preview">
-
-                <span class="ama-field-label">
-                    Question
-                </span>
-
-                <span class="ama-field-value">
-                    Your question will go here
-                </span>
-
-            </div>
-
-
-            <div class="ama-field-preview">
-
-                <span class="ama-field-label">
-                    Anonymous
-                </span>
-
-                <span class="ama-field-value">
-                    Optional
-                </span>
-
-            </div>
+            <input
+                type="text"
+                id="ama-name"
+                name="submitter_name"
+                maxlength="100"
+                autocomplete="nickname"
+                placeholder="Optional"
+            >
 
         </div>
 
 
-        <div class="request-status">
-            Form coming soon
+        <div class="ama-form-field">
+
+            <label for="ama-question">
+                Question
+            </label>
+
+            <textarea
+                id="ama-question"
+                name="question"
+                rows="7"
+                maxlength="2000"
+                required
+                placeholder="What do you want to ask?"
+            ></textarea>
+
         </div>
+
+
+        <label class="ama-anonymous-option">
+
+            <input
+                type="checkbox"
+                name="anonymous"
+                value="true"
+            >
+
+            <span>
+                Submit anonymously
+            </span>
+
+        </label>
 
 
         <p class="small-note">
-            This preview is intentionally inactive until
-            the database and submission rules are ready.
+            A name or alias is optional. If you choose
+            anonymous submission, your name will not be
+            attached to the question.
         </p>
 
-    </div>
+
+        <div class="button-row">
+
+            <button
+                type="submit"
+                class="primary-button"
+                data-ama-submit
+            >
+                Submit Question
+            </button>
+
+        </div>
+
+
+        <p
+            class="request-form-status"
+            data-ama-status
+            aria-live="polite"
+        ></p>
+
+    </form>
+
+</div>
 
 </section>
 

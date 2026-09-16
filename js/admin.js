@@ -84,6 +84,11 @@ const editSeriesCancelButton = document.querySelector(
 
 let adminFreeRequests = [];
 let editingFreeRequestId = null;
+
+let adminAmaQuestions = [];
+let editingAmaQuestionId = null;
+let editingAmaAnsweredAt = null;
+
 let convertingGraveyardRequestId = null;
 
 let adminGraveyardEntries = [];
@@ -412,6 +417,27 @@ function getAdminFreeRequestStatusLabel(value) {
 }
 
   /* ==========================================================
+   AMA STATUS LABELS
+   ========================================================== */
+
+function getAdminAmaStatusLabel(value) {
+  const labels = {
+    submitted: "Submitted",
+    reviewing: "Reviewing",
+    answered: "Answered",
+    archived: "Archived",
+    hidden: "Hidden"
+  };
+
+  return (
+    labels[value] ||
+    value ||
+    "Unknown Status"
+  );
+}
+
+
+  /* ==========================================================
    GRAVEYARD STATUS LABELS
    ========================================================== */
 
@@ -540,6 +566,7 @@ void loadAdminUpcomingBots();
 void loadAdminAnnouncements();
 void loadAdminCommissions();
 void loadAdminFreeRequests();
+void loadAdminAmaQuestions();
 void loadAdminGraveyardEntries();
 
       return true;
@@ -611,6 +638,10 @@ editingGraveyardId = null;
         adminCommissionRequests = [];
 reviewingCommissionId = null;
 
+        adminAmaQuestions = [];
+        editingAmaQuestionId = null;
+        editingAmaAnsweredAt = null;
+
 if (commissionList) {
   commissionList.replaceChildren();
 }
@@ -618,6 +649,12 @@ if (commissionList) {
 if (graveyardList) {
   graveyardList.replaceChildren();
 }
+
+if (amaList) {
+  amaList.replaceChildren();
+}
+
+        closeEditAmaQuestion();
         setUpcomingFormLoading(false);
         setAnnouncementFormLoading(false);
         seriesForm?.reset();
@@ -1219,6 +1256,75 @@ const editFreeRequestCancelButton = document.querySelector(
 const editFreeRequestStatusMessage = document.querySelector(
   "[data-admin-edit-free-request-status-message]"
 );
+
+/* ==========================================================
+   AMA QUESTION ELEMENTS
+   ========================================================== */
+
+const amaRefreshButton = document.querySelector(
+  "[data-admin-ama-refresh]"
+);
+
+const amaStatusFilter = document.querySelector(
+  "[data-admin-ama-status-filter]"
+);
+
+const amaPublicationFilter = document.querySelector(
+  "[data-admin-ama-publication-filter]"
+);
+
+const amaManagerStatus = document.querySelector(
+  "[data-admin-ama-manager-status]"
+);
+
+const amaList = document.querySelector(
+  "[data-admin-ama-list]"
+);
+
+const editAmaPanel = document.querySelector(
+  "[data-admin-edit-ama-panel]"
+);
+
+const editAmaForm = document.querySelector(
+  "[data-admin-edit-ama-form]"
+);
+
+const editAmaHeading = document.querySelector(
+  "[data-admin-edit-ama-heading]"
+);
+
+const editAmaSubmitter = document.querySelector(
+  "[data-admin-edit-ama-submitter]"
+);
+
+const editAmaQuestion = document.querySelector(
+  "[data-admin-edit-ama-question]"
+);
+
+const editAmaStatus = document.querySelector(
+  "[data-admin-edit-ama-status]"
+);
+
+const editAmaAnswer = document.querySelector(
+  "[data-admin-edit-ama-answer]"
+);
+
+const editAmaPublished = document.querySelector(
+  "[data-admin-edit-ama-published]"
+);
+
+const editAmaSubmitButton = document.querySelector(
+  "[data-admin-edit-ama-submit]"
+);
+
+const editAmaCancelButton = document.querySelector(
+  "[data-admin-edit-ama-cancel]"
+);
+
+const editAmaStatusMessage = document.querySelector(
+  "[data-admin-edit-ama-status-message]"
+);
+
 
 /* ==========================================================
    GRAVEYARD CONVERSION ELEMENTS
@@ -2729,6 +2835,143 @@ function openEditFreeRequest(request) {
 }
 
   /* ==========================================================
+   AMA REVIEW HELPERS
+   ========================================================== */
+
+function closeEditAmaQuestion() {
+  editingAmaQuestionId = null;
+  editingAmaAnsweredAt = null;
+
+  if (editAmaForm) {
+    editAmaForm.reset();
+  }
+
+  if (editAmaStatusMessage) {
+    editAmaStatusMessage.textContent = "";
+  }
+
+  if (editAmaPanel) {
+    editAmaPanel.hidden = true;
+  }
+}
+
+
+function syncAmaPublishAvailability() {
+  if (
+    !editAmaStatus ||
+    !editAmaAnswer ||
+    !editAmaPublished
+  ) {
+    return;
+  }
+
+  const status =
+    String(editAmaStatus.value || "");
+
+  const hasAnswer =
+    Boolean(
+      String(editAmaAnswer.value || "")
+        .trim()
+    );
+
+  const canPublish =
+    status === "answered" &&
+    hasAnswer;
+
+  if (!canPublish) {
+    editAmaPublished.checked = false;
+  }
+
+  editAmaPublished.disabled =
+    !canPublish;
+}
+
+
+function openEditAmaQuestion(entry) {
+  if (
+    !editAmaPanel ||
+    !editAmaForm
+  ) {
+    console.error(
+      "AMA review form elements are unavailable."
+    );
+
+    return;
+  }
+
+  editingAmaQuestionId =
+    entry.id;
+
+  editingAmaAnsweredAt =
+    entry.answered_at || null;
+
+
+  if (editAmaSubmitter) {
+    editAmaSubmitter.value =
+      entry.anonymous
+        ? "Anonymous"
+        : entry.submitter_name ||
+          "Anonymous";
+  }
+
+
+  if (editAmaQuestion) {
+    editAmaQuestion.value =
+      entry.question || "";
+  }
+
+
+  if (editAmaStatus) {
+    editAmaStatus.value =
+      entry.status ||
+      "submitted";
+  }
+
+
+  if (editAmaAnswer) {
+    editAmaAnswer.value =
+      entry.answer || "";
+  }
+
+
+  if (editAmaPublished) {
+    editAmaPublished.checked =
+      Boolean(entry.published);
+  }
+
+
+  if (editAmaHeading) {
+    const submitterLabel =
+      entry.anonymous
+        ? "an anonymous visitor"
+        : entry.submitter_name ||
+          "an anonymous visitor";
+
+    editAmaHeading.textContent =
+      `Reviewing a question from ${submitterLabel}.`;
+  }
+
+
+  if (editAmaStatusMessage) {
+    editAmaStatusMessage.textContent =
+      "";
+  }
+
+
+  syncAmaPublishAvailability();
+
+
+  editAmaPanel.hidden =
+    false;
+
+  editAmaPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+
+  /* ==========================================================
    GRAVEYARD CONVERSION HELPERS
    ========================================================== */
 
@@ -3906,6 +4149,513 @@ function renderAdminFreeRequests() {
       : `${filteredRequests.length} free request entries.`;
 }
   
+  /* ==========================================================
+   ADMIN AMA QUESTION CARD
+   ========================================================== */
+
+function createAdminAmaCard(entry) {
+  const article =
+    document.createElement("article");
+
+  article.className =
+    "admin-bot-manager-card admin-ama-card";
+
+
+  const header =
+    document.createElement("div");
+
+  header.className =
+    "admin-bot-manager-header";
+
+
+  const title =
+    document.createElement("h3");
+
+  title.className =
+    "admin-bot-manager-name";
+
+  title.textContent =
+    entry.anonymous
+      ? "Anonymous"
+      : entry.submitter_name ||
+        "Anonymous";
+
+
+  const status =
+    document.createElement("span");
+
+  status.className =
+    entry.status === "answered"
+      ? "admin-bot-publication-status is-published"
+      : "admin-bot-publication-status is-draft";
+
+  status.textContent =
+    getAdminAmaStatusLabel(
+      entry.status
+    );
+
+
+  header.append(
+    title,
+    status
+  );
+
+
+  const publication =
+    document.createElement("p");
+
+  publication.className =
+    "admin-bot-manager-link-status";
+
+  publication.textContent =
+    entry.published
+      ? "Published publicly"
+      : "Not published";
+
+
+  const question =
+    document.createElement("p");
+
+  question.className =
+    "admin-bot-manager-description";
+
+  question.textContent =
+    entry.question ||
+    "No question text available.";
+
+
+  const answer =
+    document.createElement("p");
+
+  answer.className =
+    "admin-bot-manager-description";
+
+  answer.textContent =
+    entry.answer
+      ? `Answer: ${entry.answer}`
+      : "No answer written yet.";
+
+
+  const date =
+    document.createElement("p");
+
+  date.className =
+    "admin-bot-manager-slug";
+
+  date.textContent =
+    entry.created_at
+      ? `Submitted: ${new Date(
+          entry.created_at
+        ).toLocaleString()}`
+      : "Submission date unavailable";
+
+
+  const actions =
+    document.createElement("div");
+
+  actions.className =
+    "admin-bot-manager-actions";
+
+
+  const reviewButton =
+    document.createElement("button");
+
+  reviewButton.type =
+    "button";
+
+  reviewButton.className =
+    "secondary-button";
+
+  reviewButton.textContent =
+    "Review";
+
+  reviewButton.addEventListener(
+    "click",
+    () => {
+      openEditAmaQuestion(
+        entry
+      );
+    }
+  );
+
+
+  const deleteButton =
+    document.createElement("button");
+
+  deleteButton.type =
+    "button";
+
+  deleteButton.className =
+    "secondary-button danger-button";
+
+  deleteButton.textContent =
+    "Delete";
+
+  deleteButton.addEventListener(
+    "click",
+    async () => {
+      await deleteAmaQuestion(
+        entry,
+        deleteButton
+      );
+    }
+  );
+
+
+  actions.append(
+    reviewButton,
+    deleteButton
+  );
+
+
+  article.append(
+    header,
+    publication,
+    question,
+    answer,
+    date,
+    actions
+  );
+
+
+  return article;
+}
+
+
+  /* ==========================================================
+   DELETE AMA QUESTION
+   ========================================================== */
+
+async function deleteAmaQuestion(
+  entry,
+  button
+) {
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    if (amaManagerStatus) {
+      amaManagerStatus.textContent =
+        "Administrator authorization is required.";
+    }
+
+    return;
+  }
+
+
+  const submitterLabel =
+    entry.anonymous
+      ? "Anonymous"
+      : entry.submitter_name ||
+        "Anonymous";
+
+
+  const confirmed =
+    window.confirm(
+      `Delete the AMA question from ${submitterLabel}? This cannot be undone.`
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+
+  if (button) {
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Deleting...";
+  }
+
+
+  try {
+    const {
+      error
+    } = await window.supabaseClient
+      .from("ama_questions")
+      .delete()
+      .eq(
+        "id",
+        entry.id
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    if (
+      editingAmaQuestionId ===
+      entry.id
+    ) {
+      closeEditAmaQuestion();
+    }
+
+
+    await loadAdminAmaQuestions();
+
+
+    if (amaManagerStatus) {
+      amaManagerStatus.textContent =
+        "AMA question deleted permanently.";
+    }
+
+  } catch (error) {
+    console.error(
+      "Unable to delete AMA question:",
+      error
+    );
+
+    if (amaManagerStatus) {
+      amaManagerStatus.textContent =
+        "The AMA question could not be deleted.";
+    }
+
+    if (button) {
+      button.disabled =
+        false;
+
+      button.textContent =
+        "Delete";
+    }
+  }
+}
+
+
+  /* ==========================================================
+   RENDER AMA QUESTIONS
+   ========================================================== */
+
+function renderAdminAmaQuestions() {
+  if (
+    !amaList ||
+    !amaManagerStatus
+  ) {
+    return;
+  }
+
+
+  const selectedStatus =
+    amaStatusFilter?.value ||
+    "all";
+
+  const selectedPublication =
+    amaPublicationFilter?.value ||
+    "all";
+
+
+  const filteredQuestions =
+    adminAmaQuestions.filter(
+      (entry) => {
+        const matchesStatus =
+          selectedStatus === "all" ||
+          entry.status ===
+            selectedStatus;
+
+        const matchesPublication =
+          selectedPublication === "all" ||
+          (
+            selectedPublication ===
+              "published" &&
+            Boolean(entry.published)
+          ) ||
+          (
+            selectedPublication ===
+              "unpublished" &&
+            !entry.published
+          );
+
+        return (
+          matchesStatus &&
+          matchesPublication
+        );
+      }
+    );
+
+
+  amaList.replaceChildren();
+
+
+  if (adminAmaQuestions.length === 0) {
+    amaManagerStatus.textContent =
+      "There are no AMA questions yet.";
+
+    return;
+  }
+
+
+  if (filteredQuestions.length === 0) {
+    amaManagerStatus.textContent =
+      "No AMA questions match the selected filters.";
+
+    return;
+  }
+
+
+  filteredQuestions.forEach(
+    (entry) => {
+      amaList.append(
+        createAdminAmaCard(
+          entry
+        )
+      );
+    }
+  );
+
+
+  amaManagerStatus.textContent =
+    filteredQuestions.length === 1
+      ? "1 AMA question."
+      : `${filteredQuestions.length} AMA questions.`;
+}
+
+
+  /* ==========================================================
+   LOAD AMA QUESTIONS
+   ========================================================== */
+
+async function loadAdminAmaQuestions() {
+  if (
+    !amaList ||
+    !amaManagerStatus
+  ) {
+    return;
+  }
+
+
+  if (
+    !window.supabaseClient ||
+    !adminAuthorized
+  ) {
+    adminAmaQuestions = [];
+
+    amaList.replaceChildren();
+
+    amaManagerStatus.textContent =
+      "Administrator authorization is required.";
+
+    if (amaRefreshButton) {
+      amaRefreshButton.disabled =
+        true;
+    }
+
+    if (amaStatusFilter) {
+      amaStatusFilter.disabled =
+        true;
+    }
+
+    if (amaPublicationFilter) {
+      amaPublicationFilter.disabled =
+        true;
+    }
+
+    return;
+  }
+
+
+  amaManagerStatus.textContent =
+    "Loading AMA questions...";
+
+  amaList.replaceChildren();
+
+
+  if (amaRefreshButton) {
+    amaRefreshButton.disabled =
+      true;
+  }
+
+
+  try {
+    const {
+      data,
+      error
+    } = await window.supabaseClient
+      .from("ama_questions")
+      .select(`
+        id,
+        user_id,
+        submitter_name,
+        question,
+        anonymous,
+        status,
+        answer,
+        answered_at,
+        published,
+        created_at,
+        updated_at
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    adminAmaQuestions =
+      Array.isArray(data)
+        ? data
+        : [];
+
+
+    console.log(
+      "Admin AMA questions received:",
+      adminAmaQuestions
+    );
+
+
+    if (amaStatusFilter) {
+      amaStatusFilter.disabled =
+        false;
+    }
+
+    if (amaPublicationFilter) {
+      amaPublicationFilter.disabled =
+        false;
+    }
+
+
+    renderAdminAmaQuestions();
+
+  } catch (error) {
+    console.error(
+      "Unable to load admin AMA questions:",
+      error
+    );
+
+    adminAmaQuestions = [];
+
+    amaList.replaceChildren();
+
+    amaManagerStatus.textContent =
+      "Unable to load AMA questions.";
+
+    if (amaStatusFilter) {
+      amaStatusFilter.disabled =
+        true;
+    }
+
+    if (amaPublicationFilter) {
+      amaPublicationFilter.disabled =
+        true;
+    }
+
+  } finally {
+    if (amaRefreshButton) {
+      amaRefreshButton.disabled =
+        false;
+    }
+  }
+}
+
+
   /* ==========================================================
      LOAD BOT MANAGER
      ========================================================== */
@@ -6802,6 +7552,70 @@ if (freeRequestStatusFilter) {
 }
 
   /* ==========================================================
+   AMA MANAGER CONTROLS
+   ========================================================== */
+
+if (amaRefreshButton) {
+  amaRefreshButton.addEventListener(
+    "click",
+    async () => {
+      await loadAdminAmaQuestions();
+    }
+  );
+}
+
+
+if (amaStatusFilter) {
+  amaStatusFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminAmaQuestions();
+    }
+  );
+}
+
+
+if (amaPublicationFilter) {
+  amaPublicationFilter.addEventListener(
+    "change",
+    () => {
+      renderAdminAmaQuestions();
+    }
+  );
+}
+
+
+if (editAmaStatus) {
+  editAmaStatus.addEventListener(
+    "change",
+    () => {
+      syncAmaPublishAvailability();
+    }
+  );
+}
+
+
+if (editAmaAnswer) {
+  editAmaAnswer.addEventListener(
+    "input",
+    () => {
+      syncAmaPublishAvailability();
+    }
+  );
+}
+
+
+if (editAmaCancelButton) {
+  editAmaCancelButton.addEventListener(
+    "click",
+    () => {
+      closeEditAmaQuestion();
+    }
+  );
+}
+
+
+  /* ==========================================================
    SAVE REVIEWED COMMISSION
    ========================================================== */
 
@@ -8523,6 +9337,224 @@ if (editFreeRequestForm) {
     }
   );
 }
+
+/* ==========================================================
+   SAVE AMA QUESTION
+   ========================================================== */
+
+if (editAmaForm) {
+  editAmaForm.addEventListener(
+    "submit",
+    async (event) => {
+      event.preventDefault();
+
+
+      if (
+        !window.supabaseClient ||
+        !adminAuthorized
+      ) {
+        if (editAmaStatusMessage) {
+          editAmaStatusMessage.textContent =
+            "Administrator authorization is required.";
+        }
+
+        return;
+      }
+
+
+      if (!editingAmaQuestionId) {
+        if (editAmaStatusMessage) {
+          editAmaStatusMessage.textContent =
+            "No AMA question is currently selected.";
+        }
+
+        return;
+      }
+
+
+      const formData =
+        new FormData(
+          editAmaForm
+        );
+
+
+      const status =
+        String(
+          formData.get("status") || ""
+        ).trim();
+
+      const answer =
+        String(
+          formData.get("answer") || ""
+        ).trim();
+
+      const published =
+        formData.get("published") ===
+        "on";
+
+
+      const allowedStatuses = [
+        "submitted",
+        "reviewing",
+        "answered",
+        "archived",
+        "hidden"
+      ];
+
+
+      if (
+        !allowedStatuses.includes(status)
+      ) {
+        if (editAmaStatusMessage) {
+          editAmaStatusMessage.textContent =
+            "Choose a valid AMA status.";
+        }
+
+        return;
+      }
+
+
+      if (
+        status === "answered" &&
+        !answer
+      ) {
+        if (editAmaStatusMessage) {
+          editAmaStatusMessage.textContent =
+            "Write an answer before marking this question as Answered.";
+        }
+
+        return;
+      }
+
+
+      if (
+        published &&
+        (
+          status !== "answered" ||
+          !answer
+        )
+      ) {
+        if (editAmaStatusMessage) {
+          editAmaStatusMessage.textContent =
+            "Only answered questions can be published.";
+        }
+
+        return;
+      }
+
+
+      const answeredAt =
+        status === "answered"
+          ? (
+              editingAmaAnsweredAt ||
+              new Date().toISOString()
+            )
+          : editingAmaAnsweredAt;
+
+
+      if (editAmaSubmitButton) {
+        editAmaSubmitButton.disabled =
+          true;
+
+        editAmaSubmitButton.textContent =
+          "Saving...";
+      }
+
+
+      if (editAmaStatusMessage) {
+        editAmaStatusMessage.textContent =
+          "Saving AMA question...";
+      }
+
+
+      try {
+        const {
+          data,
+          error
+        } = await window.supabaseClient
+          .from("ama_questions")
+          .update({
+            status,
+            answer:
+              answer || null,
+            answered_at:
+              answeredAt || null,
+            published
+          })
+          .eq(
+            "id",
+            editingAmaQuestionId
+          )
+          .select(`
+            id,
+            submitter_name,
+            question,
+            anonymous,
+            status,
+            answer,
+            answered_at,
+            published,
+            created_at,
+            updated_at
+          `)
+          .single();
+
+
+        if (error) {
+          throw error;
+        }
+
+
+        console.log(
+          "AMA question updated:",
+          data
+        );
+
+
+        const statusLabel =
+          getAdminAmaStatusLabel(
+            data.status
+          );
+
+
+        closeEditAmaQuestion();
+
+
+        await loadAdminAmaQuestions();
+
+
+        if (amaManagerStatus) {
+          amaManagerStatus.textContent =
+            data.published
+              ? `AMA question saved as ${statusLabel} and published.`
+              : `AMA question saved as ${statusLabel}.`;
+        }
+
+      } catch (error) {
+        console.error(
+          "Unable to update AMA question:",
+          error
+        );
+
+        if (editAmaStatusMessage) {
+          editAmaStatusMessage.textContent =
+            error?.message ||
+            "The AMA question could not be updated.";
+        }
+
+      } finally {
+        if (editAmaSubmitButton) {
+          editAmaSubmitButton.disabled =
+            false;
+
+          editAmaSubmitButton.textContent =
+            "Save Changes";
+        }
+      }
+    }
+  );
+}
+
 
 /* ==========================================================
    ADD ACCEPTED REQUEST TO GRAVEYARD

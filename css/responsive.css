@@ -412,6 +412,32 @@
         18px;
 }
 
+   .free-request-form {
+    max-width:
+        none;
+}
+
+
+.free-request-form .primary-button {
+    width:
+        100%;
+}
+
+
+.graveyard-filter-grid {
+    margin-top:
+        22px;
+
+    margin-bottom:
+        22px;
+}
+
+
+.graveyard-card-actions .primary-button {
+    width:
+        100%;
+}
+
 }
 /* ========================================
    UPCOMING BOTS PAGE

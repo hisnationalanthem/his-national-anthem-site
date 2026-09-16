@@ -3219,6 +3219,11 @@ a.creator-link-card:hover {
         0.65;
 }
 
+.creator-links-single {
+    grid-template-columns:
+        minmax(0, 620px);
+}
+
 
 /* ========================================
    AMA PREVIEW

@@ -3226,63 +3226,152 @@ a.creator-link-card:hover {
 
 
 /* ========================================
-   AMA PREVIEW
+   AMA FORM
    ======================================== */
 
-.ama-placeholder {
-    border-style:
-        dashed;
+.ama-form {
+    max-width:
+        760px;
 }
 
 
-.ama-preview {
-    margin:
-        28px 0;
-
-    border-top:
-        1px solid var(--color-border-soft);
+.ama-form-field + .ama-form-field {
+    margin-top:
+        22px;
 }
 
 
-.ama-field-preview {
-    padding:
-        17px 0;
-
+.ama-form-field label {
     display:
-        flex;
+        block;
 
-    justify-content:
-        space-between;
+    margin-bottom:
+        8px;
 
-    align-items:
-        flex-start;
-
-    gap:
-        30px;
-
-    border-bottom:
-        1px solid var(--color-border-soft);
-}
-
-
-.ama-field-label {
-    color:
-        var(--color-text);
-
-    font-size:
-        0.9rem;
-}
-
-
-.ama-field-value {
     color:
         var(--color-text-muted);
 
     font-size:
-        0.82rem;
+        0.74rem;
 
-    text-align:
-        right;
+    letter-spacing:
+        0.1em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.ama-form-field input,
+.ama-form-field textarea {
+    width:
+        100%;
+
+    padding:
+        12px 14px;
+
+    background:
+        rgba(23, 21, 18, 0.6);
+
+    color:
+        var(--color-text);
+
+    border:
+        1px solid var(--color-border);
+
+    border-radius:
+        var(--radius-small);
+
+    font:
+        inherit;
+}
+
+
+.ama-form-field input {
+    min-height:
+        48px;
+}
+
+
+.ama-form-field textarea {
+    min-height:
+        180px;
+
+    resize:
+        vertical;
+
+    line-height:
+        1.6;
+}
+
+
+.ama-form-field input:focus,
+.ama-form-field textarea:focus {
+    outline:
+        1px solid var(--color-accent-light);
+
+    border-color:
+        var(--color-accent-light);
+}
+
+
+.ama-anonymous-option {
+    margin-top:
+        20px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    width:
+        fit-content;
+
+    color:
+        var(--color-text-soft);
+
+    cursor:
+        pointer;
+}
+
+
+.ama-anonymous-option input {
+    width:
+        17px;
+
+    height:
+        17px;
+
+    margin:
+        0;
+
+    accent-color:
+        var(--color-accent-dark);
+}
+
+
+.ama-form .small-note {
+    margin-top:
+        12px;
+}
+
+
+.ama-form .button-row {
+    margin-top:
+        24px;
+}
+
+
+.ama-form .request-form-status {
+    margin-top:
+        14px;
+
+    min-height:
+        1.5em;
 }
 /* ========================================
    UPDATES & ANNOUNCEMENTS PAGE

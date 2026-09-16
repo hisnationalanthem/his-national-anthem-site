@@ -536,6 +536,23 @@
             left;
     }
 
+   .masterlist-series-filter {
+    width:
+        100%;
+
+    min-width:
+        0;
+
+    margin-left:
+        0;
+}
+
+
+.masterlist-series-filter select {
+    width:
+        100%;
+}
+
 }
 /* ========================================
    FAQ PAGE

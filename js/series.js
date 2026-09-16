@@ -304,25 +304,26 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       const {
-        data: relationshipData,
-        error: relationshipError
-      } = await window.supabaseClient
-        .from("bot_series")
-        .select(`
-          series_id,
-          sort_order,
-          bots (
-            id,
-            name,
-            slug,
-            pov,
-            bot_type,
-            janitor_url
-          )
-        `)
-        .order("sort_order", {
-          ascending: true
-        });
+  data: relationshipData,
+  error: relationshipError
+} = await window.supabaseClient
+  .from("bot_series")
+  .select(`
+    series_id,
+    sort_order,
+    bots!inner (
+      id,
+      name,
+      slug,
+      pov,
+      bot_type,
+      janitor_url
+    )
+  `)
+  .eq("bots.published", true)
+  .order("sort_order", {
+    ascending: true
+  });
 
 
       if (relationshipError) {

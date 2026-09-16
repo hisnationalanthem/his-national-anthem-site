@@ -4814,7 +4814,6 @@ a.creator-link-card:hover {
     gap: 1.1rem;
     margin-top: 1.5rem;
 }
-}
 
 .admin-login-form {
     max-width: 34rem;
@@ -5224,4 +5223,84 @@ h6 {
         min-width: 0;
         margin-left: 0;
     }
+
+    /* PHONE FLEX STACKING */
+
+    .site-footer-main,
+    .site-footer-bottom,
+    .commission-card-top,
+    .addon-item,
+    .membership-card-header,
+    .credit-counter-placeholder,
+    .upcoming-placeholder-header,
+    .upcoming-live-card-top,
+    .home-section-heading,
+    .policy-fact,
+    .currency-converter-header,
+   .follower-panel-content,
+    .admin-dashboard-heading,
+    .admin-bot-manager-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+   .follower-count-display {
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+}
+
+
+    .site-footer-links {
+        justify-content: flex-start;
+    }
+
+
+    .site-footer-note {
+        text-align: left;
+    }
+
+
+    .home-update-date {
+        margin-left: 0;
+    }
+
+
+    /* PHONE CARD PADDING */
+
+    .journal-panel,
+    .commission-card,
+    .request-card,
+    .schedule-card,
+    .series-card,
+    .policy-notice,
+    .creator-note,
+    .currency-converter {
+        padding: 22px;
+    }
+
+
+    .featured-panel,
+    .membership-card {
+        padding: 24px;
+    }
+
+
+    .upcoming-live-card,
+    .admin-bot-manager-card {
+        padding: 18px;
+    }
+
+
+    /* PHONE ACTION BUTTONS */
+
+    .button-row .primary-button,
+    .button-row .secondary-button,
+    .commission-payment-actions .primary-button,
+    .commission-payment-actions .secondary-button,
+    .admin-bot-manager-actions .primary-button,
+    .admin-bot-manager-actions .secondary-button {
+        width: 100%;
+    }
+
 }

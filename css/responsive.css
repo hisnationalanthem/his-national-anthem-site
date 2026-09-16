@@ -327,6 +327,36 @@
         align-items: flex-start;
     }
 
+   .membership-request-form,
+.membership-donation-form {
+    max-width:
+        none;
+}
+
+
+.button-row {
+    flex-direction:
+        column;
+
+    align-items:
+        stretch;
+}
+
+
+.button-row .primary-button,
+.button-row .secondary-button {
+    width:
+        100%;
+}
+
+
+.membership-account-form .primary-button,
+.membership-request-form .primary-button,
+.membership-donation-form .primary-button {
+    width:
+        100%;
+}
+
 }
 
 

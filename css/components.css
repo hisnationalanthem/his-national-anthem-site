@@ -5088,3 +5088,42 @@ a.creator-link-card:hover {
     background: var(--color-danger);
     color: var(--color-text);
 }
+
+/* ==========================================================
+   GLOBAL FORM OVERFLOW GUARD
+   ========================================================== */
+
+input,
+textarea,
+select,
+button {
+    max-width: 100%;
+}
+
+
+input,
+textarea,
+select {
+    min-width: 0;
+}
+
+
+/* ==========================================================
+   GLOBAL TEXT OVERFLOW GUARD
+   ========================================================== */
+
+p,
+li,
+a,
+span,
+strong,
+small,
+code,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    overflow-wrap: anywhere;
+}
